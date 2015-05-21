@@ -5,7 +5,7 @@
 \date{\today}
 
 \usepackage[latin1]{inputenc}   % Zeicheneingabe per Tastatur (Umlaute, etc.)
-\usepackage[T1]{fontenc}        % Schriftencoding für das Dokument
+\usepackage[T1]{fontenc}        % Schriftencoding fÃ¼r das Dokument
 \usepackage{lmodern, microtype} % Bessere Trennung und Absatzkontrolle
 \usepackage{babel}              % Sprachanpassungen in Klassenoptionen [english, ngerman]
 \usepackage{csquotes}           % Hochkommata per \enquote{}
@@ -26,6 +26,6 @@ At first, one should load the package:
 <<>>=
 x <- 5
 @
-That's it.
+That's it. Well - maybe not! Having changed this line ... what will happen?
 
 \end{document}
