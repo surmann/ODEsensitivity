@@ -1,0 +1,13 @@
+Package: ODEsensitivity
+Type: Package
+Title: Sensitivity Analysis of ODE Models
+Version: 0.2
+Date: 2015-05-21
+Author: Stefan Theers
+Maintainer: Stefan Theers <stefan.theers@tu-dortmund.de>
+Description: A package to perform Sensitivity Analysis in Ordinary Differential Equation Models.
+Suggests: ODEnetwork, exactRankTests
+Depends: devtools, sensitivity, boot, checkmate, deSolve
+License: GPL-2
+NeedsCompilation: no
+Packaged: 2015-05-21 10:57:34 UTC; theers
