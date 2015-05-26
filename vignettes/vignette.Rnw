@@ -28,4 +28,6 @@ x <- 5
 @
 That's it. Well - maybe not! Having changed this line ... what will happen?
 
+A new line.
+
 \end{document}
