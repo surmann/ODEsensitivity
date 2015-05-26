@@ -20,7 +20,7 @@ Maintainer: Stefan Theers <stefan.theers@tu-dortmund.de>
 }
 \references{
 Saltelli et al. (2010): Sensitivity Analysis
-others.
+some other books.
 }
 \keyword{ package }
 \seealso{
