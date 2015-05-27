@@ -10,7 +10,7 @@
 #'
 #' @param ranks \code{(bxk)}-matrix of the ranks of the \code{k}
 #'   variables for each of the \code{b} SAs, ties are neglected,
-#'   must be integers
+#'   must be integers.
 #' @param pearson logical, should the ordinary Pearson coefficient with
 #'   Savage scores be computed (\code{b = 2})?
 #' @param plot logical, scatter plots showing rankings and Savage scores

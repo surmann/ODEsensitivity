@@ -1,68 +1,5 @@
-#' @name plotIntwo
-#'
-#' @aliases plotIntwo
-#' @aliases plotTrajectories
-#'
-#' @title
-#' Plotting the results of Morris SA
-#'
-#' @description
-#' \code{plotIntwo} plots mu.star and sigma seperately versus time.
-#' \code{plotTrajectories} plots mu.star versus sigma for every point of time.
-#'
-#' @details
-#' no details.
-#'
-#' @param res ranking of class \code{res}.
-#'
-#' @return NULL
-#'
-#' @examples
-#' # Modell aufstellen fuer die DGL y'(t) = alpha * y(t):
-#' dglFun <- function(X, my.t) {
-#'   exp(X[, 1] * my.t) + X[, 2] * my.t
-#'   ## exp(X[, 1] * my.t)            # natuerlich die wahre Lsg.
-#' }
-#'
-#' # Fuehre fuer diesen einfachen Fall eine SA zu verschiedenen Zeitpunkten
-#' # durch:
-#' t.vec <- 0:10
-#' xFun <- function(my.t) {
-#'   morris(model = dglFun, factors = 2, r = 100, my.t = my.t,
-#'          design = list(type = "oat", levels = 100, grid.jump = 1))
-#' }
-#' oneRun <- function(xFun, my.t) {
-#'   x <- xFun(my.t)
-#'   # analog zur Hilfeseite von morris()/ hoestgradig primitiv:
-#'   k <- ncol(x$ee)
-#'   mu <- mu.star <- sigma <- numeric(k)
-#'   for(i in 1:k) {
-#'     mu[i]      <- mean(x$ee[, i])
-#'     mu.star[i] <- mean(abs(x$ee[, i]))
-#'     sigma[i]   <- sd(x$ee[, i])
-#'   }
-#'   # Ergebnisse:
-#'   res <- c(my.t, mu, mu.star, sigma)
-#'   names(res) <- c("time",
-#'                   paste("mu", 1:k, sep = ""),
-#'                   paste("mu.star", 1:k, sep = ""),
-#'                   paste("sigma", 1:k, sep = ""))
-#'   return(res)
-#' }
-#' set.seed(2015)
-#' res <- sapply(t.vec, oneRun, xFun = xFun)
-#'
-#' # Plots:
-#' plotIntwo(res)
-#' plotTrajectories(res)
-#'
-#' @author Stefan Theers
-#' @seealso \link[sensitivity]{morris}
-#'
-#' @export
-#' @import checkmate
-#'
-plotIntwo <- function(res) {
+##### auxiliary function: plotting mu and sigma seperately ###########
+plotSep <- function(res, ...) {
   t.vec <- res[1, ]
   k     <- (nrow(res) - 1) / 3
   my.cols <- rainbow(k)
@@ -97,9 +34,8 @@ plotIntwo <- function(res) {
   par(mfrow = c(1, 1))
 }
 
-#' @rdname plotIntwo
-#' @export
-plotTrajectories <- function(res) {
+##### auxiliary function: plotting trajectories ######################
+plotTrajectories <- function(res, ...) {
   t.vec <- res[1, ]
   k     <- (nrow(res) - 1) / 3
   my.cols <- rainbow(k)
@@ -116,4 +52,77 @@ plotTrajectories <- function(res) {
   }
   legend("topleft", legend = paste("X", 1:k, sep = ""), lty = 1,
          col = my.cols)
+}
+
+#' @title
+#' Plotting the results of Morris SA
+#'
+#' @description
+#' \code{plot} plots the results of Morris SA.
+#'
+#' @details
+#' \code{plot} with \code{type = "sep"} plots mu.star and
+#'   sigma seperately versus time.
+#'
+#' \code{plot} with \code{type = "trajec"} plots mu.star versus
+#'   sigma for every point of time.
+#'
+#' @param res resulting ranking of class \code{morrisres}.
+#' @param type plot type, choose between \code{sep} and \code{trajec}.
+#' @param ... additional arguments.
+#'
+#' @return NULL
+#'
+#' @method plot morrisRes
+#'
+#' @examples
+#' # Modell aufstellen fuer die DGL y'(t) = alpha * y(t):
+#' dglFun <- function(X, my.t) {
+#'   exp(X[, 1] * my.t) + X[, 2] * my.t
+#'   ## exp(X[, 1] * my.t)            # natuerlich die wahre Lsg.
+#' }
+#'
+#' # Fuehre fuer diesen einfachen Fall eine SA zu verschiedenen Zeitpunkten
+#' # durch:
+#' t.vec <- 0:10
+#' xFun <- function(my.t) {
+#'   morris(model = dglFun, factors = 2, r = 100, my.t = my.t,
+#'          design = list(type = "oat", levels = 100, grid.jump = 1))
+ #' }
+#' oneRun <- function(xFun, my.t) {
+#'   x <- xFun(my.t)
+#'   # analog zur Hilfeseite von morris()/ hoestgradig primitiv:
+#'   k <- ncol(x$ee)
+#'   mu <- mu.star <- sigma <- numeric(k)
+#'   for(i in 1:k) {
+#'     mu[i]      <- mean(x$ee[, i])
+#'     mu.star[i] <- mean(abs(x$ee[, i]))
+#'     sigma[i]   <- sd(x$ee[, i])
+#'   }
+#'   # Ergebnisse:
+#'   res <- c(my.t, mu, mu.star, sigma)
+#'   names(res) <- c("time",
+#'                   paste("mu", 1:k, sep = ""),
+#'                   paste("mu.star", 1:k, sep = ""),
+#'                   paste("sigma", 1:k, sep = ""))
+#'   return(res)
+#' }
+#' set.seed(2015)
+#' res <- setClasses(sapply(t.vec, oneRun, xFun = xFun), "morrisRes")
+#'
+#' # Plots:
+#' plot(res, type = "sep")
+#' plot(res, type = "trajec")
+#'
+#' @author Stefan Theers
+#' @seealso \link[sensitivity]{morris}
+#'
+#' @export
+#' @import checkmate
+#'
+plot.morrisRes <- function(res, type, ...) {
+  if(type == "sep")    plotSep(res, ...)
+  if(type == "trajec") plotTrajectories(res, ...)
+  # for testing purposes:
+  return(invisible(TRUE))
 }

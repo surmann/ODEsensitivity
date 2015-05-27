@@ -9,7 +9,7 @@ tdcc(ranks, pearson = FALSE, plot = FALSE)
 \arguments{
 \item{ranks}{\code{(bxk)}-matrix of the ranks of the \code{k}
 variables for each of the \code{b} SAs, ties are neglected,
-must be integers}
+must be integers.}
 
 \item{pearson}{logical, should the ordinary Pearson coefficient with
 Savage scores be computed (\code{b = 2})?}
