@@ -2,14 +2,14 @@
 % Please edit documentation in R/plot.R
 \name{plot.morrisRes}
 \alias{plot.morrisRes}
-\title{Plotting the results of Morris SA - and bla}
+\title{Plotting the results of Morris SA}
 \usage{
 \method{plot}{morrisRes}(res, type, ...)
 }
 \arguments{
-\item{res}{resulting ranking of class \code{morrisres}.}
+\item{res}{resulting ranking of class \code{morrisRes}.}
 
-\item{type}{plot type, choose between \code{sep} and \code{trajec}.}
+\item{type}{plot type, choose between \code{"sep"} and \code{"trajec"}.}
 
 \item{...}{additional arguments.}
 }

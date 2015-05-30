@@ -67,8 +67,8 @@ plotTrajectories <- function(res, ...) {
 #' \code{plot} with \code{type = "trajec"} plots mu.star versus
 #'   sigma for every point of time.
 #'
-#' @param res resulting ranking of class \code{morrisres}.
-#' @param type plot type, choose between \code{sep} and \code{trajec}.
+#' @param res resulting ranking of class \code{morrisRes}.
+#' @param type plot type, choose between \code{"sep"} and \code{"trajec"}.
 #' @param ... additional arguments.
 #'
 #' @return NULL
@@ -88,7 +88,7 @@ plotTrajectories <- function(res, ...) {
 #' xFun <- function(my.t) {
 #'   morris(model = dglFun, factors = 2, r = 100, my.t = my.t,
 #'          design = list(type = "oat", levels = 100, grid.jump = 1))
- #' }
+#' }
 #' oneRun <- function(xFun, my.t) {
 #'   x <- xFun(my.t)
 #'   # analog zur Hilfeseite von morris()/ hoestgradig primitiv:

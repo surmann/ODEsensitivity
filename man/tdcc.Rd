@@ -20,8 +20,8 @@ Savage scores be computed (\code{b = 2})?}
 \value{
 A named list with components:
 \itemize{
-  \item First item
-  \item Second item
+  \item Coefficient of Concordance
+  \item Pearson Coefficient
 }
 }
 \description{
@@ -29,7 +29,7 @@ The Top-Down Correlation Coefficient TDCC compares \code{b} rankings
 using Savage Scores.
 }
 \details{
-bla and so on.
+none.
 }
 \examples{
 ranking <- rbind(1:20,
@@ -42,8 +42,5 @@ Stefan Theers
 }
 \references{
 Iman and Conover (1987): A Measure of Top-Down Correlation
-}
-\seealso{
-nothing to see.
 }
 

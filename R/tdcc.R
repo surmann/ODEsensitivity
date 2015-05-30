@@ -6,7 +6,7 @@
 #' using Savage Scores.
 #'
 #' @details
-#' bla and so on.
+#' none.
 #'
 #' @param ranks \code{(bxk)}-matrix of the ranks of the \code{k}
 #'   variables for each of the \code{b} SAs, ties are neglected,
@@ -18,8 +18,8 @@
 #'
 #' @return A named list with components:
 #' \itemize{
-#'   \item First item
-#'   \item Second item
+#'   \item Coefficient of Concordance
+#'   \item Pearson Coefficient
 #' }
 #'
 #' @examples
@@ -30,7 +30,6 @@
 #'
 #' @author Stefan Theers
 #' @references Iman and Conover (1987): A Measure of Top-Down Correlation
-#' @seealso nothing to see.
 #'
 #' @export
 #' @import checkmate
