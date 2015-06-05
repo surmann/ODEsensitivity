@@ -162,6 +162,10 @@ plot.trajectories(res)
 #' @return list of Sobol SA results (i.e. 1st order \code{S} and total
 #'   sensitivity indices \code{T}) for every point of time out of the
 #'   \code{times} vector.
+#'
+#' @export
+#' @import checkmate, deSolve, sensitivity, boot
+#'
 
 ODEsobol <- function(mod = LVmod,
                      pars = c("rIng", "rGrow", "rMort", "assEff", "K"),
@@ -214,7 +218,7 @@ ODEsobol <- function(mod = LVmod,
   return(res)
 }
 
-res <- ODEsobol(n = 50)
+LVres <- ODEsobol(n = 50)
 
 
 
@@ -226,7 +230,7 @@ res <- ODEsobol(n = 50)
 #' Plotting the results of Sobol SA
 #'
 #' @description
-#' \code{plot.sobol} plots the results of Sobol SA.
+#' \code{plot.sobolRes} plots the results of Sobol SA.
 #'
 #' @details
 #' 1st order and total Sobol SA indices are plotted for each input
@@ -292,7 +296,7 @@ plot.sobolRes <- function(res) {
   return(invisible(TRUE))
 }
 
-plot.sobol(res)
+plot.sobolRes(LVres)
 
 
 
@@ -308,16 +312,16 @@ FHNres <- ODEsobol(mod = FHNmod,
                    seed = 2015,
                    n = 50,
                    trafo = function(Y) rowSums(Y^2))
-plot.sobol(FHNres)
+plot.sobolRes(FHNres)
 
-# ODEnetwork/ Oscillator:
-OSres <- ODEsobol(mod = OSmod,
-                  pars = c("cTime", "cState", "cParameters"),
-                  yini = OSyini,
-                  times = 1:3,
-                  seed = 2015,
-                  n = 50,
-                  trafo = function(Y) Y)
-plot.sobol(OSres)
+## # ODEnetwork/ Oscillator:
+## OSres <- ODEsobol(mod = OSmod,
+##                   pars = c("cTime", "cState", "cParameters"),
+##                   yini = OSyini,
+##                   times = 1:3,
+##                   seed = 2015,
+##                   n = 50,
+##                   trafo = function(Y) Y)
+## plot.sobolRes(OSres)
 
 
