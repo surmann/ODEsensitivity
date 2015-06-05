@@ -194,7 +194,10 @@ ODEsobol <- function(mod = LVmod,
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
-    trafo(res)
+    res <- trafo(res)
+    # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
+    # Zentrieren:
+    res - mean(res)
   }
 
   ##### Sensitivitaet ##################################################
@@ -218,7 +221,7 @@ ODEsobol <- function(mod = LVmod,
   return(res)
 }
 
-LVres <- ODEsobol(n = 50)
+LVres <- ODEsobol(n = 10)
 
 
 
