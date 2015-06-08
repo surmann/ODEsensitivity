@@ -8,6 +8,8 @@
 options(help_type = "html")
 library("sensitivity")                         # fuer SA
 library("boot")                                # fuer SA, Sobol
+source("Package-sensitivity.R")
+dev.off()
 
 
 ##----------------------------------------------------------------------
@@ -77,3 +79,14 @@ plot(res, main = "Ergebnis Morris-SA fuer model5")
 plot3d.morris(res)
 # X1 mit groesstem Einfluss. Alle uebrigen weniger.
 
+
+##----------------------------------------------------------------------
+## Untersuchung vorimplementierte Saltelli-Testfunktionen
+##----------------------------------------------------------------------
+
+# Hilfeseiten zu Standard-Testfunktionen:
+?sobol.fun
+sobol.fun
+
+y <- sobol2002(model = sobol.fun, X1, X2, nboot = 1e6)
+# auch hier: negative ST_i !?
