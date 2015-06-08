@@ -5,6 +5,7 @@
 ##--------------------------------------------------------------------##
 
 options(help_type = "html")
+library("parallel")              # fuer paralleles Rechnen
 source("Package-deSolve.R")
 source("Package-sensitivity.R")
 source("Package-ODEnetwork.R")
@@ -172,7 +173,7 @@ ODEsobol <- function(mod = LVmod,
                      yini = LVyini,
                      times = seq(1, 100, 5),
                      seed = 2015,
-                     n = 1000,
+                     n = 10,    # default eigentlich 1000
                      trafo = function(Y) rowSums(Y^2)) {
 
   ##### Plausibilitaet #################################################
@@ -194,10 +195,11 @@ ODEsobol <- function(mod = LVmod,
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
-    res <- trafo(res)
-    # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
-    # Zentrieren:
-    res - mean(res)
+    ## res <-
+    trafo(res)
+    ## # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
+    ## # Zentrieren:
+    ## res - mean(res)
   }
 
   ##### Sensitivitaet ##################################################
@@ -207,12 +209,33 @@ ODEsobol <- function(mod = LVmod,
   # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
   # interessierenden Zeitpunkten:
   S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
-  # Durchlaufe alle Zeitpunkte und bestimme die Sensitivitaet:
-  for(i in 1:timesNum) {
+
+  # Calculates SA indices S and T for the i-th point of time:
+  STForPot <- function(i) {
+    pot <- times[i]
     res <- sobol2007(model = modFun, X1, X2, pot = times[i])
-    S[, i] <- c(times[i], res$S[, 1])
-    T[, i] <- c(times[i], res$T[, 1])
+    return(c(res$S[, 1], res$T[, 1]))
   }
+
+  # Durchlaufe alle Zeitpunkte und bestimme die Sensitivitaet:
+  ## # ohne Parallelisierung:
+  ## for(i in 1:timesNum) {
+  ##   res <- sobol2007(model = modFun, X1, X2, pot = times[i])
+  ##   S[, i] <- c(times[i], res$S[, 1])
+  ##   T[, i] <- c(times[i], res$T[, 1])
+  ## }
+  cl <- makeCluster(rep("localhost", 2), type = "SOCK")
+  clusterSetRNGStream(cl)
+  clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
+                         "timesNum", "pars", "yini", "z", "STForPot",
+                         "S", "T", "sobol2007", "ode", "trafo"),
+    envir = environment())
+  res <- parSapply(cl, 1:timesNum, STForPot)
+  stopCluster(cl)
+
+  # res wieder in 2 Matrizen S und T aufspalten:
+  S <- rbind(times, res[1:k, ])
+  T <- rbind(times, res[(k+1):(2*k), ])
   rownames(S) <- rownames(T) <- c("time", pars)
 
   # Rueckgabe:
@@ -221,7 +244,7 @@ ODEsobol <- function(mod = LVmod,
   return(res)
 }
 
-LVres <- ODEsobol(n = 10)
+system.time(LVres <- ODEsobol(n = 10))
 
 
 
@@ -313,9 +336,29 @@ FHNres <- ODEsobol(mod = FHNmod,
                    yini = FHNyini,
                    times = seq(1, 100, 5),
                    seed = 2015,
-                   n = 50,
+                   n = 10,
                    trafo = function(Y) rowSums(Y^2))
 plot.sobolRes(FHNres)
+
+FHNres <- ODEsobol(mod = FHNmod,
+                   pars = c("a", "b", "s"),
+                   yini = FHNyini,
+                   times = seq(1, 100, 5),
+                   seed = 2015,
+                   n = 10,
+                   trafo = function(Y) Y[, 1])
+plot.sobolRes(FHNres)
+
+FHNres <- ODEsobol(mod = FHNmod,
+                   pars = c("a", "b", "s"),
+                   yini = FHNyini,
+                   times = seq(1, 100, 5),
+                   seed = 2015,
+                   n = 10,
+                   trafo = function(Y) Y[, 2])
+plot.sobolRes(FHNres)
+
+
 
 ## # ODEnetwork/ Oscillator:
 ## OSres <- ODEsobol(mod = OSmod,
