@@ -158,7 +158,8 @@ plot.trajectories(res)
 #' @param seed Seed
 #' @param n Parameter \code{n} used in \link{\code{sobol2007}}
 #' @param trafo function to transform \code{z > 1} output variables to
-#'   IR [only needed, if \code{z > 1}].
+#'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
+#'   matrix.
 #'
 #' @return list of Sobol SA results (i.e. 1st order \code{S} and total
 #'   sensitivity indices \code{T}) for every point of time out of the
@@ -177,7 +178,18 @@ ODEsobol <- function(mod = LVmod,
                      trafo = function(Y) rowSums(Y^2)) {
 
   ##### Plausibilitaet #################################################
+  ## stopifnot(!missing(...))
+  assertFunction(mod)
+  assertCharacter(pars)
   assertNumeric(yini)
+  assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
+  times <- sort(times)
+  stopifnot(!any(times == 0))
+  assertNumeric(seed)
+  assertIntegerish(n)
+  assertFunction(trafo)
+  if(!testVector(trafo(matrix(1:30, nrow = 6)), len = 6))
+    stop("Make sure that trafo() transforms matrices to suitable vectors!")
 
   ##### Vorarbeiten ####################################################
   # Anzahl Parameter:
@@ -195,11 +207,11 @@ ODEsobol <- function(mod = LVmod,
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
-    ## res <-
+    res <-
     trafo(res)
     ## # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
     ## # Zentrieren:
-    ## res - mean(res)
+    res - mean(res)
   }
 
   ##### Sensitivitaet ##################################################
@@ -224,7 +236,7 @@ ODEsobol <- function(mod = LVmod,
   ##   S[, i] <- c(times[i], res$S[, 1])
   ##   T[, i] <- c(times[i], res$T[, 1])
   ## }
-  cl <- makeCluster(rep("localhost", 2), type = "SOCK")
+  cl <- makeCluster(rep("localhost", 3), type = "SOCK")
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
                          "timesNum", "pars", "yini", "z", "STForPot",
@@ -244,8 +256,8 @@ ODEsobol <- function(mod = LVmod,
   return(res)
 }
 
-system.time(LVres <- ODEsobol(n = 10))
-
+system.time(LVres <- ODEsobol(n = 10,
+                              times = seq(1,100,1)))
 
 
 ##----------------------------------------------------------------------
@@ -278,7 +290,7 @@ system.time(LVres <- ODEsobol(n = 10))
 #' @export
 #' @import checkmate
 #'
-plot.sobolRes <- function(res) {
+plot.sobolRes <- function(res, ...) {
   k <- nrow(res$S) - 1
   pars <- rownames(res$S)[- 1]
   parsCols <- rainbow(k)
@@ -366,7 +378,7 @@ plot.sobolRes(FHNres)
 ##                   yini = OSyini,
 ##                   times = 1:3,
 ##                   seed = 2015,
-##                   n = 50,
+##                   n = 10,
 ##                   trafo = function(Y) Y)
 ## plot.sobolRes(OSres)
 
