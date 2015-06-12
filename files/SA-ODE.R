@@ -241,6 +241,7 @@ ODEsobol <- function(mod = LVmod,
   clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
                          "timesNum", "pars", "yini", "z", "STForPot",
                          "S", "T", "sobol2007", "ode", "trafo"),
+  ## clusterExport(cl, list(ls(), "sobol2007", "ode"),
     envir = environment())
   res <- parSapply(cl, 1:timesNum, STForPot)
   stopCluster(cl)
@@ -377,15 +378,14 @@ FHNres <- ODEsobol(mod = FHNmod,
 plot.sobolRes(FHNres)
 
 
-
-## # ODEnetwork/ Oscillator:
-## OSres <- ODEsobol(mod = OSmod,
-##                   pars = c("cTime", "cState", "cParameters"),
-##                   yini = OSyini,
-##                   times = 1:3,
-##                   seed = 2015,
-##                   n = 10,
-##                   trafo = function(Y) Y)
-## plot.sobolRes(OSres)
+# ODEnetwork/ Oscillator:
+OSres <- ODEsobol(mod = OSmod,
+                  pars = c("m.1", "d.1", "k.1", "r.1"),
+                  yini = OSyini,
+                  times = 1:100,
+                  seed = 2015,
+                  n = 10,
+                  trafo = function(Y) Y[, 1])
+plot.sobolRes(OSres)
 
 

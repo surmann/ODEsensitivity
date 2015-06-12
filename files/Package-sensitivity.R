@@ -72,4 +72,3 @@ plot(y)
 y$S
 # totaler Sensitivitaetsindex ST_i fuer x_i:
 y$T
-
