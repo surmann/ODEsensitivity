@@ -395,6 +395,8 @@ plot.sobolRes(FHNres)
 
 
 # ODEnetwork/ Oscillator:
+
+# einfach:
 ## system.time(     # Laufzeit Notebook 50 min.
 ##   OSres <- ODEsobol(mod = OSmod,
 ##                     pars = c("m.1", "d.1", "k.1", "r.1"),
@@ -409,3 +411,14 @@ load("OSres.RData")
 plot.sobolRes(OSres, type = "l", legendPos = "topright")
 # Hier kommen noch immer 1st order Indizes < 0 vor!? Warum?
 
+# erweitert:
+system.time(
+  OS2res <- ODEsobol(mod = OS2mod,
+                     pars = names(OS2pars),
+                     yini = OS2yini,
+                     times = seq(1, 100, 5),
+                     seed = 2015,
+                     n = 10,
+                     trafo = function(Y) Y[, 1])
+)
+plot.sobolRes(OS2res, type = "l", legendPos = "topright")

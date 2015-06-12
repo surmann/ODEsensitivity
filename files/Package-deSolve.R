@@ -77,6 +77,7 @@ plot(myout)    # genial!
 ## Bsp. aus ODEnetwork
 ##----------------------------------------------------------------------
 
+##### einfach ##########################################################
 masses    <- 1
 dampers   <- as.matrix(0.5)
 springs   <- as.matrix(4)
@@ -100,6 +101,34 @@ OSout <- ode(OSyini, OStimes, OSmod, OSpars)
 
 # plot:
 plot(OSout)
+
+
+##### erweitert ########################################################
+masses   <- c(1, 2)
+dampers  <- diag(c(0.1, 0.5))
+dampers[1, 2] <- 0.05
+springs  <- diag(c(4, 10))
+springs[1, 2] <- 6
+
+odenet2 <- ODEnetwork(masses, dampers, springs)
+
+# only state
+odenet2 <- setState(odenet2, c(1, 3), c(0, 0))
+odenet2 <- simuNetwork(odenet2, seq(0, 60, by = 0.05))
+plot(odenet2)
+plot(odenet2, state = "1vs2")
+
+# Intera in "simuNetwork" [OS for oscillator]:
+OS2mod   <- ODEnetwork:::createOscillators(odenet2)
+OS2pars  <- ODEnetwork:::createParamVec(odenet2)
+OS2yini  <- ODEnetwork:::createState(odenet2)
+OS2times <- seq(0, 10, by = 0.01)
+
+OS2out <- ode(OS2yini, OS2times, OS2mod, OS2pars)
+
+# plot:
+plot(OS2out)
+
 
 
 ##----------------------------------------------------------------------
