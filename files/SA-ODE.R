@@ -208,10 +208,9 @@ ODEsobol <- function(mod = LVmod,
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
-    res <-
-    trafo(res)
-    ## # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
-    ## # Zentrieren:
+    res <- trafo(res)
+    # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
+    # Zentrieren:
     res - mean(res)
   }
 
@@ -237,7 +236,7 @@ ODEsobol <- function(mod = LVmod,
   ##   S[, i] <- c(times[i], res$S[, 1])
   ##   T[, i] <- c(times[i], res$T[, 1])
   ## }
-  cl <- makeCluster(rep("localhost", 3), type = "SOCK")
+  cl <- makeCluster(rep("localhost", 4), type = "SOCK")
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
                          "timesNum", "pars", "yini", "z", "STForPot",
@@ -279,6 +278,8 @@ system.time(LVres <- ODEsobol(n = 10,
 #' parameter against time.
 #'
 #' @param res resulting output of \link{\code{ODEsobol}}.
+#' @param type plot type, i.e. "p", "l", "b", "c" or "n".
+#' @param legendPos legend position, default is "topleft".
 #' @param ... additional arguments.
 #'
 #' @return NULL
@@ -394,13 +395,17 @@ plot.sobolRes(FHNres)
 
 
 # ODEnetwork/ Oscillator:
-OSres <- ODEsobol(mod = OSmod,
-                  pars = c("m.1", "d.1", "k.1", "r.1"),
-                  yini = OSyini,
-                  times = 1:100,
-                  seed = 2015,
-                  n = 10,
-                  trafo = function(Y) Y[, 1])
-plot.sobolRes(OSres)
-
+## system.time(     # Laufzeit Notebook 50 min.
+##   OSres <- ODEsobol(mod = OSmod,
+##                     pars = c("m.1", "d.1", "k.1", "r.1"),
+##                     yini = OSyini,
+##                     times = 1:100,
+##                     seed = 2015,
+##                     n = 1000,
+##                     trafo = function(Y) Y[, 1])
+## )
+## save(OSres, file = "OSres.RData")
+load("OSres.RData")
+plot.sobolRes(OSres, type = "l", legendPos = "topright")
+# Hier kommen noch immer 1st order Indizes < 0 vor!? Warum?
 
