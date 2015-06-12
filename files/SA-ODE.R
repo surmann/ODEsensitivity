@@ -188,7 +188,8 @@ ODEsobol <- function(mod = LVmod,
   assertNumeric(seed)
   assertIntegerish(n)
   assertFunction(trafo)
-  if(!testVector(trafo(matrix(1:30, nrow = 6)), len = 6))
+  notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
+  if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
 
   ##### Vorarbeiten ####################################################
@@ -260,7 +261,7 @@ ODEsobol <- function(mod = LVmod,
 }
 
 system.time(LVres <- ODEsobol(n = 10,
-                              times = seq(1, 15, 1)))
+                              times = seq(1, 50, 1)))
 
 
 ##----------------------------------------------------------------------
@@ -293,9 +294,23 @@ system.time(LVres <- ODEsobol(n = 10,
 #' @export
 #' @import checkmate
 #'
-plot.sobolRes <- function(res = LVres, ...) {
+plot.sobolRes <- function(res = LVres, type = "b",
+                          legendPos = "topleft", ...) {
+
   ##### Plausibilitaet #################################################
   assertClass(res, "sobolRes")
+  assertCharacter(type, len = 1)
+  notOk <- !any(rep(type, 5) == c("p", "l", "b", "c", "n"))
+  if(notOk)
+    stop("type must be one of \"p\", \"l\", \"b\", \"c\" or \"n\"!")
+  assertCharacter(legendPos, len = 1)
+  notOk <- !any(rep(legendPos, 9) == c("bottomright", "bottom",
+    "bottomleft", "left", "topleft", "top", "topright", "right",
+    "center"))
+  if(notOk)
+    stop("legendPos must be one of \"bottomright\", \"bottom\",
+      \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
+      \"right\", \"center\"!")
 
   ##### Vorbereitungen #################################################
   k <- nrow(res@S) - 1
@@ -312,14 +327,14 @@ plot.sobolRes <- function(res = LVres, ...) {
   plot(x = res@S[1, ], y = res@S[2, ],
        main = "1st order Sobol SA indices", xlab = "time",
        ylab = "1st order Sobol SA indices",
-       type = "b", col = parsCols[1], ylim = minMaxS)
+       type = type, col = parsCols[1], ylim = minMaxS, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
     lines(x = res@S[1, ], y = res@S[i + 1, ],
-          type = "b", col = parsCols[i])
+          type = type, col = parsCols[i], ...)
   }
   # Legende:
-  legend("topleft", legend = pars, col = parsCols, bg = "white",
+  legend(legendPos, legend = pars, col = parsCols, bg = "white",
          lty = 1, pch = 1)
 
   ##### total SA indices ###############################################
@@ -327,14 +342,14 @@ plot.sobolRes <- function(res = LVres, ...) {
   plot(x = res@T[1, ], y = res@T[2, ],
        main = "Total Sobol SA indices", xlab = "time",
        ylab = "Total Sobol SA indices",
-       type = "b", col = parsCols[1], ylim = minMaxT)
+       type = type, col = parsCols[1], ylim = minMaxT, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
     lines(x = res@T[1, ], y = res@T[i + 1, ],
-          type = "b", col = parsCols[i])
+          type = type, col = parsCols[i], ...)
   }
   # Legende:
-  legend("topleft", legend = pars, col = parsCols, bg = "white",
+  legend(legendPos, legend = pars, col = parsCols, bg = "white",
          lty = 1, pch = 1)
 
   par(mfrow = c(1, 1))
@@ -342,7 +357,7 @@ plot.sobolRes <- function(res = LVres, ...) {
 }
 
 plot.sobolRes(LVres)
-
+plot.sobolRes(LVres, legendPos = "top", type = "l", lwd = 2)
 
 
 ##----------------------------------------------------------------------
