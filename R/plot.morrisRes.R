@@ -55,7 +55,7 @@ plotTrajectories <- function(res, ...) {
 }
 
 #' @title
-#' Plotting the results of Morris SA
+#' Plotting the Results of Morris SA
 #'
 #' @description
 #' \code{plot} plots the results of Morris SA.
@@ -115,7 +115,7 @@ plotTrajectories <- function(res, ...) {
 #' plot(res, type = "trajec")
 #'
 #' @author Stefan Theers
-#' @seealso \link[sensitivity]{morris}
+#' @seealso \code{\link[sensitivity]{morris}}
 #'
 #' @export
 #' @import checkmate
