@@ -369,11 +369,11 @@ plot.sobolRes(LVres, legendPos = "top", type = "l", lwd = 2)
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),
                    yini = FHNyini,
-                   times = seq(1, 100, 5),
+                   times = seq(1, 20, 1),
                    seed = 2015,
                    n = 10,
                    trafo = function(Y) rowSums(Y^2))
-plot.sobolRes(FHNres)
+plot.sobolRes(FHNres, type = "l")
 
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),

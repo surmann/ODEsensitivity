@@ -36,7 +36,33 @@ ordinary differential equations using
 the variance-based Sobol method.
 }
 \examples{
-x <- 5
+##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+# definition of the model itself, parameters, initial values
+# and the times vector:
+FHNmod <- function(Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+
+    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
+    dCurrent <- - 1 / s *(Voltage - a + b * Current)
+
+    return(list(c(dVoltage, dCurrent)))
+  })
+}
+
+FHNpars  <- c(a = 0.2,     # paramter a
+              b = 0.3,     # paramter b
+              s = 3)       # paramter s (= c in the original notation)
+
+FHNyini  <- c(Voltage = -1, Current = 1)
+FHNtimes <- seq(0.1, 20, by = 0.5)
+
+FHNres <- ODEsobol(mod = FHNmod,
+                   pars = c("a", "b", "s"),
+                   yini = FHNyini,
+                   times = FHNtimes,
+                   seed = 2015,
+                   n = 10,
+                   trafo = function(Y) rowSums(Y^2))
 }
 \seealso{
 \code{\link[sensitivity]{sobol}},

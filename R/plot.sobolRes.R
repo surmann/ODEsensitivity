@@ -50,24 +50,24 @@ plot.sobolRes <- function(res = LVres, type = "b",
       \"right\", \"center\"!")
 
   ##### Vorbereitungen #################################################
-  k <- nrow(res@S) - 1
-  pars <- rownames(res@S)[- 1]
+  k <- nrow(res$S) - 1
+  pars <- rownames(res$S)[- 1]
   parsCols <- rainbow(k)
   # Extrema SA Indizes:
-  minMaxS <- c(0.95 * min(res@S[-1, ]), 1.05 * max(res@S[-1, ]))
-  minMaxT <- c(0.95 * min(res@T[-1, ]), 1.05 * max(res@T[-1, ]))
+  minMaxS <- c(0.95 * min(res$S[-1, ]), 1.05 * max(res$S[-1, ]))
+  minMaxT <- c(0.95 * min(res$T[-1, ]), 1.05 * max(res$T[-1, ]))
 
   par(mfrow = c(1, 2))
 
   ##### 1st order SA indices ###########################################
   # Plot fuer ersten Parameter:
-  plot(x = res@S[1, ], y = res@S[2, ],
+  plot(x = res$S[1, ], y = res$S[2, ],
        main = "1st order Sobol SA indices", xlab = "time",
        ylab = "1st order Sobol SA indices",
        type = type, col = parsCols[1], ylim = minMaxS, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
-    lines(x = res@S[1, ], y = res@S[i + 1, ],
+    lines(x = res$S[1, ], y = res$S[i + 1, ],
           type = type, col = parsCols[i], ...)
   }
   # Legende:
@@ -76,13 +76,13 @@ plot.sobolRes <- function(res = LVres, type = "b",
 
   ##### total SA indices ###############################################
   # Plot fuer ersten Parameter:
-  plot(x = res@T[1, ], y = res@T[2, ],
+  plot(x = res$T[1, ], y = res$T[2, ],
        main = "Total Sobol SA indices", xlab = "time",
        ylab = "Total Sobol SA indices",
        type = type, col = parsCols[1], ylim = minMaxT, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
-    lines(x = res@T[1, ], y = res@T[i + 1, ],
+    lines(x = res$T[1, ], y = res$T[i + 1, ],
           type = type, col = parsCols[i], ...)
   }
   # Legende:
