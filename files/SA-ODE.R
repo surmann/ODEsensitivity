@@ -374,6 +374,7 @@ FHNres <- ODEsobol(mod = FHNmod,
                    n = 10,
                    trafo = function(Y) rowSums(Y^2))
 plot.sobolRes(FHNres, type = "l")
+plot(FHNres, type = "l")
 
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),

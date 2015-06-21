@@ -18,7 +18,7 @@
 #'
 #' @return list of Sobol SA results (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
-#'   time of the \code{times} vector.
+#'   time of the \code{times} vector, of class \code{sobolRes}.
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)

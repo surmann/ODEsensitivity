@@ -28,7 +28,7 @@ i.e. the number of bootstrap replicates.}
 \value{
 list of Sobol SA results (i.e. 1st order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of
-  time of the \code{times} vector.
+  time of the \code{times} vector, of class \code{sobolRes}.
 }
 \description{
 \code{ODEsobol} performs a sensitivity analysis for
