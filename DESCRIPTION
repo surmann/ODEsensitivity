@@ -14,5 +14,6 @@ Depends:
   boot,
   checkmate,
   deSolve,
-  ODEnetwork
+  ODEnetwork,
+  BBmisc
 License: GPL-2

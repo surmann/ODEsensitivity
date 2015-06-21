@@ -363,7 +363,7 @@ plot.sobolRes(LVres, legendPos = "top", type = "l", lwd = 2)
 
 
 ##----------------------------------------------------------------------
-## weitere Beispiele
+## weitere Beispiele fuer Sobol
 ##----------------------------------------------------------------------
 
 # FitzHugh-Nagumo:
@@ -424,3 +424,31 @@ system.time(
                      trafo = function(Y) Y[, 1])
 )
 plot.sobolRes(OS2res, type = "l", legendPos = "topright")
+
+
+
+##----------------------------------------------------------------------
+## Beispiele fuer Morris
+##----------------------------------------------------------------------
+
+LVres <- ODEmorris(mod = LVmod,
+                    pars = names(LVpars),
+                    yini = LVyini,
+                    times = seq(1, 200, 10),
+                    seed = 2015,
+                    r = 25,
+                    design =
+                        list(type = "oat", levels = 100, grid.jump = 1),
+                    trafo = function(Y) rowSums(Y^2))
+
+system.time(
+  OS2res <- ODEmorris(mod = OS2mod,
+                      pars = names(OS2pars),
+                      yini = OS2yini,
+                      times = seq(1, 100, 5),
+                      seed = 2015,
+                      r = 25,
+                      design =
+                        list(type = "oat", levels = 100, grid.jump = 1),
+                      trafo = function(Y) Y[, 1])
+)

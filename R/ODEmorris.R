@@ -1,17 +1,19 @@
-#' @title Sobol SA for ODEs
+#' @title Morris SA for ODEs
 #'
 #' @description
-#' \code{ODEsobol} performs a sensitivity analysis for
+#' \code{ODEmorris} performs a sensitivity analysis for
 #' ordinary differential equations using
-#' the variance-based Sobol method.
+#' Morris's elementary effects screening method.
 #'
 #' @param mod model to examine.
 #' @param pars vector of input variable names.
 #' @param yini vector of initial values.
 #' @param times points of time at which the SA should be executed.
 #' @param seed seed.
-#' @param n parameter \code{nboot} used in \code{\link{sobol2007}},
-#'   i.e. the number of bootstrap replicates.
+#' @param r number of repetitions of the \code{design},
+#'   cf. \code{\link[sensitivity]{morris}}.
+#' @param design a list specifying the design type and its parameters,
+#'   cf. \code{\link[sensitivity]{morris}}.
 #' @param trafo function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
 #'   matrix.
@@ -39,15 +41,17 @@
 #'               s = 3)       # paramter s (= c in the original notation)
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 20, by = 0.5)
+#' FHNtimes <- seq(0.1, 100, by = 10)
 #'
-#' FHNres <- ODEsobol(mod = FHNmod,
-#'                    pars = c("a", "b", "s"),
-#'                    yini = FHNyini,
-#'                    times = FHNtimes,
-#'                    seed = 2015,
-#'                    n = 10,
-#'                    trafo = function(Y) rowSums(Y^2))
+#' FHNres <- ODEmorris(mod = FHNmod,
+#'                     pars = c("a", "b", "s"),
+#'                     yini = FHNyini,
+#'                     times = FHNtimes,
+#'                     seed = 2015,
+#'                     r = 100,
+#'                     design =
+#'                         list(type = "oat", levels = 100, grid.jump = 1),
+#'                     trafo = function(Y) rowSums(Y^2))
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
 #'   \code{\link[sensitivity]{sobol2007}}
@@ -62,13 +66,15 @@
 #'   BBmisc
 #'
 
-ODEsobol <- function(mod,
-                     pars,
-                     yini,
-                     times,
-                     seed = 2015,
-                     n = 1000,    # default eigentlich 1000
-                     trafo = function(Y) rowSums(Y^2)) {
+ODEmorris <- function(mod,
+                      pars,
+                      yini,
+                      times,
+                      seed = 2015,
+                      r,
+                      design =
+                        list(type = "oat", levels = 100, grid.jump = 1),
+                      trafo = function(Y) rowSums(Y^2)) {
 
   ##### Plausibilitaet #################################################
   ## stopifnot(!missing(...))
@@ -79,7 +85,8 @@ ODEsobol <- function(mod,
   times <- sort(times)
   stopifnot(!any(times == 0))
   assertNumeric(seed)
-  assertIntegerish(n)
+  assertIntegerish(r)
+  assertList(design)
   assertFunction(trafo)
   notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
   if(notOk)
@@ -93,7 +100,7 @@ ODEsobol <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
-  # Umformen DGL-Modell, sodass fuer sobol2007()-Argument model passend
+  # Umformen DGL-Modell, sodass fuer morris()-Argument model passend
   modFun <- function(X, pot) {
     # X   - (nxk)-Matrix
     # pot - point of time
@@ -102,50 +109,51 @@ ODEsobol <- function(mod,
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
-    res <- trafo(res)
-    # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
-    # Zentrieren:
-    res - mean(res)
+    trafo(res)
+    ## res <- trafo(res)
+    ## # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
+    ## # Zentrieren:
+    ## res - mean(res)
   }
 
   ##### Sensitivitaet ##################################################
-  X1 <- data.frame(matrix(runif(k * n), nrow = n))
-  X2 <- data.frame(matrix(runif(k * n), nrow = n))
-  colnames(X1) <- colnames(X2) <- pars
-  # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
-  # interessierenden Zeitpunkten:
-  S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
-
-  # Calculates SA indices S and T for the i-th point of time:
-  STForPot <- function(i) {
-    pot <- times[i]
-    res <- sobol2007(model = modFun, X1, X2, pot = times[i])
-    return(c(res$S[, 1], res$T[, 1]))
+  # syntax adaptation:
+  xFun <- function(pot) {
+    morris(model = modFun, factors = k, r = r, pot = pot,
+           design = design)
   }
 
-  # Durchlaufe alle Zeitpunkte und bestimme die Sensitivitaet:
-  ## # ohne Parallelisierung:
-  ## for(i in 1:timesNum) {
-  ##   res <- sobol2007(model = modFun, X1, X2, pot = times[i])
-  ##   S[, i] <- c(times[i], res$S[, 1])
-  ##   T[, i] <- c(times[i], res$T[, 1])
-  ## }
+  # performing Morris SA for 1 point of time:
+  oneRun <- function(xFun, pot) {
+    x <- xFun(pot)
+    # analog zur Hilfeseite von morris()/ hoestgradig primitiv:
+    k <- ncol(x$ee)
+    mu <- mu.star <- sigma <- numeric(k)
+    for(i in 1:k) {
+      mu[i]      <- mean(x$ee[, i])
+      mu.star[i] <- mean(abs(x$ee[, i]))
+      sigma[i]   <- sd(x$ee[, i])
+    }
+    # Ergebnisse:
+    res <- c(pot, mu, mu.star, sigma)
+    names(res) <- c("time",
+                    paste("mu", 1:k, sep = ""),
+                    paste("mu.star", 1:k, sep = ""),
+                    paste("sigma", 1:k, sep = ""))
+    return(res)
+  }
+
   cl <- makeCluster(rep("localhost", 4), type = "SOCK")
   clusterSetRNGStream(cl)
-  clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
-                         "timesNum", "pars", "yini", "z", "STForPot",
-                         "S", "T", "sobol2007", "ode", "trafo"),
+  clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
+                         "yini", "z", "r", "design", "xFun", "oneRun",
+                         "morris", "ode", "trafo"),
   ## clusterExport(cl, list(ls(), "sobol2007", "ode"),
     envir = environment())
-  res <- parSapply(cl, 1:timesNum, STForPot)
+  res <- parSapply(cl, times, oneRun, xFun = xFun)
   stopCluster(cl)
 
-  # res wieder in 2 Matrizen S und T aufspalten:
-  S <- rbind(times, res[1:k, ])
-  T <- rbind(times, res[(k+1):(2*k), ])
-  rownames(S) <- rownames(T) <- c("time", pars)
-
   # Rueckgabe:
-  res <- setClasses(list(S = S, T = T), "sobolRes")
+  res <- setClasses(res, "morrisRes")
   return(res)
 }
