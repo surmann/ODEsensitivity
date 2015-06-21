@@ -18,8 +18,8 @@
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
 #'   matrix.
 #'
-#' @return list of Sobol SA results (i.e. 1st order sensitivity indices
-#'   \code{S} and total sensitivity indices \code{T}) for every point of
+#' @return matrix of Morris SA results (i.e. \code{mu, mu.star} and
+#'   \code{sigma}) for every point of
 #'   time of the \code{times} vector, of class \code{sobolRes}.
 #'
 #' @examples

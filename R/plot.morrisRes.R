@@ -114,9 +114,16 @@ plotTrajectories <- function(res, ...) {
 #' @seealso \code{\link[sensitivity]{morris}}
 #'
 #' @export
-#' @import checkmate
+#' @import
+#'   checkmate
 #'
-plot.morrisRes <- function(res, type, ...) {
+plot.morrisRes <- function(res, type = "sep", ...) {
+  assertClass(res, "morrisRes")
+  assertCharacter(type, len = 1)
+  notOk <- !any(rep(type, 2) == c("sep", "trajec"))
+  if(notOk)
+    stop("type must be one of \"sep\" or \"trajec\"!")
+
   if(type == "sep")    plotSep(res, ...)
   if(type == "trajec") plotTrajectories(res, ...)
   # for testing purposes:

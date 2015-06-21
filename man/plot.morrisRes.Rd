@@ -4,7 +4,7 @@
 \alias{plot.morrisRes}
 \title{Plotting the Results of Morris SA}
 \usage{
-\method{plot}{morrisRes}(res, type, ...)
+\method{plot}{morrisRes}(res, type = "sep", ...)
 }
 \arguments{
 \item{res}{resulting ranking of class \code{morrisRes}.}
