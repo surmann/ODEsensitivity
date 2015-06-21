@@ -441,6 +441,21 @@ LVres <- ODEmorris(mod = LVmod,
                         list(type = "oat", levels = 100, grid.jump = 1),
                     trafo = function(Y) rowSums(Y^2))
 
+# FitzHugh-Nagumo:
+FHNres <- ODEmorris(mod = FHNmod,
+                    pars = names(FHNpars),
+                    yini = FHNyini,
+                    times = seq(1, 20, 2),
+                    seed = 2015,
+                    r = 25,
+                    design =
+                        list(type = "oat", levels = 100, grid.jump = 1),
+                    trafo = function(Y) rowSums(Y^2))
+plot.morrisRes(FHNres, type = "sep")
+plot.morrisRes(FHNres, type = "trajec")
+plot(FHNres, type = "sep")
+plot(FHNres, type = "trajec")
+
 system.time(
   OS2res <- ODEmorris(mod = OS2mod,
                       pars = names(OS2pars),

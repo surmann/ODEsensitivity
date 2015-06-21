@@ -48,7 +48,7 @@
 #'                     yini = FHNyini,
 #'                     times = FHNtimes,
 #'                     seed = 2015,
-#'                     r = 100,
+#'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),
 #'                     trafo = function(Y) rowSums(Y^2))
