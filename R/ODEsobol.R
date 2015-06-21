@@ -59,6 +59,7 @@
 #'   sensitivity
 #'   boot
 #'   parallel
+#'   BBmisc
 #'
 
 ODEsobol <- function(mod,
@@ -144,12 +145,6 @@ ODEsobol <- function(mod,
   rownames(S) <- rownames(T) <- c("time", pars)
 
   # Rueckgabe:
-  sobolRes <- function(S, T) {
-    res <- list(S = S, T = T)
-    # Name der Klasse:
-    class(res) <- append(class(res), "sobolRes")
-    return(res)
-  }
-  res <- sobolRes(S = S, T = T)
+  res <- setClasses(list(S = S, T = T), "sobolRes")
   return(res)
 }

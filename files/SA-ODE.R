@@ -6,6 +6,7 @@
 
 options(help_type = "html")
 library("parallel")              # fuer paralleles Rechnen
+library("BBmisc")                # fuer setClasses
 source("Package-deSolve.R")
 source("Package-sensitivity.R")
 source("Package-ODEnetwork.R")
