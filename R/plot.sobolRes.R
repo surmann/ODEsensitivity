@@ -28,6 +28,7 @@
 #' x <- 7
 #'
 #' @export
+#'
 #' @import checkmate
 #'
 

@@ -29,8 +29,8 @@ cf. \code{\link[sensitivity]{morris}}.}
   matrix.}
 }
 \value{
-list of Sobol SA results (i.e. 1st order sensitivity indices
-  \code{S} and total sensitivity indices \code{T}) for every point of
+matrix of Morris SA results (i.e. \code{mu, mu.star} and
+  \code{sigma}) for every point of
   time of the \code{times} vector, of class \code{sobolRes}.
 }
 \description{
