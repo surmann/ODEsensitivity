@@ -18,7 +18,7 @@ ODEsobol(mod, pars, yini, times, seed = 2015, n = 1000,
 
 \item{seed}{seed.}
 
-\item{n}{parameter \code{nboot} used in \code{\link{sobol2007}},
+\item{n}{parameter \code{nboot} used in \code{\link{soboljansen}},
 i.e. the number of bootstrap replicates.}
 
 \item{trafo}{function to transform \code{z > 1} output variables to
@@ -66,6 +66,6 @@ FHNres <- ODEsobol(mod = FHNmod,
 }
 \seealso{
 \code{\link[sensitivity]{sobol}},
-  \code{\link[sensitivity]{sobol2007}}
+  \code{\link[sensitivity]{soboljansen}}
 }
 

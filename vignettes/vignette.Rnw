@@ -1,8 +1,4 @@
 \documentclass[paper=a4, fontsize=12pt, parskip=half+, DIV=13, ngerman]{scrartcl}
-\title{ODEsensitivity}
-\subtitle{General Information}
-\author{Stefan Theers}
-\date{\today}
 
 \usepackage[latin1]{inputenc}   % Zeicheneingabe per Tastatur (Umlaute, etc.)
 \usepackage[T1]{fontenc}        % Schriftencoding für das Dokument
@@ -10,6 +6,12 @@
 \usepackage{babel}              % Sprachanpassungen in Klassenoptionen [english, ngerman]
 \usepackage{csquotes}           % Hochkommata per \enquote{}
 \usepackage{amsmath, mathtools} % Mathe-Pakete
+
+\title{\textsf{ODEsensitivity}: An \textbf{R} Package for Sensitivity Analysis of ODE Models}
+\subtitle{General Information}
+\author{Dirk Surmann \qquad Stefan Theers}
+\date{\today}
+
 
 % \VignetteIndexEntry{SA for ODEs}
 % \VignetteDepends{sensitivity}
@@ -22,7 +24,7 @@
 %\tableofcontents
 %, eval=FALSE
 
-At first, one should load the package:
+
 <<>>=
 x <- 5
 @

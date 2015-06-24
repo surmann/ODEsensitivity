@@ -64,7 +64,7 @@ x$S
 ## X2 <- data.frame(matrix(runif(8 * n), nrow = n))
 
 # sensitivity analysis
-y <- sobol2002(model = sobol.fun, X1, X2, nboot = 1000)
+y <- sobol2007(model = sobol.fun, X1, X2, nboot = 1000)
 print(y)
 plot(y)
 
@@ -72,3 +72,14 @@ plot(y)
 y$S
 # totaler Sensitivitaetsindex ST_i fuer x_i:
 y$T
+
+
+##----------------------------------------------------------------------
+## soboljansen(.)
+##----------------------------------------------------------------------
+
+# Nutze wegen
+#  http://stats.stackexchange.com/questions/43504/interpreting-results-from-sobol-sensitivity-analysis-in-r
+# diese Implementierung:
+soboljansen
+# (mit gleichen Argumenten).

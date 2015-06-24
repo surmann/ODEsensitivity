@@ -10,7 +10,7 @@
 #' @param yini vector of initial values.
 #' @param times points of time at which the SA should be executed.
 #' @param seed seed.
-#' @param n parameter \code{nboot} used in \code{\link{sobol2007}},
+#' @param n parameter \code{nboot} used in \code{\link{soboljansen}},
 #'   i.e. the number of bootstrap replicates.
 #' @param trafo function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
@@ -50,7 +50,7 @@
 #'                    trafo = function(Y) rowSums(Y^2))
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
-#'   \code{\link[sensitivity]{sobol2007}}
+#'   \code{\link[sensitivity]{soboljansen}}
 #'
 #' @export
 #' @import
@@ -93,7 +93,7 @@ ODEsobol <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
-  # Umformen DGL-Modell, sodass fuer sobol2007()-Argument model passend
+  # Umformen DGL-Modell, sodass fuer soboljansen()-Argument model passend
   modFun <- function(X, pot) {
     # X   - (nxk)-Matrix
     # pot - point of time
@@ -102,10 +102,11 @@ ODEsobol <- function(mod,
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
-    res <- trafo(res)
-    # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
-    # Zentrieren:
-    res - mean(res)
+    trafo(res)
+    ## res <- trafo(res)
+    ## # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
+    ## # Zentrieren:
+    ## res - mean(res)
   }
 
   ##### Sensitivitaet ##################################################
@@ -119,14 +120,14 @@ ODEsobol <- function(mod,
   # Calculates SA indices S and T for the i-th point of time:
   STForPot <- function(i) {
     pot <- times[i]
-    res <- sobol2007(model = modFun, X1, X2, pot = times[i])
+    res <- soboljansen(model = modFun, X1, X2, pot = times[i])
     return(c(res$S[, 1], res$T[, 1]))
   }
 
   # Durchlaufe alle Zeitpunkte und bestimme die Sensitivitaet:
   ## # ohne Parallelisierung:
   ## for(i in 1:timesNum) {
-  ##   res <- sobol2007(model = modFun, X1, X2, pot = times[i])
+  ##   res <- soboljansen(model = modFun, X1, X2, pot = times[i])
   ##   S[, i] <- c(times[i], res$S[, 1])
   ##   T[, i] <- c(times[i], res$T[, 1])
   ## }
@@ -134,8 +135,8 @@ ODEsobol <- function(mod,
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
                          "timesNum", "pars", "yini", "z", "STForPot",
-                         "S", "T", "sobol2007", "ode", "trafo"),
-  ## clusterExport(cl, list(ls(), "sobol2007", "ode"),
+                         "S", "T", "soboljansen", "ode", "trafo"),
+  ## clusterExport(cl, list(ls(), "soboljansen", "ode"),
     envir = environment())
   res <- parSapply(cl, 1:timesNum, STForPot)
   stopCluster(cl)
