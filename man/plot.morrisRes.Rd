@@ -7,9 +7,11 @@
 \method{plot}{morrisRes}(res, type = "sep", ...)
 }
 \arguments{
-\item{res}{resulting ranking of class \code{morrisRes}.}
+\item{res}{[\code{morrisRes}]\cr
+resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.}
 
-\item{type}{plot type, choose between \code{"sep"} and \code{"trajec"}.}
+\item{type}{[\code{character(1)}]\cr
+plot type, choose between \code{"sep"} and \code{"trajec"}.}
 
 \item{...}{additional arguments.}
 }

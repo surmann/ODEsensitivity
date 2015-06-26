@@ -5,16 +5,26 @@
 #' ordinary differential equations using
 #' Morris's elementary effects screening method.
 #'
-#' @param mod model to examine.
-#' @param pars vector of input variable names.
-#' @param yini vector of initial values.
-#' @param times points of time at which the SA should be executed.
-#' @param seed seed.
-#' @param r number of repetitions of the \code{design},
+#' @param mod [\code{function(Time, State, Pars)}]\cr
+#'   model to examine, cf. example below.
+#' @param pars [\code{numeric(k)}]\cr
+#'   vector of \code{k} input variable names.
+#' @param yini [\code{numeric(z)}]\cr
+#'   vector of \code{z} initial values.
+#' @param times [\code{numeric}]\cr
+#'   points of time at which the SA should be executed
+#'   (vector of arbitrary length). Also the
+#'   first point of time must be positive.
+#' @param seed [\code{numeric(1)}]\cr
+#'   seed.
+#' @param r [\code{integer(1)}]\cr
+#'   number of repetitions of the \code{design},
 #'   cf. \code{\link[sensitivity]{morris}}.
-#' @param design a list specifying the design type and its parameters,
+#' @param design [\code{list}]\cr
+#'   a list specifying the design type and its parameters,
 #'   cf. \code{\link[sensitivity]{morris}}.
-#' @param trafo function to transform \code{z > 1} output variables to
+#' @param trafo [\code{function}]\cr
+#'   function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
 #'   matrix.
 #'

@@ -8,23 +8,33 @@ ODEmorris(mod, pars, yini, times, seed = 2015, r, design = list(type =
   "oat", levels = 100, grid.jump = 1), trafo = function(Y) rowSums(Y^2))
 }
 \arguments{
-\item{mod}{model to examine.}
+\item{mod}{[\code{function(Time, State, Pars)}]\cr
+model to examine, cf. example below.}
 
-\item{pars}{vector of input variable names.}
+\item{pars}{[\code{numeric(k)}]\cr
+vector of \code{k} input variable names.}
 
-\item{yini}{vector of initial values.}
+\item{yini}{[\code{numeric(z)}]\cr
+vector of \code{z} initial values.}
 
-\item{times}{points of time at which the SA should be executed.}
+\item{times}{[\code{numeric}]\cr
+points of time at which the SA should be executed
+(vector of arbitrary length). Also the
+first point of time must be positive.}
 
-\item{seed}{seed.}
+\item{seed}{[\code{numeric(1)}]\cr
+seed.}
 
-\item{r}{number of repetitions of the \code{design},
+\item{r}{[\code{integer(1)}]\cr
+number of repetitions of the \code{design},
 cf. \code{\link[sensitivity]{morris}}.}
 
-\item{design}{a list specifying the design type and its parameters,
+\item{design}{[\code{list}]\cr
+a list specifying the design type and its parameters,
 cf. \code{\link[sensitivity]{morris}}.}
 
-\item{trafo}{function to transform \code{z > 1} output variables to
+\item{trafo}{[\code{function}]\cr
+  function to transform \code{z > 1} output variables to
   IR [only needed, if \code{z > 1}]. Must be able to deal with a
   matrix.}
 }

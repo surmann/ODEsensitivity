@@ -8,9 +8,12 @@
 #' 1st order and total Sobol SA indices are plotted for each input
 #' parameter against time.
 #'
-#' @param res resulting output of \code{\link{ODEsobol}}.
-#' @param type plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.
-#' @param legendPos legend position, default is \code{"topleft"}.
+#' @param res [\code{sobolRes}]\cr
+#'   resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.
+#' @param type [\code{character(1)}]\cr
+#'   plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.
+#' @param legendPos [\code{character(1)}]\cr
+#'   legend position, default is \code{"topleft"}.
 #' @param ... additional arguments.
 #'
 #' @return NULL
@@ -31,8 +34,7 @@
 #'
 #' @import checkmate
 #'
-
-plot.sobolRes <- function(res = LVres, type = "b",
+plot.sobolRes <- function(res, type = "b",
                           legendPos = "topleft", ...) {
 
   ##### Plausibilitaet #################################################

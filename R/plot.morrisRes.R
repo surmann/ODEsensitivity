@@ -67,8 +67,10 @@ plotTrajectories <- function(res, ...) {
 #' \code{plot} with \code{type = "trajec"} plots mu.star versus
 #'   sigma for every point of time.
 #'
-#' @param res resulting ranking of class \code{morrisRes}.
-#' @param type plot type, choose between \code{"sep"} and \code{"trajec"}.
+#' @param res [\code{morrisRes}]\cr
+#'   resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.
+#' @param type [\code{character(1)}]\cr
+#'   plot type, choose between \code{"sep"} and \code{"trajec"}.
 #' @param ... additional arguments.
 #'
 #' @return NULL

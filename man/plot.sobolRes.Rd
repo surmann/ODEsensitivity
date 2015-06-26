@@ -4,15 +4,17 @@
 \alias{plot.sobolRes}
 \title{Plotting the results of Sobol SA}
 \usage{
-\method{plot}{sobolRes}(res = LVres, type = "b", legendPos = "topleft",
-  ...)
+\method{plot}{sobolRes}(res, type = "b", legendPos = "topleft", ...)
 }
 \arguments{
-\item{res}{resulting output of \code{\link{ODEsobol}}.}
+\item{res}{[\code{sobolRes}]\cr
+resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.}
 
-\item{type}{plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.}
+\item{type}{[\code{character(1)}]\cr
+plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.}
 
-\item{legendPos}{legend position, default is \code{"topleft"}.}
+\item{legendPos}{[\code{character(1)}]\cr
+legend position, default is \code{"topleft"}.}
 
 \item{...}{additional arguments.}
 }
