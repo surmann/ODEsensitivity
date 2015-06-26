@@ -7,21 +7,24 @@
 tdcc(ranks, pearson = FALSE, plot = FALSE)
 }
 \arguments{
-\item{ranks}{\code{(bxk)}-matrix of the ranks of the \code{k}
+\item{ranks}{[\code{matrix(nrow = b, ncol = k)}]\cr
+\code{(bxk)}-matrix of the ranks of the \code{k}
 variables for each of the \code{b} SAs, ties are neglected,
 must be integers.}
 
-\item{pearson}{logical, should the ordinary Pearson coefficient with
+\item{pearson}{[\code{logical(1)}]\cr
+logical, should the ordinary Pearson coefficient with
 Savage scores be computed (\code{b = 2})?}
 
-\item{plot}{logical, scatter plots showing rankings and Savage scores
+\item{plot}{[\code{logical(1)}]\cr
+  logical, scatter plots showing rankings and Savage scores
   (\code{b = 2})?}
 }
 \value{
-A named list with components:
+A named vector with components:
 \itemize{
-  \item Coefficient of Concordance
-  \item Pearson Coefficient
+  \item{\bold{kendall}}: Coefficient of concordance.
+  \item{\bold{pearson}}: Pearson Coefficient (only if \code{pearson = TRUE}).
 }
 }
 \description{
@@ -29,7 +32,8 @@ The Top-Down Correlation Coefficient TDCC compares \code{b} rankings
 using Savage Scores.
 }
 \details{
-none.
+NOTE: As the implementation of the coefficient of concordance is still defective,
+please use the Pearson coefficient!
 }
 \examples{
 ranking <- rbind(1:20,

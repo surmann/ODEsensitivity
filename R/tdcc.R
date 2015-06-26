@@ -6,20 +6,24 @@
 #' using Savage Scores.
 #'
 #' @details
-#' none.
+#' NOTE: As the implementation of the coefficient of concordance is still defective,
+#' please use the Pearson coefficient!
 #'
-#' @param ranks \code{(bxk)}-matrix of the ranks of the \code{k}
+#' @param ranks [\code{matrix(nrow = b, ncol = k)}]\cr
+#'   \code{(bxk)}-matrix of the ranks of the \code{k}
 #'   variables for each of the \code{b} SAs, ties are neglected,
 #'   must be integers.
-#' @param pearson logical, should the ordinary Pearson coefficient with
+#' @param pearson [\code{logical(1)}]\cr
+#'   logical, should the ordinary Pearson coefficient with
 #'   Savage scores be computed (\code{b = 2})?
-#' @param plot logical, scatter plots showing rankings and Savage scores
+#' @param plot [\code{logical(1)}]\cr
+#'   logical, scatter plots showing rankings and Savage scores
 #'   (\code{b = 2})?
 #'
-#' @return A named list with components:
+#' @return A named vector with components:
 #' \itemize{
-#'   \item Coefficient of Concordance
-#'   \item Pearson Coefficient
+#'   \item{\bold{kendall}}: Coefficient of concordance.
+#'   \item{\bold{pearson}}: Pearson Coefficient (only if \code{pearson = TRUE}).
 #' }
 #'
 #' @examples
@@ -32,7 +36,9 @@
 #' @references Iman and Conover (1987): A Measure of Top-Down Correlation
 #'
 #' @export
+#'
 #' @import checkmate
+#'
 tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
   # Plausibilitaet:
   assertMatrix(ranks, mode = "numeric", min.rows = 2, min.cols = 2)
@@ -64,11 +70,11 @@ tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
     par(mfrow = c(1, 1))
   }
   if(!pearson)
-    return(C.T)
+    return(c(kendall = C.T))
   if(pearson) {
     r.T <- 1 / (k - S1) * (sum(apply(S, 2, prod)) - k)
     # An dieser Stelle kann analog zu Abschnitt 2 ein Permutationstest
     # implementiert werden.
-    return(list(kendall = C.T, pearson = r.T))
+    return(c(kendall = C.T, pearson = r.T))
   }
 }
