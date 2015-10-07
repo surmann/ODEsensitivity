@@ -27,6 +27,9 @@
 #'   function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
 #'   matrix.
+#' @param ncores [\code{integer(1)}]\cr
+#'   number of processor cores to be used for calculating the sensitivity
+#'   indices. Must be between 1 and 4.
 #'
 #' @return matrix of Morris SA results (i.e. \code{mu, mu.star} and
 #'   \code{sigma}) for every point of
@@ -61,7 +64,8 @@
 #'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),
-#'                     trafo = function(Y) rowSums(Y^2))
+#'                     trafo = function(Y) rowSums(Y^2),
+#'                     ncores = 4)
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
 #'   \code{\link[sensitivity]{sobol2007}}
@@ -84,7 +88,8 @@ ODEmorris <- function(mod,
                       r,
                       design =
                         list(type = "oat", levels = 100, grid.jump = 1),
-                      trafo = function(Y) rowSums(Y^2)) {
+                      trafo = function(Y) rowSums(Y^2),
+                      ncores = 1) {
 
   ##### Plausibilitaet #################################################
   ## stopifnot(!missing(...))
@@ -101,6 +106,7 @@ ODEmorris <- function(mod,
   notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
   if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
+  assertIntegerish(ncores, lower = 1L, upper = 4L)
 
   ##### Vorarbeiten ####################################################
   set.seed(seed)
@@ -153,7 +159,7 @@ ODEmorris <- function(mod,
     return(res)
   }
 
-  cl <- makeCluster(rep("localhost", 4), type = "SOCK")
+  cl <- makeCluster(rep("localhost", ncores), type = "SOCK")
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
                          "yini", "z", "r", "design", "xFun", "oneRun",

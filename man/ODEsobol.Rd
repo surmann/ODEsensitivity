@@ -5,7 +5,7 @@
 \title{Sobol SA for ODEs}
 \usage{
 ODEsobol(mod, pars, yini, times, seed = 2015, n = 1000,
-  trafo = function(Y) rowSums(Y^2))
+  trafo = function(Y) rowSums(Y^2), ncores = 1)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -30,9 +30,13 @@ parameter \code{nboot} used in \code{\link{soboljansen}},
 i.e. the number of bootstrap replicates.}
 
 \item{trafo}{[\code{function}]\cr
-  function to transform \code{z > 1} output variables to
-  IR [only needed, if \code{z > 1}]. Must be able to deal with a
-  matrix.}
+function to transform \code{z > 1} output variables to
+IR [only needed, if \code{z > 1}]. Must be able to deal with a
+matrix.}
+
+\item{ncores}{[\code{integer(1)}]\cr
+  number of processor cores to be used for calculating the sensitivity
+  indices. Must be between 1 and 4.}
 }
 \value{
 list of Sobol SA results (i.e. 1st order sensitivity indices
@@ -71,7 +75,8 @@ FHNres <- ODEsobol(mod = FHNmod,
                    times = FHNtimes,
                    seed = 2015,
                    n = 10,
-                   trafo = function(Y) rowSums(Y^2))
+                   trafo = function(Y) rowSums(Y^2),
+                   ncores = 4)
 }
 \seealso{
 \code{\link[sensitivity]{sobol}},

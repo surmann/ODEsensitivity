@@ -24,6 +24,9 @@
 #'   function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
 #'   matrix.
+#' @param ncores [\code{integer(1)}]\cr
+#'   number of processor cores to be used for calculating the sensitivity
+#'   indices. Must be between 1 and 4.
 #'
 #' @return list of Sobol SA results (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
@@ -56,7 +59,8 @@
 #'                    times = FHNtimes,
 #'                    seed = 2015,
 #'                    n = 10,
-#'                    trafo = function(Y) rowSums(Y^2))
+#'                    trafo = function(Y) rowSums(Y^2),
+#'                    ncores = 4)
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
 #'   \code{\link[sensitivity]{soboljansen}}
@@ -77,7 +81,8 @@ ODEsobol <- function(mod,
                      times,
                      seed = 2015,
                      n = 1000,    # default eigentlich 1000
-                     trafo = function(Y) rowSums(Y^2)) {
+                     trafo = function(Y) rowSums(Y^2),
+                     ncores = 1) {
 
   ##### Plausibilitaet #################################################
   ## stopifnot(!missing(...))
@@ -93,6 +98,7 @@ ODEsobol <- function(mod,
   notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
   if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
+  assertIntegerish(ncores, lower = 1L, upper = 4L)
 
   ##### Vorarbeiten ####################################################
   set.seed(seed)
@@ -140,7 +146,7 @@ ODEsobol <- function(mod,
   ##   S[, i] <- c(times[i], res$S[, 1])
   ##   T[, i] <- c(times[i], res$T[, 1])
   ## }
-  cl <- makeCluster(rep("localhost", 4), type = "SOCK")
+  cl <- makeCluster(rep("localhost", ncores), type = "SOCK")
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
                          "timesNum", "pars", "yini", "z", "STForPot",

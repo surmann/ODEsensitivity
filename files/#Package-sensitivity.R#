@@ -125,7 +125,7 @@ y$T
 ##### Plotting the results for the report ##############################
 pdf("C:/Users/theers/ALLE/07_Studium/2012-2015_TU_Dortmund_Statistik_BSc/HiWi-Jobs/LehrstuhlCStat/Bericht/img/sobolfun-sobol2007.pdf",
     width = 10, height = 5)
-y <- soboljansen(model = sobol.fun, X1, X2, nboot = 1000, conf = 0.95)
+y <- sobol2007(model = sobol.fun, X1, X2, nboot = 1000, conf = 0.95)
 print(y)
 plot(y)
 abline(h=0, lty = 2, col = "gray")
