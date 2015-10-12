@@ -70,12 +70,12 @@ FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 20, by = 0.5)
 
 FHNres <- ODEsobol(mod = FHNmod,
-                   pars = c("a", "b", "s"),
+                   pars = names(FHNpars),
                    yini = FHNyini,
                    times = FHNtimes,
                    seed = 2015,
-                   n = 10,
-                   trafo = function(Y) rowSums(Y^2),
+                   n = 10,                        # use n >> 10!
+                   trafo = function(Y) Y[, 1],    # voltage only
                    ncores = 4)
 }
 \seealso{

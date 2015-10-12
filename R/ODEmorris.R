@@ -57,18 +57,17 @@
 #' FHNtimes <- seq(0.1, 100, by = 10)
 #'
 #' FHNres <- ODEmorris(mod = FHNmod,
-#'                     pars = c("a", "b", "s"),
+#'                     pars = names(FHNpars),
 #'                     yini = FHNyini,
 #'                     times = FHNtimes,
 #'                     seed = 2015,
 #'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),
-#'                     trafo = function(Y) rowSums(Y^2),
+#'                     trafo = function(Y) Y[, 1],    # voltage only,
 #'                     ncores = 4)
 #'
-#' @seealso \code{\link[sensitivity]{sobol}},
-#'   \code{\link[sensitivity]{sobol2007}}
+#' @seealso \code{\link[sensitivity]{morris}}
 #'
 #' @export
 #' @import
