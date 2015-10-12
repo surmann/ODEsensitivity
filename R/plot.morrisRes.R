@@ -6,22 +6,22 @@ plotSep <- function(res, pars, legendPos, ...) {
   # Teile den Plot in mu.star und sigma:
   par(mfrow = c(1, 2))
   # mu.star:
-  plot(t.vec, y = res[2, ], type = "b", col = my.cols[1], lwd = 1,
+  plot(t.vec, y = res[2, ], type = "l", col = my.cols[1], lwd = 1,
        main = "mu.star(t)",
        ylim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
-                max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
+                min(max(res[(k+2):(2*k+1), ], na.rm = TRUE), 2)), ### KRITISCH!
        xlab = "time t", ylab = "mu.star")
   if(k > 1) {
     j <- 1
     for(i in (k+2):(2*k+1)) {
-      lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "b")
+      lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "l")
       j <- j + 1
     }
   }
   legend("topleft", legend = pars, lty = 1,
          col = my.cols)
   # sigma:
-  plot(t.vec, y = res[2+2*k, ], type = "b", col = my.cols[1], lwd = 1,
+  plot(t.vec, y = res[2+2*k, ], type = "l", col = my.cols[1], lwd = 1,
        main = "sigma(t)",
        ylim = c(min(res[(2*k+2):(3*k+1), ], na.rm = TRUE),
                 max(res[(2*k+2):(3*k+1), ], na.rm = TRUE)),
@@ -29,7 +29,7 @@ plotSep <- function(res, pars, legendPos, ...) {
   if(k > 1) {
     j <- 1
     for(i in (2*k+2):(3*k+1)) {
-      lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "b")
+      lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "l")
       j <- j + 1
     }
   }
