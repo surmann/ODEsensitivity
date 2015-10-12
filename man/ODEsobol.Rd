@@ -80,6 +80,7 @@ FHNres <- ODEsobol(mod = FHNmod,
 }
 \seealso{
 \code{\link[sensitivity]{sobol}},
-  \code{\link[sensitivity]{soboljansen}}
+  \code{\link[sensitivity]{soboljansen}},
+  \code{\link{plot.sobolRes}}
 }
 

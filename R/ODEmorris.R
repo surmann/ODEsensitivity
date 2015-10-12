@@ -31,9 +31,11 @@
 #'   number of processor cores to be used for calculating the sensitivity
 #'   indices. Must be between 1 and 4.
 #'
-#' @return matrix of Morris SA results (i.e. \code{mu, mu.star} and
+#' @return list with (1) \code{res}, the matrix of Morris SA results
+#'   (i.e. \code{mu, mu.star} and
 #'   \code{sigma}) for every point of
-#'   time of the \code{times} vector, of class \code{sobolRes}.
+#'   time of the \code{times} vector, and (2) \code{pars},
+#'   the parameter names; of class \code{sobolRes}.
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
@@ -64,10 +66,11 @@
 #'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),
-#'                     trafo = function(Y) Y[, 1],    # voltage only,
+#'                     trafo = function(Y) Y[, 1],    # voltage only
 #'                     ncores = 4)
 #'
-#' @seealso \code{\link[sensitivity]{morris}}
+#' @seealso \code{\link[sensitivity]{morris}},
+#'   \code{\link{plot.morrisRes}}
 #'
 #' @export
 #' @import
@@ -169,6 +172,7 @@ ODEmorris <- function(mod,
   stopCluster(cl)
 
   # Rueckgabe:
+  res <- list(res = res, pars = pars)
   res <- setClasses(res, "morrisRes")
   return(res)
 }

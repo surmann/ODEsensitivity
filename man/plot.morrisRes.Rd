@@ -4,7 +4,7 @@
 \alias{plot.morrisRes}
 \title{Plotting the Results of Morris SA}
 \usage{
-\method{plot}{morrisRes}(res, type = "sep", ...)
+\method{plot}{morrisRes}(res, type = "sep", legendPos = "topleft", ...)
 }
 \arguments{
 \item{res}{[\code{morrisRes}]\cr
@@ -12,6 +12,9 @@ resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.}
 
 \item{type}{[\code{character(1)}]\cr
 plot type, choose between \code{"sep"} and \code{"trajec"}.}
+
+\item{legendPos}{[\code{character(1)}]\cr
+legend position, default is \code{"topleft"}.}
 
 \item{...}{additional arguments.}
 }
@@ -64,6 +67,7 @@ plot(FHNres, type = "trajec")
 Stefan Theers
 }
 \seealso{
-\code{\link[sensitivity]{morris}}
+\code{\link{ODEmorris}},
+  \code{\link[sensitivity]{morris}}
 }
 

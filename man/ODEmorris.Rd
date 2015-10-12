@@ -44,9 +44,11 @@ matrix.}
   indices. Must be between 1 and 4.}
 }
 \value{
-matrix of Morris SA results (i.e. \code{mu, mu.star} and
+list with (1) \code{res}, the matrix of Morris SA results
+  (i.e. \code{mu, mu.star} and
   \code{sigma}) for every point of
-  time of the \code{times} vector, of class \code{sobolRes}.
+  time of the \code{times} vector, and (2) \code{pars},
+  the parameter names; of class \code{sobolRes}.
 }
 \description{
 \code{ODEmorris} performs a sensitivity analysis for
@@ -82,10 +84,11 @@ FHNres <- ODEmorris(mod = FHNmod,
                     r = 25,
                     design =
                         list(type = "oat", levels = 100, grid.jump = 1),
-                    trafo = function(Y) Y[, 1],    # voltage only,
+                    trafo = function(Y) Y[, 1],    # voltage only
                     ncores = 4)
 }
 \seealso{
-\code{\link[sensitivity]{morris}}
+\code{\link[sensitivity]{morris}},
+  \code{\link{plot.morrisRes}}
 }
 

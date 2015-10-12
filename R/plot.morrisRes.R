@@ -1,5 +1,5 @@
 ##### auxiliary function: plotting mu and sigma seperately ###########
-plotSep <- function(res, ...) {
+plotSep <- function(res, pars, legendPos, ...) {
   t.vec <- res[1, ]
   k     <- (nrow(res) - 1) / 3
   my.cols <- rainbow(k)
@@ -8,6 +8,8 @@ plotSep <- function(res, ...) {
   # mu.star:
   plot(t.vec, y = res[2, ], type = "b", col = my.cols[1], lwd = 1,
        main = "mu.star(t)",
+       ylim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
+                max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
        xlab = "time t", ylab = "mu.star")
   if(k > 1) {
     j <- 1
@@ -16,11 +18,13 @@ plotSep <- function(res, ...) {
       j <- j + 1
     }
   }
-  legend("topleft", legend = paste("X", 1:k, sep = ""), lty = 1,
+  legend("topleft", legend = pars, lty = 1,
          col = my.cols)
   # sigma:
   plot(t.vec, y = res[2+2*k, ], type = "b", col = my.cols[1], lwd = 1,
        main = "sigma(t)",
+       ylim = c(min(res[(2*k+2):(3*k+1), ], na.rm = TRUE),
+                max(res[(2*k+2):(3*k+1), ], na.rm = TRUE)),
        xlab = "time t", ylab = "sigma")
   if(k > 1) {
     j <- 1
@@ -29,13 +33,12 @@ plotSep <- function(res, ...) {
       j <- j + 1
     }
   }
-  legend("topleft", legend = paste("X", 1:k, sep = ""), lty = 1,
-         col = my.cols)
+  legend(legendPos, legend = pars, lty = 1, col = my.cols)
   par(mfrow = c(1, 1))
 }
 
 ##### auxiliary function: plotting trajectories ######################
-plotTrajectories <- function(res, ...) {
+plotTrajectories <- function(res, pars, legendPos, ...) {
   t.vec <- res[1, ]
   k     <- (nrow(res) - 1) / 3
   my.cols <- rainbow(k)
@@ -50,8 +53,7 @@ plotTrajectories <- function(res, ...) {
       j <- j + 1
     }
   }
-  legend("topleft", legend = paste("X", 1:k, sep = ""), lty = 1,
-         col = my.cols)
+  legend(legendPos, legend = pars, lty = 1, col = my.cols)
 }
 
 #' @title
@@ -71,6 +73,8 @@ plotTrajectories <- function(res, ...) {
 #'   resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, choose between \code{"sep"} and \code{"trajec"}.
+#' @param legendPos [\code{character(1)}]\cr
+#'   legend position, default is \code{"topleft"}.
 #' @param ... additional arguments.
 #'
 #' @return NULL
@@ -113,21 +117,35 @@ plotTrajectories <- function(res, ...) {
 #' plot(FHNres, type = "trajec")
 #'
 #' @author Stefan Theers
-#' @seealso \code{\link[sensitivity]{morris}}
+#' @seealso \code{\link{ODEmorris}},
+#'   \code{\link[sensitivity]{morris}}
 #'
 #' @export
 #' @import
 #'   checkmate
 #'
-plot.morrisRes <- function(res, type = "sep", ...) {
+plot.morrisRes <- function(res, type = "sep", legendPos = "topleft",
+                           ...) {
+
+  ##### Plausibilitaet #################################################
   assertClass(res, "morrisRes")
   assertCharacter(type, len = 1)
   notOk <- !any(rep(type, 2) == c("sep", "trajec"))
   if(notOk)
     stop("type must be one of \"sep\" or \"trajec\"!")
+  assertCharacter(legendPos, len = 1)
+  notOk <- !any(rep(legendPos, 9) == c("bottomright", "bottom",
+    "bottomleft", "left", "topleft", "top", "topright", "right",
+    "center"))
+  if(notOk)
+    stop("legendPos must be one of \"bottomright\", \"bottom\",
+      \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
+      \"right\", \"center\"!")
 
-  if(type == "sep")    plotSep(res, ...)
-  if(type == "trajec") plotTrajectories(res, ...)
+  ##### Plot ###########################################################
+  if(type == "sep")    plotSep(res[[1]], res[[2]], legendPos, ...)
+  if(type == "trajec") plotTrajectories(res[[1]], res[[2]], legendPos,
+                                        ...)
   # for testing purposes:
   return(invisible(TRUE))
 }
