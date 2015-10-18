@@ -44,16 +44,27 @@ matrix.}
   indices. Must be between 1 and 4.}
 }
 \value{
-list with (1) \code{res}, the matrix of Morris SA results
-  (i.e. \code{mu, mu.star} and
-  \code{sigma}) for every point of
-  time of the \code{times} vector, and (2) \code{pars},
-  the parameter names; of class \code{sobolRes}.
+list of class \code{sobolRes} with
+  \itemize{
+    \item \code{res}, the matrix of Morris SA results
+      (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
+      time in the \code{times} vector and
+    \item \code{pars}, the parameter names.
+  }
 }
 \description{
 \code{ODEmorris} performs a sensitivity analysis for
 ordinary differential equations using
 Morris's elementary effects screening method.
+}
+\note{
+\code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
+  sometimes cannot solve an ODE system if unrealistic parameters
+  are sampled by \code{\link[sensitivity]{morris}}. Hence
+  \code{NA}s might occur in the Morris sensitivity results, such
+  that \code{\link{ODEmorris}} fails for one or many points of time!
+  For this reason, please make use of \code{\link{ODEsobol}} instead
+  if \code{NA}s occur!
 }
 \examples{
 ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)

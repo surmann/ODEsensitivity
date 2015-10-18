@@ -31,11 +31,14 @@
 #'   number of processor cores to be used for calculating the sensitivity
 #'   indices. Must be between 1 and 4.
 #'
-#' @return list with (1) \code{res}, the matrix of Morris SA results
-#'   (i.e. \code{mu, mu.star} and
-#'   \code{sigma}) for every point of
-#'   time of the \code{times} vector, and (2) \code{pars},
-#'   the parameter names; of class \code{sobolRes}.
+#' @return list of class \code{sobolRes} with
+#'   \itemize{
+#'     \item \code{res}, the matrix of Morris SA results
+#'       (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
+#'       time in the \code{times} vector and
+#'     \item \code{pars}, the parameter names.
+#'   }
+#'
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
@@ -71,6 +74,15 @@
 #'
 #' @seealso \code{\link[sensitivity]{morris}},
 #'   \code{\link{plot.morrisRes}}
+#'
+#' @note \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
+#'   sometimes cannot solve an ODE system if unrealistic parameters
+#'   are sampled by \code{\link[sensitivity]{morris}}. Hence
+#'   \code{NA}s might occur in the Morris sensitivity results, such
+#'   that \code{\link{ODEmorris}} fails for one or many points of time!
+#'   For this reason, please make use of \code{\link{ODEsobol}} instead
+#'   if \code{NA}s occur!
+#'
 #'
 #' @export
 #' @import
@@ -126,12 +138,9 @@ ODEmorris <- function(mod,
     res <-
       t(apply(X, 1, function(x)
               ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
+
     # Transformation der Output-Variablen nach IR:
     trafo(res)
-    ## res <- trafo(res)
-    ## # Das "BE CAREFUL!" aus der R-Doku zu sobol2007() beachten, d.h.
-    ## # Zentrieren:
-    ## res - mean(res)
   }
 
   ##### Sensitivitaet ##################################################
@@ -144,16 +153,14 @@ ODEmorris <- function(mod,
   # performing Morris SA for 1 point of time:
   oneRun <- function(xFun, pot) {
     x <- xFun(pot)
-    # analog zur Hilfeseite von morris()/ hoestgradig primitiv:
-    k <- ncol(x$ee)
-    mu <- mu.star <- sigma <- numeric(k)
-    for(i in 1:k) {
-      mu[i]      <- mean(x$ee[, i])
-      mu.star[i] <- mean(abs(x$ee[, i]))
-      sigma[i]   <- sd(x$ee[, i])
-    }
+    # analog zur Hilfeseite von morris()/ weniger primitiv als Schleife:
+    mu <- colMeans(x$ee)
+    mu.star <- colMeans(abs(x$ee))
+    sigma <- apply(x$ee, 2, sd)
+
     # Ergebnisse:
     res <- c(pot, mu, mu.star, sigma)
+    k <- ncol(x$ee)
     names(res) <- c("time",
                     paste("mu", 1:k, sep = ""),
                     paste("mu.star", 1:k, sep = ""),
@@ -165,11 +172,19 @@ ODEmorris <- function(mod,
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
                          "yini", "z", "r", "design", "xFun", "oneRun",
-                         "morris", "ode", "trafo"),
+                         "morris", "ode", "trafo", "k"),
   ## clusterExport(cl, list(ls(), "sobol2007", "ode"),
     envir = environment())
   res <- parSapply(cl, times, oneRun, xFun = xFun)
   stopCluster(cl)
+
+  # Warnungen, falls NAs auftreten (unrealistische Paramter => nicht
+  # loesbare ODEs):
+  if(any(is.na(res)))
+    warning("deSolve/ lsoda cannot solve the ODE system!
+This might be due to arising unrealistic parameters by means of Morris
+Screening. Use ODEsobol() instead or wait until the ODEmorris()
+implementation is updated to fix this issue!")
 
   # Rueckgabe:
   res <- list(res = res, pars = pars)
