@@ -10,6 +10,8 @@ plotSep <- function(res, pars, legendPos, ...) {
        main = "mu.star(t)",
        ylim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
                 max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
+                ## min(max(res[(k+2):(2*k+1), ], na.rm = TRUE),  # willkuerlich!
+                ##     5 * median(res[(k+2):(2*k+1), ], na.rm = TRUE)) ),
        xlab = "time t", ylab = "mu.star")
   if(k > 1) {
     j <- 1
