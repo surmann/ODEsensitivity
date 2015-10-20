@@ -6,14 +6,14 @@ plotSep <- function(res, pars, legendPos, ...) {
   # Teile den Plot in mu.star und sigma:
   par(mfrow = c(1, 2))
   # mu.star:
-  plot(t.vec, y = res[2, ], type = "l", col = my.cols[1], lwd = 1,
+  plot(t.vec, y = res[k + 2, ], type = "l", col = my.cols[1], lwd = 1,
        main = "mu.star(t)",
        ylim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
-                min(max(res[(k+2):(2*k+1), ], na.rm = TRUE), 2)), ### KRITISCH!
+                max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
        xlab = "time t", ylab = "mu.star")
   if(k > 1) {
     j <- 1
-    for(i in (k+2):(2*k+1)) {
+    for(i in (k+2+1):(2*k+1)) {
       lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "l")
       j <- j + 1
     }
