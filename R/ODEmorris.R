@@ -17,6 +17,12 @@
 #'   first point of time must be positive.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
+#' @param binf [\code{numeric(k)}]\cr
+#'   vector of lower borders of possible input parameter values.
+#'   If they are all equal, a single value can be set.
+#' @param bsup [\code{numeric(k)}]\cr
+#'   vector of upper borders of possible input parameter values.
+#'   If they are all equal, a single value can be set.
 #' @param r [\code{integer(1)}]\cr
 #'   number of repetitions of the \code{design},
 #'   cf. \code{\link[sensitivity]{morris}}.
@@ -66,6 +72,8 @@
 #'                     yini = FHNyini,
 #'                     times = FHNtimes,
 #'                     seed = 2015,
+#'                     binf = c(0.18, 0.18, 2.8),
+#'                     bsup = c(0.22, 0.22, 3.2),
 #'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),
@@ -80,8 +88,10 @@
 #'   are sampled by \code{\link[sensitivity]{morris}}. Hence
 #'   \code{NA}s might occur in the Morris sensitivity results, such
 #'   that \code{\link{ODEmorris}} fails for one or many points of time!
-#'   For this reason, please make use of \code{\link{ODEsobol}} instead
-#'   if \code{NA}s occur!
+#'   For this reason, if \code{NA}s occur, please make use of
+#'   \code{\link{ODEsobol}} instead or
+#'   restrict the input parameter value intervals usefully using
+#'   \code{binf} and \code{bsup}!
 #'
 #'
 #' @export
@@ -99,7 +109,9 @@ ODEmorris <- function(mod,
                       yini,
                       times,
                       seed = 2015,
-                      r,
+                      binf = 0,
+                      bsup = 1,
+                      r = 25,
                       design =
                         list(type = "oat", levels = 100, grid.jump = 1),
                       trafo = function(Y) rowSums(Y^2),
@@ -114,6 +126,14 @@ ODEmorris <- function(mod,
   times <- sort(times)
   stopifnot(!any(times == 0))
   assertNumeric(seed)
+  assertNumeric(binf)
+  notOk <- length(binf) != length(pars) & length(binf) != 1
+  if(notOk)
+    stop("binf must be of length 1 or of the same length as pars!")
+  assertNumeric(bsup)
+  notOk <- length(bsup) != length(pars) & length(bsup) != 1
+  if(notOk)
+    stop("bsup must be of length 1 or of the same length as pars!")
   assertIntegerish(r)
   assertList(design)
   assertFunction(trafo)
@@ -145,14 +165,14 @@ ODEmorris <- function(mod,
 
   ##### Sensitivitaet ##################################################
   # syntax adaptation:
-  xFun <- function(pot) {
+  xFun <- function(pot, ...) {
     morris(model = modFun, factors = k, r = r, pot = pot,
-           design = design)
+           design = design, ...)
   }
 
   # performing Morris SA for 1 point of time:
-  oneRun <- function(xFun, pot) {
-    x <- xFun(pot)
+  oneRun <- function(xFun, pot, ...) {
+    x <- xFun(pot, binf = binf, bsup = bsup)
     # analog zur Hilfeseite von morris()/ weniger primitiv als Schleife:
     mu <- colMeans(x$ee)
     mu.star <- colMeans(abs(x$ee))
@@ -183,8 +203,7 @@ ODEmorris <- function(mod,
   if(any(is.na(res)))
     warning("deSolve/ lsoda cannot solve the ODE system!
 This might be due to arising unrealistic parameters by means of Morris
-Screening. Use ODEsobol() instead or wait until the ODEmorris()
-implementation is updated to fix this issue!")
+Screening. Use ODEsobol() instead or set binf and bsup differently!")
 
   # Rueckgabe:
   res <- list(res = res, pars = pars)

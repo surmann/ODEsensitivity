@@ -107,6 +107,8 @@ plotTrajectories <- function(res, pars, legendPos, ...) {
 #'                     yini = FHNyini,
 #'                     times = FHNtimes,
 #'                     seed = 2015,
+#'                     binf = c(0.18, 0.18, 2.8),
+#'                     bsup = c(0.22, 0.22, 3.2),
 #'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),

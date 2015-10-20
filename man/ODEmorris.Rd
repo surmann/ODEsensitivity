@@ -4,9 +4,9 @@
 \alias{ODEmorris}
 \title{Morris SA for ODEs}
 \usage{
-ODEmorris(mod, pars, yini, times, seed = 2015, r, design = list(type =
-  "oat", levels = 100, grid.jump = 1), trafo = function(Y) rowSums(Y^2),
-  ncores = 1)
+ODEmorris(mod, pars, yini, times, seed = 2015, binf = 0, bsup = 1,
+  r = 25, design = list(type = "oat", levels = 100, grid.jump = 1),
+  trafo = function(Y) rowSums(Y^2), ncores = 1)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -25,6 +25,14 @@ first point of time must be positive.}
 
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
+
+\item{binf}{[\code{numeric(k)}]\cr
+vector of lower borders of possible input parameter values.
+If they are all equal, a single value can be set.}
+
+\item{bsup}{[\code{numeric(k)}]\cr
+vector of upper borders of possible input parameter values.
+If they are all equal, a single value can be set.}
 
 \item{r}{[\code{integer(1)}]\cr
 number of repetitions of the \code{design},
@@ -63,8 +71,10 @@ Morris's elementary effects screening method.
   are sampled by \code{\link[sensitivity]{morris}}. Hence
   \code{NA}s might occur in the Morris sensitivity results, such
   that \code{\link{ODEmorris}} fails for one or many points of time!
-  For this reason, please make use of \code{\link{ODEsobol}} instead
-  if \code{NA}s occur!
+  For this reason, if \code{NA}s occur, please make use of
+  \code{\link{ODEsobol}} instead or
+  restrict the input parameter value intervals usefully using
+  \code{binf} and \code{bsup}!
 }
 \examples{
 ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
@@ -92,6 +102,8 @@ FHNres <- ODEmorris(mod = FHNmod,
                     yini = FHNyini,
                     times = FHNtimes,
                     seed = 2015,
+                    binf = c(0.18, 0.18, 2.8),
+                    bsup = c(0.22, 0.22, 3.2),
                     r = 25,
                     design =
                         list(type = "oat", levels = 100, grid.jump = 1),
