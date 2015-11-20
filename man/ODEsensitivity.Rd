@@ -6,11 +6,11 @@
 \alias{ODEsensitivity-package}
 \title{Performing Sensitivity Analysis in ODE Models}
 \description{
-ODEsensitivity provides methods to perform sensitivity analysis
-in ordinary differential equation models.
+ODEsensitivity provides methods to perform sensitivity analysis (SA)
+in ordinary differential equation (ODE) models.
 \code{\link{ODEmorris}} and \code{\link{ODEsobol}}
 are based on the implementations of Morris and Sobol SA in the
-\link{sensitivity} package (Pujol et. al, 2015).
+\link{sensitivity} package (Pujol et al., 2015).
 }
 \details{
 cf. \link{sensitivity} package and its \code{\link[sensitivity]{morris}}

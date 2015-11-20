@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.morrisRes.R
 \name{plot.morrisRes}
 \alias{plot.morrisRes}
-\title{Plotting the Results of Morris SA}
+\title{Plotting the results of Morris SA}
 \usage{
 \method{plot}{morrisRes}(res, type = "sep", legendPos = "topleft", ...)
 }
@@ -23,7 +23,7 @@ legend position, default is \code{"topleft"}.}
 }
 \details{
 \code{plot} with \code{type = "sep"} plots mu.star and
-  sigma seperately versus time.
+  sigma separately versus time.
 
 \code{plot} with \code{type = "trajec"} plots mu.star versus
   sigma for every point of time.
@@ -42,9 +42,9 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 
-FHNpars  <- c(a = 0.2,     # paramter a
-              b = 0.3,     # paramter b
-              s = 3)       # paramter s (= c in the original notation)
+FHNpars  <- c(a = 0.2,     # parameter a
+              b = 0.3,     # parameter b
+              s = 3)       # parameter s (= c in the original notation)
 
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 100, by = 10)

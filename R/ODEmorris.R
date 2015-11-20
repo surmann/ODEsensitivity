@@ -7,7 +7,7 @@
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
-#' @param pars [\code{numeric(k)}]\cr
+#' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param yini [\code{numeric(z)}]\cr
 #'   vector of \code{z} initial values.
@@ -37,7 +37,7 @@
 #'   number of processor cores to be used for calculating the sensitivity
 #'   indices. Must be between 1 and 4.
 #'
-#' @return list of class \code{sobolRes} with
+#' @return list of class \code{morrisRes} with
 #'   \itemize{
 #'     \item \code{res}, the matrix of Morris SA results
 #'       (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
@@ -60,9 +60,9 @@
 #'   })
 #' }
 #'
-#' FHNpars  <- c(a = 0.2,     # paramter a
-#'               b = 0.3,     # paramter b
-#'               s = 3)       # paramter s (= c in the original notation)
+#' FHNpars  <- c(a = 0.2,     # parameter a
+#'               b = 0.3,     # parameter b
+#'               s = 3)       # parameter s (= c in the original notation)
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 100, by = 10)

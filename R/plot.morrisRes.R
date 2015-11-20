@@ -1,4 +1,4 @@
-##### auxiliary function: plotting mu and sigma seperately ###########
+##### auxiliary function: plotting mu.star and sigma separately ###########
 plotSep <- function(res, pars, legendPos, ...) {
   t.vec <- res[1, ]
   k     <- (nrow(res) - 1) / 3
@@ -14,14 +14,13 @@ plotSep <- function(res, pars, legendPos, ...) {
                 ##     5 * median(res[(k+2):(2*k+1), ], na.rm = TRUE)) ),
        xlab = "time t", ylab = "mu.star")
   if(k > 1) {
-    j <- 1
+    j <- 2
     for(i in (k+2+1):(2*k+1)) {
       lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "l")
       j <- j + 1
     }
   }
-  legend("topleft", legend = pars, lty = 1,
-         col = my.cols)
+  legend(legendPos, legend = pars, lty = 1, col = my.cols)
   # sigma:
   plot(t.vec, y = res[2+2*k, ], type = "l", col = my.cols[1], lwd = 1,
        main = "sigma(t)",
@@ -29,8 +28,8 @@ plotSep <- function(res, pars, legendPos, ...) {
                 max(res[(2*k+2):(3*k+1), ], na.rm = TRUE)),
        xlab = "time t", ylab = "sigma")
   if(k > 1) {
-    j <- 1
-    for(i in (2*k+2):(3*k+1)) {
+    j <- 2
+    for(i in (2*k+3):(3*k+1)) {
       lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = "l")
       j <- j + 1
     }
@@ -49,8 +48,8 @@ plotTrajectories <- function(res, pars, legendPos, ...) {
        main = "Trajectories: mu.star vs. sigma",
        xlab = "mu.star", ylab = "sigma")
   if(k > 1) {
-    j <- 1
-    for(i in (k+2):(2*k+1)) {
+    j <- 2
+    for(i in (k+3):(2*k+1)) {
       lines(x = res[i, ], y = res[i+k, ], col = my.cols[j], lwd = 1, type = "b")
       j <- j + 1
     }
@@ -59,14 +58,14 @@ plotTrajectories <- function(res, pars, legendPos, ...) {
 }
 
 #' @title
-#' Plotting the Results of Morris SA
+#' Plotting the results of Morris SA
 #'
 #' @description
 #' \code{plot} plots the results of Morris SA.
 #'
 #' @details
 #' \code{plot} with \code{type = "sep"} plots mu.star and
-#'   sigma seperately versus time.
+#'   sigma separately versus time.
 #'
 #' \code{plot} with \code{type = "trajec"} plots mu.star versus
 #'   sigma for every point of time.
@@ -97,9 +96,9 @@ plotTrajectories <- function(res, pars, legendPos, ...) {
 #'   })
 #' }
 #'
-#' FHNpars  <- c(a = 0.2,     # paramter a
-#'               b = 0.3,     # paramter b
-#'               s = 3)       # paramter s (= c in the original notation)
+#' FHNpars  <- c(a = 0.2,     # parameter a
+#'               b = 0.3,     # parameter b
+#'               s = 3)       # parameter s (= c in the original notation)
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 100, by = 10)
@@ -128,8 +127,8 @@ plotTrajectories <- function(res, pars, legendPos, ...) {
 #' @import
 #'   checkmate
 #'
-plot.morrisRes <- function(res, type = "sep", legendPos = "topleft",
-                           ...) {
+
+plot.morrisRes <- function(res, type = "sep", legendPos = "topleft", ...) {
 
   ##### Plausibilitaet #################################################
   assertClass(res, "morrisRes")
@@ -148,8 +147,8 @@ plot.morrisRes <- function(res, type = "sep", legendPos = "topleft",
 
   ##### Plot ###########################################################
   if(type == "sep")    plotSep(res[[1]], res[[2]], legendPos, ...)
-  if(type == "trajec") plotTrajectories(res[[1]], res[[2]], legendPos,
-                                        ...)
+  if(type == "trajec") plotTrajectories(res[[1]], res[[2]], legendPos, ...)
+  
   # for testing purposes:
   return(invisible(TRUE))
 }

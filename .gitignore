@@ -4,3 +4,4 @@
 .Rhistory
 # RStudio
 *.Rproj
+/.Rproj.user

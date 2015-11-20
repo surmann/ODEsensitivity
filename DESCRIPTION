@@ -17,5 +17,6 @@ Depends:
   checkmate,
   deSolve,
   ODEnetwork,
-  BBmisc
+  BBmisc,
+  parallel
 License: GPL-2

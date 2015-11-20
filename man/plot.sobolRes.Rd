@@ -39,9 +39,9 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 
-FHNpars  <- c(a = 0.2,     # paramter a
-              b = 0.3,     # paramter b
-              s = 3)       # paramter s (= c in the original notation)
+FHNpars  <- c(a = 0.2,     # parameter a
+              b = 0.3,     # parameter b
+              s = 3)       # parameter s (= c in the original notation)
 
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 20, by = 0.5)
