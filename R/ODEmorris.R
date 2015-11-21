@@ -150,6 +150,7 @@ ODEmorris <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
+
   # Umformen DGL-Modell, sodass fuer morris()-Argument model passend
   modFun <- function(X, pot) {
     # X   - (nxk)-Matrix
@@ -164,15 +165,11 @@ ODEmorris <- function(mod,
   }
 
   ##### Sensitivitaet ##################################################
-  # syntax adaptation:
-  xFun <- function(pot, ...) {
-    morris(model = modFun, factors = k, r = r, pot = pot,
-           design = design, ...)
-  }
-
+  
   # performing Morris SA for 1 point of time:
-  oneRun <- function(xFun, pot, ...) {
-    x <- xFun(pot, binf = binf, bsup = bsup)
+  oneRun <- function(pot) {
+    x <- morris(model = modFun, factors = k, r = r, pot = pot,
+                design = design, binf = binf, bsup = bsup)
     # analog zur Hilfeseite von morris()/ weniger primitiv als Schleife:
     mu <- colMeans(x$ee)
     mu.star <- colMeans(abs(x$ee))
@@ -180,7 +177,7 @@ ODEmorris <- function(mod,
 
     # Ergebnisse:
     res <- c(pot, mu, mu.star, sigma)
-    k <- ncol(x$ee)
+    # k <- ncol(x$ee)
     names(res) <- c("time",
                     paste("mu", 1:k, sep = ""),
                     paste("mu.star", 1:k, sep = ""),
@@ -191,11 +188,11 @@ ODEmorris <- function(mod,
   cl <- makeCluster(rep("localhost", ncores), type = "SOCK")
   clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
-                         "yini", "z", "r", "design", "xFun", "oneRun",
+                         "yini", "z", "r", "design", "oneRun",
                          "morris", "ode", "trafo", "k"),
-  ## clusterExport(cl, list(ls(), "sobol2007", "ode"),
-    envir = environment())
-  res <- parSapply(cl, times, oneRun, xFun = xFun)
+                envir = environment())
+  ## clusterExport(cl, list(ls(), "sobol2007", "ode"), envir = environment())
+  res <- parSapply(cl, times, oneRun)
   stopCluster(cl)
 
   # Warnungen, falls NAs auftreten (unrealistische Paramter => nicht
