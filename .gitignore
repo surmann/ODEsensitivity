@@ -5,3 +5,5 @@
 # RStudio
 *.Rproj
 /.Rproj.user
+# Auxiliary functions adopted from sensitivity-package
+/R/auxiliary_ats.R
