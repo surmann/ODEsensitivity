@@ -1,4 +1,5 @@
-# Auxiliary functions (adopted and modified from package "sensitivity"):
+# Auxiliary functions (adopted and modified from package "sensitivity"),
+# available only locally:
 
 ind.rep <- function (i, p) 
 {
