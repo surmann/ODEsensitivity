@@ -145,7 +145,7 @@ ODEmorris_ats <- function(mod,
   
   ##### Sensitivitaet ##################################################
   
-  # Morris SA fuer eine :
+  # Morris SA fuer eine Outputvariable:
   one_y <- function(y_idx){
     # Forme DGL-Modell um, sodass fuer morris_ats()-Argument "model_matrix" 
     # passend:

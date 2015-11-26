@@ -168,6 +168,7 @@ ODEmorris <- function(mod,
   
   # performing Morris SA for 1 point of time:
   oneRun <- function(pot) {
+    set.seed(seed)
     x <- morris(model = modFun, factors = k, r = r, pot = pot,
                 design = design, binf = binf, bsup = bsup)
     # analog zur Hilfeseite von morris()/ weniger primitiv als Schleife:
@@ -186,7 +187,7 @@ ODEmorris <- function(mod,
   }
 
   cl <- makeCluster(rep("localhost", ncores), type = "SOCK")
-  clusterSetRNGStream(cl)
+  # clusterSetRNGStream(cl)
   clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
                          "yini", "z", "r", "design", "oneRun",
                          "morris", "ode", "trafo", "k"),
