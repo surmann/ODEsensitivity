@@ -12,7 +12,7 @@ Description: A package to perform Sensitivity Analysis in Ordinary Differential 
 Suggests:
   testthat
 Depends:
-  sensitivity,
+  sensitivity (>= 1.12),
   boot,
   checkmate,
   deSolve,

@@ -154,13 +154,13 @@ ODEmorris_ats <- function(mod,
       #       als Zeilen
       colnames(X) <- pars
       res <- t(apply(X, 1, function(x){
-        ode(yini, times = c(0, times), FHNmod, parms = x)[2:(timesNum+1), y_idx+1]
+        ode(yini, times = c(0, times), mod, parms = x)[2:(timesNum+1), y_idx+1]
       }))
       return(res)
     }
     
-    x <- morris_ats(model_matrix = model_fit, pars = pars, p = k, r = r, 
-                    design = design, binf = binf, bsup = bsup, scale = scale)
+    x <- morris_matrix(model_matrix = model_fit, factors = k, r = r, 
+                       design = design, binf = binf, bsup = bsup, scale = scale)
     mu <- lapply(x$ee, colMeans)
     mu.star <- lapply(x$ee, abs)
     mu.star <- lapply(mu.star, colMeans)
@@ -176,7 +176,7 @@ ODEmorris_ats <- function(mod,
                              paste0("mu.star_", pars),
                              paste0("sigma_", pars))
     
-    # Warnungen, falls NAs auftreten (unrealistische Paramter => nicht
+    # Warnungen, falls NAs auftreten (unrealistische Parameter => nicht
     # loesbare ODEs):
     if(any(is.na(out_y_idx)))
       warning("deSolve/ lsoda cannot solve the ODE system!
