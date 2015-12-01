@@ -47,7 +47,7 @@
 #'
 #'
 #' @examples
-#' ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
 #' FHNmod <- function(Time, State, Pars) {
@@ -92,6 +92,11 @@
 #'   \code{\link{ODEsobol}} instead or
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf} and \code{bsup}!
+#'   
+#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+#'   \emph{Parameter estimation for differential equations: a generalized 
+#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+#'   69, Part 5, 741--796.
 #'
 #'
 #' @export
@@ -143,7 +148,7 @@ ODEmorris <- function(mod,
   assertIntegerish(ncores, lower = 1L, upper = 4L)
 
   ##### Vorarbeiten ####################################################
-  set.seed(seed)
+  # set.seed(seed)
   # Anzahl Parameter:
   k <- length(pars)
   # Anzahl Outputgroessen:
@@ -168,6 +173,8 @@ ODEmorris <- function(mod,
   
   # performing Morris SA for 1 point of time:
   oneRun <- function(pot) {
+    # Setze hier erst den Seed, sodass immer die gleiche Zufallsmatrix
+    # fuer die Parameter-Konstellationen verwendet wird:
     set.seed(seed)
     x <- morris(model = modFun, factors = k, r = r, pot = pot,
                 design = design, binf = binf, bsup = bsup)

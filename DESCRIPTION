@@ -1,7 +1,7 @@
 Package: ODEsensitivity
 Type: Package
 Title: Sensitivity Analysis of ODE Models
-Version: 0.6
+Version: 0.7
 Date: 2015-10-07
 Authors@R:
   c(person("Stefan", "Theers", email =
@@ -12,7 +12,7 @@ Description: A package to perform Sensitivity Analysis in Ordinary Differential 
 Suggests:
   testthat
 Depends:
-  sensitivity (>= 1.12),
+  sensitivity (>= 1.13),
   boot,
   checkmate,
   deSolve,

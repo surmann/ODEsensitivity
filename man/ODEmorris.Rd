@@ -77,7 +77,7 @@ Morris's elementary effects screening method.
   \code{binf} and \code{bsup}!
 }
 \examples{
-##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values
 # and the times vector:
 FHNmod <- function(Time, State, Pars) {
@@ -109,6 +109,12 @@ FHNres <- ODEmorris(mod = FHNmod,
                         list(type = "oat", levels = 100, grid.jump = 1),
                     trafo = function(Y) Y[, 1],    # voltage only
                     ncores = 4)
+}
+\references{
+J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+  \emph{Parameter estimation for differential equations: a generalized
+  smoothing approach}, Journal of the Royal Statistical Society, Series B,
+  69, Part 5, 741--796.
 }
 \seealso{
 \code{\link[sensitivity]{morris}},

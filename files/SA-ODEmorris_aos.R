@@ -18,7 +18,7 @@ FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 100, by = 10)
 
 system.time(
-FHNres_ats <- ODEmorris_ats(mod = FHNmod,
+FHNres_aos <- ODEmorris_aos(mod = FHNmod,
                     pars = names(FHNpars),
                     yini = FHNyini,
                     times = FHNtimes,
@@ -31,11 +31,15 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                     scale = FALSE)
 )
 #  User      System verstrichen 
-# 18.93        0.03       19.50
+# 19.01        0.02       19.77
 
-# save(FHNres_ats, file = "SA-ODEmorris_ats.RData")
+# save(FHNres_aos, file = "SA-ODEmorris_aos.RData")
 
-# pdf("SA-ODEmorris_ats.pdf", width = 10, height = 7)
-plot(FHNres_ats, type = "sep")
-plot(FHNres_ats, type = "trajec")
+# pdf("SA-ODEmorris_aos.pdf", width = 10, height = 7)
+# Voltage:
+plot(FHNres_aos, y_idx = 1, type = "sep")
+plot(FHNres_aos, y_idx = 1, type = "trajec")
+# Current:
+plot(FHNres_aos, y_idx = 2, type = "sep")
+plot(FHNres_aos, y_idx = 2, type = "trajec")
 # dev.off()
