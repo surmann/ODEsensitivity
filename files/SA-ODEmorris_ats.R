@@ -28,7 +28,7 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                     r = 10,
                     design =
                       list(type = "oat", levels = 30, grid.jump = 1),
-                    scale = FALSE)
+                    scale = TRUE)
 )
 #  User      System verstrichen 
 # 18.93        0.03       19.50

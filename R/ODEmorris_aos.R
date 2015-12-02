@@ -87,7 +87,7 @@
 #'                             design =
 #'                                list(type = "oat", levels = 100, 
 #'                                     grid.jump = 1),
-#'                             scale = FALSE)
+#'                             scale = TRUE)
 #'
 #' @seealso \code{\link[sensitivity]{morris}},
 #'   \code{\link[sensitivity]{morris_list}},
