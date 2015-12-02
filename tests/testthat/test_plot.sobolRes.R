@@ -13,7 +13,7 @@ test_that("Plots are generated", {
       res$T <- rbind(res$S[1, ], as.matrix(res$S[-1, ] * 2, ncol = pots))
       rownames(res$S) <- rownames(res$T) <-
         c("time", paste("input", 1:k, sep = ""))
-      res <- setClasses(res, "sobolRes")
+      class(res) <- "sobolRes"
       
       # Testen:
       expect_true(plot(res))
@@ -38,14 +38,17 @@ test_that("Errors are thrown", {
       res$T <- rbind(res$S[1, ], as.matrix(res$S[-1, ] * 2, ncol = pots))
       rownames(res$S) <- rownames(res$T) <-
         c("time", paste("input", 1:k, sep = ""))
-      res <- setClasses(res, "sobolRes")
+      class(res) <- "sobolRes"
+      # Irgendein willkuerliches Objekt:
+      res_nonsense <- diag(7)
+      class(res_nonsense) <- "sobolRes"
       
       # Testen:
       expect_error(plot(res, main = "Something."))
       expect_error(plot.sobolRes(1:3))
       expect_error(plot.sobolRes("no character!"))
       expect_error(plot.sobolRes(diag(7)))
-      expect_error(plot.sobolRes(res <- setClasses(diag(7), "sobolRes")))
+      expect_error(plot.sobolRes(res_nonsense))
       expect_error(plot(res, type = 1))
       expect_error(plot(res, type = "No!"))
       expect_error(plot(res, legendPos = 1))

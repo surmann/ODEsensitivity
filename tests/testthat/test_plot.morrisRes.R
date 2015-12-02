@@ -9,12 +9,13 @@ test_that("Plots are generated", {
   for(k in kVec){
     for(pots in potsVec){
       # Ein Morris-Ergebnis erzeugen:
-      res <- rbind(1:pots, matrix(runif((3*k) * pots), ncol = pots))
-      rownames(res) <- c("time",
+      res_matrix <- rbind(1:pots, matrix(runif((3*k) * pots), ncol = pots))
+      rownames(res_matrix) <- c("time",
                          paste("mu", 1:k, sep = ""),
                          paste("mu.star", 1:k, sep = ""),
                          paste("sigma", 1:k, sep = ""))
-      res <- setClasses(res, "morrisRes")
+      res <- list(res = res_matrix, pars = paste0("X", 1:k))
+      class(res) <- "morrisRes"
       
       # Testen:
       expect_true(plot(res))
@@ -30,18 +31,22 @@ test_that("Errors are thrown", {
   for(k in kVec){
     for(pots in potsVec){
       # Ein Morris-Ergebnis erzeugen:
-      res <- rbind(1:pots, matrix(runif((3*k) * pots), ncol = pots))
-      rownames(res) <- c("time",
-                         paste("mu", 1:k, sep = ""),
-                         paste("mu.star", 1:k, sep = ""),
-                         paste("sigma", 1:k, sep = ""))
-      res <- setClasses(res, "morrisRes")
+      res_matrix <- rbind(1:pots, matrix(runif((3*k) * pots), ncol = pots))
+      rownames(res_matrix) <- c("time",
+                                paste("mu", 1:k, sep = ""),
+                                paste("mu.star", 1:k, sep = ""),
+                                paste("sigma", 1:k, sep = ""))
+      res <- list(res = res_matrix, pars = paste0("X", 1:k))
+      class(res) <- "morrisRes"
+      # Ein willkuerliches Sobol-Ergebnis erzeugen:
+      res_sobol <- diag(7)
+      class(res_sobol) <- "sobolRes"
       
       # Testen:
       expect_error(plot.morrisRes(1:3))
       expect_error(plot.morrisRes("no character!"))
       expect_error(plot.morrisRes(diag(7)))
-      expect_error(plot.morrisRes(res <- setClasses(diag(7), "sobolRes")))
+      expect_error(plot.morrisRes(res_sobol))
     }
   }
 })
