@@ -147,6 +147,8 @@ ODEmorris_aos <- function(mod,
   if(notOk)
     stop("bsup must be of length 1 or of the same length as pars!")
   assertIntegerish(r, len = 1)
+  if(r < 1)
+    stop("r must be greater or equal to 1.")
   assertList(design)
   
   ##### Vorarbeiten ####################################################
@@ -170,12 +172,19 @@ ODEmorris_aos <- function(mod,
       ode(yini, times = c(0, times), 
           mod, parms = X[i, ])[2:(timesNum + 1), 2:(z + 1)]
     })
-    res_matrix <- t(do.call(cbind, res_per_par))
+    if(timesNum == 1){
+      # Correction needed if timesNum == 1:
+      res_vec <- unlist(res_per_par)
+      res_matrix <- matrix(res_vec, ncol = 1)
+    } else{
+      # Transpose the results matrices, so columns represent timepoints:
+      res_matrix <- t(do.call(cbind, res_per_par))
+    }
     # Entferne verwirrende Zeilennamen:
     rownames(res_matrix) <- NULL
     nrow_res_matrix <- nrow(res_matrix)
     res_per_y <- lapply(1:z, function(i){
-      res_matrix[seq(i, nrow_res_matrix, z), ]
+      res_matrix[seq(i, nrow_res_matrix, z), , drop = FALSE]
     })
     names(res_per_y) <- names(yini)
     return(res_per_y)
@@ -203,11 +212,19 @@ ODEmorris_aos <- function(mod,
   
   # Warnungen, falls NAs auftreten (unrealistische Parameter => nicht
   # loesbare ODEs):
-  if(any(is.na(out_all_y)))
+  NA_check_mu <- function(M){
+    any(is.na(M[1:(1 + k*2), ]))
+  }
+  NA_check_sigma <- function(M){
+    all(is.na(M[(2 + k*2):(1 + k*3), ]))
+  }
+  if(any(unlist(lapply(out_all_y, NA_check_mu))))
     warning("deSolve/ lsoda cannot solve the ODE system!
             This might be due to arising unrealistic parameters by means of 
             Morris Screening. Use ODEsobol() instead or set binf and bsup 
             differently!")
+  if(all(unlist(lapply(out_all_y, NA_check_sigma)) && r == 1))
+    warning("Calculation of sigma requires r >= 2.")
   
   res <- list(res = out_all_y, pars = pars)
   class(res) <- "morrisRes_aos"

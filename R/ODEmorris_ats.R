@@ -159,6 +159,8 @@ ODEmorris_ats <- function(mod,
   if(notOk)
     stop("bsup must be of length 1 or of the same length as pars!")
   assertIntegerish(r, len = 1)
+  if(r < 1)
+    stop("r must be greater or equal to 1.")
   assertList(design)
   
   ##### Vorarbeiten ####################################################
@@ -178,19 +180,28 @@ ODEmorris_ats <- function(mod,
     # X   - (nxk)-Matrix mit den n einzugebenden Parameter-Konstellationen
     #       als Zeilen
     colnames(X) <- pars
-    res <- t(apply(X, 1, function(x){
+    res <- apply(X, 1, function(x){
       ode(yini, times = c(0, times), 
           mod, parms = x)[2:(timesNum + 1), y_idx + 1]
-    }))
+    })
+    # (Each row in "res" represents one timepoint.)
+    
+    if(timesNum == 1){
+      # Correction needed if timesNum == 1:
+      res <- matrix(res)
+    } else{
+      # Transpose the results matrix, so columns represent timepoints:
+      res <- t(res)
+    }
     return(res)
   }
-    
+  
   x <- morris_matrix(model_matrix = model_fit, factors = k, r = r, 
                      design = design, binf = binf, bsup = bsup, scale = scale)
-  mu <- lapply(x$ee, colMeans)
-  mu.star <- lapply(x$ee, abs)
+  mu <- lapply(x$ee_by_col, colMeans)
+  mu.star <- lapply(x$ee_by_col, abs)
   mu.star <- lapply(mu.star, colMeans)
-  sigma <- lapply(x$ee, function(M){
+  sigma <- lapply(x$ee_by_col, function(M){
     apply(M, 2, sd)
   })
   out_y_idx <- mapply(c, mu, mu.star, sigma, SIMPLIFY = TRUE)
@@ -201,11 +212,13 @@ ODEmorris_ats <- function(mod,
   
   # Warnungen, falls NAs auftreten (unrealistische Parameter => nicht
   # loesbare ODEs):
-  if(any(is.na(out_y_idx)))
+  if(any(is.na(out_y_idx[1:(1 + k*2), ])))
     warning("deSolve/ lsoda cannot solve the ODE system!
             This might be due to arising unrealistic parameters by means of 
             Morris Screening. Use ODEsobol() instead or set binf and bsup 
             differently!")
+  if(all(is.na(out_y_idx[(2 + k*2):(1 + k*3), ]) && r == 1))
+    warning("Calculation of sigma requires r >= 2.")
   
   # Rueckgabe:
   res <- list(res = out_y_idx, pars = pars)
