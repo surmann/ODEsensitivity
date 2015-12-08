@@ -102,6 +102,10 @@
 #'   \code{\link{ODEsobol}} instead or
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf} and \code{bsup}!
+#'   
+#'   If \code{\link[sensitivity]{morris_list}} throws a warning message saying
+#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
+#'   \code{levels} in the \code{design} argument.
 #'
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 #'   \emph{Parameter estimation for differential equations: a generalized 
@@ -113,8 +117,7 @@
 #' @import
 #'   checkmate
 #'   deSolve
-#'   boot
-#'   BBmisc
+#'   sensitivity
 #'
 
 ODEmorris_aos <- function(mod,
@@ -218,13 +221,21 @@ ODEmorris_aos <- function(mod,
   NA_check_sigma <- function(M){
     all(is.na(M[(2 + k*2):(1 + k*3), ]))
   }
-  if(any(unlist(lapply(out_all_y, NA_check_mu))))
+  if(any(unlist(lapply(out_all_y, NA_check_mu)))){
     warning("deSolve/ lsoda cannot solve the ODE system!
             This might be due to arising unrealistic parameters by means of 
             Morris Screening. Use ODEsobol() instead or set binf and bsup 
             differently!")
-  if(all(unlist(lapply(out_all_y, NA_check_sigma)) && r == 1))
+  } else if(all(unlist(lapply(out_all_y, NA_check_sigma))) && r == 1){
     warning("Calculation of sigma requires r >= 2.")
+  } else{
+    NA_check_sigma_any <- function(M){
+      any(is.na(M[(2 + k*2):(1 + k*3), ]))
+    }
+    if(any(unlist(lapply(out_all_y, NA_check_sigma_any)))){
+      warning("NAs for sigma. This might be due to r being too small.")
+    }
+  }
   
   res <- list(res = out_all_y, pars = pars)
   class(res) <- "morrisRes_aos"

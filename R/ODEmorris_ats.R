@@ -91,6 +91,7 @@
 #'                             pars = names(FHNpars),
 #'                             yini = FHNyini,
 #'                             times = FHNtimes,
+#'                             y_idx = 1,        # voltage only
 #'                             seed = 2015,
 #'                             binf = c(0.18, 0.18, 2.8),
 #'                             bsup = c(0.22, 0.22, 3.2),
@@ -114,6 +115,10 @@
 #'   \code{\link{ODEsobol}} instead or
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf} and \code{bsup}!
+#'   
+#'   If \code{\link[sensitivity]{morris_matrix}} throws a warning message saying
+#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
+#'   \code{levels} in the \code{design} argument.
 #'
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 #'   \emph{Parameter estimation for differential equations: a generalized 
@@ -124,8 +129,7 @@
 #' @import
 #'   checkmate
 #'   deSolve
-#'   boot
-#'   BBmisc
+#'   sensitivity
 #'
 
 ODEmorris_ats <- function(mod,
@@ -212,13 +216,16 @@ ODEmorris_ats <- function(mod,
   
   # Warnungen, falls NAs auftreten (unrealistische Parameter => nicht
   # loesbare ODEs):
-  if(any(is.na(out_y_idx[1:(1 + k*2), ])))
+  if(any(is.na(out_y_idx[1:(1 + k*2), ]))){
     warning("deSolve/ lsoda cannot solve the ODE system!
             This might be due to arising unrealistic parameters by means of 
             Morris Screening. Use ODEsobol() instead or set binf and bsup 
             differently!")
-  if(all(is.na(out_y_idx[(2 + k*2):(1 + k*3), ]) && r == 1))
+  } else if(all(is.na(out_y_idx[(2 + k*2):(1 + k*3), ])) && r == 1){
     warning("Calculation of sigma requires r >= 2.")
+  } else if(any(is.na(out_y_idx[(2 + k*2):(1 + k*3), ]))){
+    warning("NAs for sigma. This might be due to r being too small.")
+  }
   
   # Rueckgabe:
   res <- list(res = out_y_idx, pars = pars)

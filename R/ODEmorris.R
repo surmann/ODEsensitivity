@@ -29,6 +29,12 @@
 #' @param design [\code{list}]\cr
 #'   a list specifying the design type and its parameters,
 #'   cf. \code{\link[sensitivity]{morris}}.
+#' @param scale [\code{logical(1)}]\cr
+#'   if \code{TRUE}, scaling is done for the input design of experiments after 
+#'   building the design and before calculating the elementary effects,
+#'   cf. \code{\link[sensitivity]{morris}}. Defaults to \code{FALSE}, but it is
+#'   highly recommended to use \code{scale = TRUE} if the factors have different
+#'   orders of magnitude.
 #' @param trafo [\code{function}]\cr
 #'   function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
@@ -77,6 +83,7 @@
 #'                     r = 25,
 #'                     design =
 #'                         list(type = "oat", levels = 100, grid.jump = 1),
+#'                     scale = TRUE,
 #'                     trafo = function(Y) Y[, 1],    # voltage only
 #'                     ncores = 4)
 #'
@@ -93,6 +100,10 @@
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf} and \code{bsup}!
 #'   
+#'   If \code{\link[sensitivity]{morris}} throws a warning message saying
+#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
+#'   \code{levels} in the \code{design} argument.
+#'   
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
@@ -104,9 +115,7 @@
 #'   checkmate
 #'   deSolve
 #'   sensitivity
-#'   boot
 #'   parallel
-#'   BBmisc
 #'
 
 ODEmorris <- function(mod,
@@ -119,6 +128,7 @@ ODEmorris <- function(mod,
                       r = 25,
                       design =
                         list(type = "oat", levels = 100, grid.jump = 1),
+                      scale = TRUE,
                       trafo = function(Y) rowSums(Y^2),
                       ncores = 1) {
 
@@ -177,7 +187,7 @@ ODEmorris <- function(mod,
     # fuer die Parameter-Konstellationen verwendet wird:
     set.seed(seed)
     x <- morris(model = modFun, factors = k, r = r, pot = pot,
-                design = design, binf = binf, bsup = bsup)
+                design = design, binf = binf, bsup = bsup, scale = scale)
     # analog zur Hilfeseite von morris()/ weniger primitiv als Schleife:
     mu <- colMeans(x$ee)
     mu.star <- colMeans(abs(x$ee))
@@ -205,13 +215,18 @@ ODEmorris <- function(mod,
 
   # Warnungen, falls NAs auftreten (unrealistische Paramter => nicht
   # loesbare ODEs):
-  if(any(is.na(res)))
+  if(any(is.na(res[1:(1 + k*2), ]))){
     warning("deSolve/ lsoda cannot solve the ODE system!
-This might be due to arising unrealistic parameters by means of Morris
-Screening. Use ODEsobol() instead or set binf and bsup differently!")
-
+          This might be due to arising unrealistic parameters by means of Morris
+          Screening. Use ODEsobol() instead or set binf and bsup differently!")
+  } else if(all(is.na(res[(2 + k*2):(1 + k*3), ])) && r == 1){
+    warning("Calculation of sigma requires r >= 2.")
+  } else if(any(is.na(res[(2 + k*2):(1 + k*3), ]))){
+    warning("NAs for sigma. This might be due to r being too small.")
+  }
+  
   # Rueckgabe:
   res <- list(res = res, pars = pars)
-  res <- setClasses(res, "morrisRes")
+  class(res) <- "morrisRes"
   return(res)
 }

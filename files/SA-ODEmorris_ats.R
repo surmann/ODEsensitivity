@@ -22,6 +22,7 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                     pars = names(FHNpars),
                     yini = FHNyini,
                     times = FHNtimes,
+                    y_idx = 1,
                     seed = 2015,
                     binf = c(0.18, 0.18, 2.8),
                     bsup = c(0.22, 0.22, 3.2),
@@ -31,7 +32,7 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                     scale = TRUE)
 )
 #  User      System verstrichen 
-# 18.93        0.03       19.50
+# 20.01        0.01       22.39 
 
 # save(FHNres_ats, file = "SA-ODEmorris_ats.RData")
 

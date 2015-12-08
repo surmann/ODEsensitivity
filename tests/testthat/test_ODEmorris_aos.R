@@ -75,6 +75,49 @@ test_that("Type of result is correct", {
   expect_true(is.character(FHNres2$pars))
   expect_equal(length(FHNres2$pars), 3L)
   expect_equal(FHNres2$pars, names(FHNpars))
+  
+  # Only one parameter, one point of time and 4 trajectories in the parameter
+  # space:
+  FHNmod3 <- function(Time, State, Pars) {
+    with(as.list(c(State, Pars)), {
+      
+      dVoltage <- 3 * (Voltage - Voltage^3 / 3 + Current)
+      dCurrent <- - 1 / 3 *(Voltage - a + 0.3 * Current)
+      
+      return(list(c(dVoltage, dCurrent)))
+    })
+  }
+  FHNpars3  <- c(a = 0.2)
+  
+  FHNres3 <- ODEmorris_aos(mod = FHNmod3,
+                           pars = names(FHNpars3),
+                           yini = FHNyini,
+                           times = FHNtimes2,
+                           seed = 2015,
+                           binf = c(0.18),
+                           bsup = c(0.22),
+                           r = 4,
+                           design =
+                             list(type = "oat", levels = 100, grid.jump = 1),
+                           scale = TRUE)
+  
+  expect_true(is.list(FHNres3))
+  expect_equal(class(FHNres3), "morrisRes_aos")
+  expect_equal(length(FHNres3), 2L)
+  expect_equal(names(FHNres3), c("res", "pars"))
+  expect_true(is.list(FHNres3$res))
+  expect_equal(length(FHNres3$res), length(FHNyini))
+  expect_equal(names(FHNres3$res), names(FHNyini))
+  expect_true(is.matrix(FHNres3$res$Voltage))
+  expect_true(is.matrix(FHNres3$res$Current))
+  expect_equal(dim(FHNres3$res$Voltage), 
+               c(1 + 3*length(FHNpars3), length(FHNtimes2)))
+  expect_equal(dim(FHNres3$res$Current), 
+               c(1 + 3*length(FHNpars3), length(FHNtimes2)))
+  expect_true(is.vector(FHNres3$pars))
+  expect_true(is.character(FHNres3$pars))
+  expect_equal(length(FHNres3$pars), 1L)
+  expect_equal(FHNres3$pars, names(FHNpars3))
 })
 
 test_that("Errors and warnings are correctly thrown", {

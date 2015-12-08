@@ -29,11 +29,12 @@ FHNres <- ODEmorris(mod = FHNmod,
                     r = 10,
                     design =
                       list(type = "oat", levels = 30, grid.jump = 1),
+                    scale = TRUE,
                     trafo = function(Y) Y[, 1],    # voltage only
                     ncores = 2)
 )
 # User      System verstrichen 
-# 0.39        0.10       74.14
+# 0.17        0.02       73.44
 
 # save(FHNres, file = "SA-ODEmorris.RData")
 
