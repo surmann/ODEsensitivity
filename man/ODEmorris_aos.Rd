@@ -125,6 +125,9 @@ FHNres_aos <- ODEmorris_aos(mod = FHNmod,
                             scale = TRUE)
 
 }
+\author{
+Frank Weber
+}
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   \emph{Parameter estimation for differential equations: a generalized 

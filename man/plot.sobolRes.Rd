@@ -4,10 +4,10 @@
 \alias{plot.sobolRes}
 \title{Plotting the results of Sobol SA}
 \usage{
-\method{plot}{sobolRes}(res, type = "b", legendPos = "topleft", ...)
+\method{plot}{sobolRes}(x, type = "b", legendPos = "topleft", ...)
 }
 \arguments{
-\item{res}{[\code{sobolRes}]\cr
+\item{x}{[\code{sobolRes}]\cr
 resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.}
 
 \item{type}{[\code{character(1)}]\cr
@@ -18,6 +18,9 @@ legend position, default is \code{"topleft"}.}
 
 \item{...}{additional arguments.}
 }
+\value{
+TRUE (invisible; for testing purposes).
+}
 \description{
 \code{plot.sobolRes} plots the results of Sobol SA.
 }
@@ -27,7 +30,7 @@ parameter against time.
 }
 \examples{
 
-##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values
 # and the times vector:
 FHNmod <- function(Time, State, Pars) {

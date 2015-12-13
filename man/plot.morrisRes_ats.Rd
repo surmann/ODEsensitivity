@@ -74,7 +74,7 @@ plot(FHNres_ats, type = "trajec")
 
 }
 \author{
-Stefan Theers
+Frank Weber
 }
 \seealso{
 \code{\link{ODEmorris_ats}},

@@ -67,7 +67,10 @@
 #' plot(FHNres_aos, y_idx = 2, type = "sep")
 #' plot(FHNres_aos, y_idx = 2, type = "trajec")
 #'
-#' @author Stefan Theers
+#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
+#'   correctly.
+#'
+#' @author Frank Weber
 #' @seealso \code{\link{ODEmorris_aos}},
 #'   \code{\link[sensitivity]{morris_list}}
 #'

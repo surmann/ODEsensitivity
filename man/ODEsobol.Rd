@@ -4,7 +4,7 @@
 \alias{ODEsobol}
 \title{Sobol SA for ODEs}
 \usage{
-ODEsobol(mod, pars, yini, times, seed = 2015, n = 1000,
+ODEsobol(mod, pars, yini, times, seed = 2015, n = 1000, nboot = 0,
   trafo = function(Y) rowSums(Y^2), ncores = 1)
 }
 \arguments{
@@ -26,8 +26,16 @@ first point of time must be positive.}
 seed.}
 
 \item{n}{[\code{integer(1)}]\cr
+number of samples used to estimate the variance-based sensitivity
+indices by Monte-Carlo-method. (Variance-based methods for
+sensitivity analysis (like the Sobol- and also the Sobol-Jansen-
+method) rely on Monte-Carlo-simulation to estimate integrals needed for
+the calculation of the sensitivity indices.) Defaults to 1000.}
+
+\item{nboot}{[\code{integer(1)}]\cr
 parameter \code{nboot} used in \code{\link{soboljansen}},
-i.e. the number of bootstrap replicates.}
+i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
+is done.}
 
 \item{trafo}{[\code{function}]\cr
 function to transform \code{z > 1} output variables to
@@ -48,8 +56,13 @@ list of Sobol SA results (i.e. 1st order sensitivity indices
 ordinary differential equations using
 the variance-based Sobol method.
 }
+\note{
+Package \code{parallel} is needed for this function. However, the use
+  of \code{\link{ODEsobol_ats}} is recommended if no transformation has
+  to be made.
+}
 \examples{
-##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values
 # and the times vector:
 FHNmod <- function(Time, State, Pars) {
@@ -75,9 +88,13 @@ FHNres <- ODEsobol(mod = FHNmod,
                    times = FHNtimes,
                    seed = 2015,
                    n = 10,                        # use n >> 10!
+                   nboot = 0,
                    trafo = function(Y) Y[, 1],    # voltage only
                    ncores = 4)
 
+}
+\author{
+Stefan Theers
 }
 \seealso{
 \code{\link[sensitivity]{sobol}},

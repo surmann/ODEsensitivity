@@ -1,10 +1,10 @@
-#' @title Sobol SA for ODEs
+#' @title Sobol SA for ODEs at All Timepoints Simultaneously
 #'
 #' @description
 #' \code{ODEsobol_ats} performs a sensitivity analysis for
-#' ordinary differential equations at all timepoints simultaneously using
-#' the variance-based Sobol method and 
-#' \code{\link[sensitivity]{soboljansen_matrix}}.
+#' ordinary differential equations using the variance-based Sobol-Jansen method.
+#' The analysis is done for one output variable at all timepoints simultaneously
+#' using \code{\link[sensitivity]{soboljansen_matrix}}.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -22,14 +22,32 @@
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param n [\code{integer(1)}]\cr
-#'   parameter \code{nboot} used in \code{\link[sensitivity]{soboljansen}},
-#'   i.e. the number of bootstrap replicates. Can also be zero for no 
-#'   bootstrapping.
+#'   number of samples used to estimate the variance-based sensitivity
+#'   indices by Monte-Carlo-method. (Variance-based methods for
+#'   sensitivity analysis (like the Sobol- and also the Sobol-Jansen-
+#'   method) rely on Monte-Carlo-simulation to estimate integrals needed for
+#'   the calculation of the sensitivity indices.) Defaults to 1000.
+#' @param nboot [\code{integer(1)}]\cr
+#'   parameter \code{nboot} used in \code{\link{soboljansen}},
+#'   i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
+#'   is done.
 #'
 #' @return list of Sobol SA results (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
 #'   time of the \code{times} vector, of class \code{sobolRes_ats}.
 #'
+#' @details \code{ODEsobol_ats} is faster than \code{ODEsobol} since 
+#' \code{\link[sensitivity]{soboljansen_matrix}} can handle matrix output for 
+#' its model function. Thus, the adopted model function for 
+#' \code{\link[sensitivity]{soboljansen_matrix}} (and with it
+#' \code{\link[deSolve]{ode}} from the package \code{deSolve}) only needs to be
+#' executed once. The ODE-output for each timepoint is then transformed to one
+#' column of the output matrix (of the adopted model function).
+#'
+#' @note \code{ODEsobol_ats} is only purposed for analyzing one output 
+#' variable.
+#'
+#' @author Frank Weber
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -57,7 +75,8 @@
 #'                        times = FHNtimes,
 #'                        y_idx = 1,            # only Voltage
 #'                        seed = 2015,
-#'                        n = 10)               # use n >> 10!
+#'                        n = 10,               # use n >> 10!
+#'                        nboot = 0)
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
 #'   \code{\link[sensitivity]{soboljansen_matrix}},
@@ -66,9 +85,8 @@
 #' @export
 #' @import
 #'   checkmate
-#'   deSolve
-#'   sensitivity
-#'   boot
+#' @importFrom deSolve ode
+#' @importFrom sensitivity soboljansen_matrix
 #'
 
 ODEsobol_ats <- function(mod,
@@ -77,7 +95,8 @@ ODEsobol_ats <- function(mod,
                          times,
                          y_idx = 1,
                          seed = 2015,
-                         n = 1000) {
+                         n = 1000,
+                         nboot = 0) {
 
   ##### Check input #################################################
   ## stopifnot(!missing(...))
@@ -90,6 +109,7 @@ ODEsobol_ats <- function(mod,
   assertIntegerish(y_idx)
   assertNumeric(seed)
   assertIntegerish(n)
+  assertIntegerish(nboot)
 
   ##### Vorarbeiten ####################################################
   set.seed(seed)
@@ -129,7 +149,7 @@ ODEsobol_ats <- function(mod,
   # interessierenden Zeitpunkten:
   S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
   
-  x <- soboljansen_matrix(model_matrix = model_fit, X1, X2)
+  x <- soboljansen_matrix(model_matrix = model_fit, X1, X2, nboot = nboot)
   ST_original <- sapply(x$ST_by_col, function(ST_col){
     c(ST_col$S[, 1], ST_col$T[, 1])
   })

@@ -51,7 +51,7 @@
 #'     \item \code{pars}, the parameter names.
 #'   }
 #'
-#'
+#' @author Stefan Theers
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -90,7 +90,12 @@
 #' @seealso \code{\link[sensitivity]{morris}},
 #'   \code{\link{plot.morrisRes}}
 #'
-#' @note \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
+#' @note Package \code{parallel} is needed for this function. However, the use
+#'   of \code{\link{ODEmorris_ats}} (for one output variable) or 
+#'   \code{\link{ODEmorris_aos}} (for multiple output variables) is 
+#'   recommended if no transformation has to be made.
+#' 
+#' \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
 #'   sometimes cannot solve an ODE system if unrealistic parameters
 #'   are sampled by \code{\link[sensitivity]{morris}}. Hence
 #'   \code{NA}s might occur in the Morris sensitivity results, such
@@ -113,9 +118,8 @@
 #' @export
 #' @import
 #'   checkmate
-#'   deSolve
-#'   sensitivity
-#'   parallel
+#' @importFrom deSolve ode
+#' @importFrom sensitivity morris
 #'
 
 ODEmorris <- function(mod,
@@ -156,6 +160,11 @@ ODEmorris <- function(mod,
   if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
   assertIntegerish(ncores, lower = 1L, upper = 4L)
+  if (!requireNamespace("parallel", quietly = TRUE)) {
+    stop(paste("Package \"parallel\" needed for this function to work.",
+               "Please install it."),
+         call. = FALSE)
+  }
 
   ##### Vorarbeiten ####################################################
   # set.seed(seed)
@@ -203,15 +212,16 @@ ODEmorris <- function(mod,
     return(res)
   }
 
-  cl <- makeCluster(rep("localhost", ncores), type = "SOCK")
+  cl <- parallel::makeCluster(rep("localhost", ncores), type = "SOCK")
   # clusterSetRNGStream(cl)
-  clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
-                         "yini", "z", "r", "design", "oneRun",
-                         "morris", "ode", "trafo", "k"),
-                envir = environment())
-  ## clusterExport(cl, list(ls(), "sobol2007", "ode"), envir = environment())
-  res <- parSapply(cl, times, oneRun)
-  stopCluster(cl)
+  parallel::clusterExport(cl, list("mod", "modFun", "times", "timesNum", "pars",
+                                   "yini", "z", "r", "design", "oneRun",
+                                   "morris", "ode", "trafo", "k"),
+                          envir = environment())
+  ## parallel::clusterExport(cl, list(ls(), "sobol2007", "ode"),
+  ##                         envir = environment())
+  res <- parallel::parSapply(cl, times, oneRun)
+  parallel::stopCluster(cl)
 
   # Warnungen, falls NAs auftreten (unrealistische Paramter => nicht
   # loesbare ODEs):

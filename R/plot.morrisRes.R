@@ -60,6 +60,9 @@
 #' plot(FHNres, type = "sep")
 #' plot(FHNres, type = "trajec")
 #'
+#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
+#'   correctly.
+#'
 #' @author Stefan Theers
 #' @seealso \code{\link{ODEmorris}},
 #'   \code{\link[sensitivity]{morris}}

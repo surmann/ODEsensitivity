@@ -55,6 +55,7 @@
 #' This way, \code{\link[deSolve]{ode}} only runs once and the rest is
 #' reformatting the data to a \code{list} output.
 #'
+#' @author Frank Weber
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -116,8 +117,8 @@
 #' @export
 #' @import
 #'   checkmate
-#'   deSolve
-#'   sensitivity
+#' @importFrom deSolve ode
+#' @importFrom sensitivity morris_list
 #'
 
 ODEmorris_aos <- function(mod,

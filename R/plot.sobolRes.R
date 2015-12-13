@@ -8,21 +8,21 @@
 #' 1st order and total Sobol SA indices are plotted for each input
 #' parameter against time.
 #'
-#' @param res [\code{sobolRes}]\cr
+#' @param x [\code{sobolRes}]\cr
 #'   resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.
 #' @param legendPos [\code{character(1)}]\cr
 #'   legend position, default is \code{"topleft"}.
-#' @param ... additional arguments.
+#' @param ... additional arguments passed to \code{\link{plot}}.
 #'
-#' @return NULL
+#' @return TRUE (invisible; for testing purposes).
 #'
 #' @method plot sobolRes
 #'
 #' @examples
 #'
-#' ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
 #' FHNmod <- function(Time, State, Pars) {
@@ -54,6 +54,9 @@
 #' # Plot:
 #' plot(FHNres, type = "l", legendPos = "topright")
 #'
+#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
+#'   correctly.
+#'
 #' @author Stefan Theers
 #' @seealso \code{\link{ODEsobol}},
 #'   \code{\link[sensitivity]{sobol}},
@@ -63,11 +66,10 @@
 #' @import checkmate
 #'
 
-plot.sobolRes <- function(res, type = "b",
-                          legendPos = "topleft", ...) {
+plot.sobolRes <- function(x, type = "b", legendPos = "topleft", ...) {
 
   ##### Plausibilitaet #################################################
-  assertClass(res, "sobolRes")
+  assertClass(x, "sobolRes")
   assertCharacter(type, len = 1)
   notOk <- !any(rep(type, 5) == c("p", "l", "b", "c", "n"))
   if(notOk)
@@ -82,24 +84,24 @@ plot.sobolRes <- function(res, type = "b",
       \"right\", \"center\"!")
 
   ##### Vorbereitungen #################################################
-  k <- nrow(res$S) - 1
-  pars <- rownames(res$S)[- 1]
+  k <- nrow(x$S) - 1
+  pars <- rownames(x$S)[- 1]
   parsCols <- rainbow(k)
   # Extrema SA Indizes:
-  minMaxS <- c(0.95 * min(res$S[-1, ]), 1.05 * max(res$S[-1, ]))
-  minMaxT <- c(0.95 * min(res$T[-1, ]), 1.05 * max(res$T[-1, ]))
+  minMaxS <- c(0.95 * min(x$S[-1, ]), 1.05 * max(x$S[-1, ]))
+  minMaxT <- c(0.95 * min(x$T[-1, ]), 1.05 * max(x$T[-1, ]))
 
   par(mfrow = c(1, 2))
 
   ##### 1st order SA indices ###########################################
   # Plot fuer ersten Parameter:
-  plot(x = res$S[1, ], y = res$S[2, ],
+  plot(x = x$S[1, ], y = x$S[2, ],
        main = "1st order Sobol SA indices", xlab = "time",
        ylab = "1st order Sobol SA indices",
        type = type, col = parsCols[1], ylim = minMaxS, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
-    lines(x = res$S[1, ], y = res$S[i + 1, ],
+    lines(x = x$S[1, ], y = x$S[i + 1, ],
           type = type, col = parsCols[i], ...)
   }
   # Legende:
@@ -108,13 +110,13 @@ plot.sobolRes <- function(res, type = "b",
 
   ##### total SA indices ###############################################
   # Plot fuer ersten Parameter:
-  plot(x = res$T[1, ], y = res$T[2, ],
+  plot(x = x$T[1, ], y = x$T[2, ],
        main = "Total Sobol SA indices", xlab = "time",
        ylab = "Total Sobol SA indices",
        type = type, col = parsCols[1], ylim = minMaxT, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
-    lines(x = res$T[1, ], y = res$T[i + 1, ],
+    lines(x = x$T[1, ], y = x$T[i + 1, ],
           type = type, col = parsCols[i], ...)
   }
   # Legende:

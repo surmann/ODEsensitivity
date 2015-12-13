@@ -64,7 +64,10 @@
 #' plot(FHNres_ats, type = "sep")
 #' plot(FHNres_ats, type = "trajec")
 #'
-#' @author Stefan Theers
+#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
+#'   correctly.
+#'
+#' @author Frank Weber
 #' @seealso \code{\link{ODEmorris_ats}},
 #'   \code{\link[sensitivity]{morris_matrix}}
 #'

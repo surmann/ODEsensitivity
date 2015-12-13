@@ -79,7 +79,7 @@ plot(FHNres_aos, y_idx = 2, type = "trajec")
 
 }
 \author{
-Stefan Theers
+Frank Weber
 }
 \seealso{
 \code{\link{ODEmorris_aos}},

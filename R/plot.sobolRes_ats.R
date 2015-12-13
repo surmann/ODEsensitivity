@@ -15,9 +15,9 @@
 #'   plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.
 #' @param legendPos [\code{character(1)}]\cr
 #'   legend position, default is \code{"topleft"}.
-#' @param ... additional arguments.
+#' @param ... additional arguments passed to \code{\link{plot}}.
 #'
-#' @return NULL
+#' @return TRUE (invisible; for testing purposes).
 #'
 #' @method plot sobolRes_ats
 #'
@@ -53,6 +53,9 @@
 #'
 #' # Plot:
 #' plot(FHNres_ats, type = "l", legendPos = "topright")
+#'
+#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
+#'   correctly.
 #'
 #' @author Frank Weber
 #' @seealso \code{\link{ODEsobol_ats}},

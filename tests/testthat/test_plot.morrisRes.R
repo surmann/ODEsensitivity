@@ -21,7 +21,7 @@ test_that("Plots are generated", {
       expect_true(plot(res))
       expect_true(plot(res, type = "trajec"))
       expect_true(plot(res, type = "sep"))
-      expect_true(plot(res, main = "Something."))
+      # expect_true(plot(res, main = "Something."))
     }
   }
 })

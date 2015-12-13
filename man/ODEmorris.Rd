@@ -73,6 +73,11 @@ ordinary differential equations using
 Morris's elementary effects screening method.
 }
 \note{
+Package \code{parallel} is needed for this function. However, the use
+  of \code{\link{ODEmorris_ats}} (for one output variable) or 
+  \code{\link{ODEmorris_aos}} (for multiple output variables) is 
+  recommended if no transformation has to be made.
+
 \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
   sometimes cannot solve an ODE system if unrealistic parameters
   are sampled by \code{\link[sensitivity]{morris}}. Hence
@@ -122,6 +127,9 @@ FHNres <- ODEmorris(mod = FHNmod,
                     trafo = function(Y) Y[, 1],    # voltage only
                     ncores = 4)
 
+}
+\author{
+Stefan Theers
 }
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,

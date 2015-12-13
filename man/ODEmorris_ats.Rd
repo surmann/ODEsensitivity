@@ -69,10 +69,6 @@ screening method. The analysis is done for one output variable at all
 timepoints simultaneously using \code{\link[sensitivity]{morris_matrix}}.
 }
 \details{
-\code{ODEmorris_ats} is only purposed for analyzing one output 
-variable. If multiple output variables shall be analysed simultaneously,
-please use \code{\link{ODEmorris_aos}}.
-
 \code{ODEmorris_ats} is faster than \code{ODEmorris} since 
 \code{\link[sensitivity]{morris_matrix}} can handle matrix output for its 
 model function. Thus, one random matrix of parameter combinations can be 
@@ -88,6 +84,10 @@ simultaneously is a lot faster than \code{apply}-ing it on every timepoint
 separately.
 }
 \note{
+\code{ODEmorris_ats} is only purposed for analyzing one output 
+variable. If multiple output variables shall be analysed simultaneously,
+please use \code{\link{ODEmorris_aos}}.
+
 \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
   sometimes cannot solve an ODE system if unrealistic parameters
   are sampled by \code{\link[sensitivity]{morris}}. Hence
@@ -137,6 +137,9 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                                    grid.jump = 1),
                             scale = TRUE)
 
+}
+\author{
+Frank Weber
 }
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,

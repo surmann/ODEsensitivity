@@ -47,12 +47,8 @@
 #'       of time per column
 #'     \item \code{pars}, the parameter names.
 #'   }
-#'
-#' @details \code{ODEmorris_ats} is only purposed for analyzing one output 
-#' variable. If multiple output variables shall be analysed simultaneously,
-#' please use \code{\link{ODEmorris_aos}}.
 #' 
-#' \code{ODEmorris_ats} is faster than \code{ODEmorris} since 
+#' @details \code{ODEmorris_ats} is faster than \code{ODEmorris} since 
 #' \code{\link[sensitivity]{morris_matrix}} can handle matrix output for its 
 #' model function. Thus, one random matrix of parameter combinations can be 
 #' generated and the adopted model function for 
@@ -66,6 +62,7 @@
 #' simultaneously is a lot faster than \code{apply}-ing it on every timepoint
 #' separately.
 #'
+#' @author Frank Weber
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -106,7 +103,11 @@
 #'   \code{\link{ODEmorris_aos}},
 #'   \code{\link{plot.morrisRes_ats}}
 #'
-#' @note \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
+#' @note \code{ODEmorris_ats} is only purposed for analyzing one output 
+#' variable. If multiple output variables shall be analysed simultaneously,
+#' please use \code{\link{ODEmorris_aos}}.
+#' 
+#' \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
 #'   sometimes cannot solve an ODE system if unrealistic parameters
 #'   are sampled by \code{\link[sensitivity]{morris}}. Hence
 #'   \code{NA}s might occur in the Morris sensitivity results, such
@@ -128,8 +129,8 @@
 #' @export
 #' @import
 #'   checkmate
-#'   deSolve
-#'   sensitivity
+#' @importFrom deSolve ode
+#' @importFrom sensitivity morris_matrix
 #'
 
 ODEmorris_ats <- function(mod,

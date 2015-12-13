@@ -18,8 +18,15 @@
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param n [\code{integer(1)}]\cr
+#'   number of samples used to estimate the variance-based sensitivity
+#'   indices by Monte-Carlo-method. (Variance-based methods for
+#'   sensitivity analysis (like the Sobol- and also the Sobol-Jansen-
+#'   method) rely on Monte-Carlo-simulation to estimate integrals needed for
+#'   the calculation of the sensitivity indices.) Defaults to 1000.
+#' @param nboot [\code{integer(1)}]\cr
 #'   parameter \code{nboot} used in \code{\link{soboljansen}},
-#'   i.e. the number of bootstrap replicates.
+#'   i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
+#'   is done.
 #' @param trafo [\code{function}]\cr
 #'   function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
@@ -31,9 +38,14 @@
 #' @return list of Sobol SA results (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
 #'   time of the \code{times} vector, of class \code{sobolRes}.
+#'   
+#' @note Package \code{parallel} is needed for this function. However, the use
+#'   of \code{\link{ODEsobol_ats}} is recommended if no transformation has
+#'   to be made.
 #'
+#' @author Stefan Theers
 #' @examples
-#' ##### FitzHugh-Nagumo equations (Ramsay et al, 2007)
+#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
 #' FHNmod <- function(Time, State, Pars) {
@@ -59,6 +71,7 @@
 #'                    times = FHNtimes,
 #'                    seed = 2015,
 #'                    n = 10,                        # use n >> 10!
+#'                    nboot = 0,
 #'                    trafo = function(Y) Y[, 1],    # voltage only
 #'                    ncores = 4)
 #'
@@ -69,11 +82,8 @@
 #' @export
 #' @import
 #'   checkmate
-#'   deSolve
-#'   sensitivity
-#'   boot
-#'   parallel
-#'   BBmisc
+#' @importFrom deSolve ode
+#' @importFrom sensitivity soboljansen
 #'
 
 ODEsobol <- function(mod,
@@ -81,7 +91,8 @@ ODEsobol <- function(mod,
                      yini,
                      times,
                      seed = 2015,
-                     n = 1000,    # default eigentlich 1000
+                     n = 1000,
+                     nboot = 0,
                      trafo = function(Y) rowSums(Y^2),
                      ncores = 1) {
 
@@ -95,11 +106,17 @@ ODEsobol <- function(mod,
   stopifnot(!any(times == 0))
   assertNumeric(seed)
   assertIntegerish(n)
+  assertIntegerish(nboot)
   assertFunction(trafo)
   notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
   if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
   assertIntegerish(ncores, lower = 1L, upper = 4L)
+  if (!requireNamespace("parallel", quietly = TRUE)) {
+    stop(paste("Package \"parallel\" needed for this function to work.",
+               "Please install it."),
+         call. = FALSE)
+  }
 
   ##### Vorarbeiten ####################################################
   set.seed(seed)
@@ -136,10 +153,10 @@ ODEsobol <- function(mod,
   # Calculates SA indices S and T for the i-th point of time:
   STForPot <- function(i) {
     pot <- times[i]
-    res <- soboljansen(model = modFun, X1, X2, pot = times[i])
+    res <- soboljansen(model = modFun, X1, X2, nboot = nboot, pot = times[i])
     return(c(res$S[, 1], res$T[, 1]))
   }
-
+  
   # Durchlaufe alle Zeitpunkte und bestimme die Sensitivitaet:
   ## # ohne Parallelisierung:
   ## for(i in 1:timesNum) {
@@ -147,15 +164,16 @@ ODEsobol <- function(mod,
   ##   S[, i] <- c(times[i], res$S[, 1])
   ##   T[, i] <- c(times[i], res$T[, 1])
   ## }
-  cl <- makeCluster(rep("localhost", ncores), type = "SOCK")
-  clusterSetRNGStream(cl)
-  clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
-                         "timesNum", "pars", "yini", "z", "STForPot",
-                         "S", "T", "soboljansen", "ode", "trafo"),
-  ## clusterExport(cl, list(ls(), "soboljansen", "ode"),
-    envir = environment())
-  res <- parSapply(cl, 1:timesNum, STForPot)
-  stopCluster(cl)
+  cl <- parallel::makeCluster(rep("localhost", ncores), type = "SOCK")
+  parallel::clusterSetRNGStream(cl)
+  parallel::clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
+                                   "timesNum", "pars", "yini", "z", "STForPot",
+                                   "S", "T", "soboljansen", "ode", "trafo"),
+                          envir = environment())
+  ## parallel::clusterExport(cl, list(ls(), "soboljansen", "ode"), 
+  ##                         envir = environment())
+  res <- parallel::parSapply(cl, 1:timesNum, STForPot)
+  parallel::stopCluster(cl)
 
   # res wieder in 2 Matrizen S und T aufspalten:
   S <- rbind(times, res[1:k, ])
@@ -163,6 +181,7 @@ ODEsobol <- function(mod,
   rownames(S) <- rownames(T) <- c("time", pars)
 
   # Rueckgabe:
-  res <- setClasses(list(S = S, T = T), "sobolRes")
+  res <- list(S = S, T = T)
+  class(res) <- "sobolRes"
   return(res)
 }
