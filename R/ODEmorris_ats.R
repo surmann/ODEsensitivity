@@ -153,6 +153,7 @@ ODEmorris_ats <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
+  assertIntegerish(y_idx)
   assertNumeric(seed)
   assertNumeric(binf)
   notOk <- length(binf) != length(pars) & length(binf) != 1
@@ -175,9 +176,6 @@ ODEmorris_ats <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
-  
-  ##### Sensitivitaet ##################################################
-  
   # Forme DGL-Modell um, sodass fuer morris_matrix()-Argument "model_matrix" 
   # passend:
   model_fit <- function(X){
@@ -200,6 +198,7 @@ ODEmorris_ats <- function(mod,
     return(res)
   }
   
+  ##### Sensitivitaet ##################################################
   x <- morris_matrix(model_matrix = model_fit, factors = k, r = r, 
                      design = design, binf = binf, bsup = bsup, scale = scale)
   mu <- lapply(x$ee_by_col, colMeans)

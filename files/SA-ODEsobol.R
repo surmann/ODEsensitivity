@@ -29,6 +29,8 @@ FHNres <- ODEsobol(mod = FHNmod,
                    trafo = function(Y) Y[, 1],    # voltage only
                    ncores = 2)
 )
+# User      System verstrichen 
+# 0.18        0.09       28.64
 
 # save(FHNres, file = "SA-ODEsobol.RData")
 
