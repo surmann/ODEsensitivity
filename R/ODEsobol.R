@@ -18,11 +18,24 @@
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param n [\code{integer(1)}]\cr
-#'   number of samples used to estimate the variance-based sensitivity
-#'   indices by Monte-Carlo-method. (Variance-based methods for
-#'   sensitivity analysis (like the Sobol- and also the Sobol-Jansen-
-#'   method) rely on Monte-Carlo-simulation to estimate integrals needed for
-#'   the calculation of the sensitivity indices.) Defaults to 1000.
+#'   number of random parameter values (\code{n} per input factor) used to 
+#'   estimate the variance-based sensitivity indices by Monte-Carlo-method.
+#'   (Variance-based methods for sensitivity analysis (like the Sobol- and also 
+#'   the Sobol-Jansen-method) rely on Monte-Carlo-simulation to estimate the
+#'   integrals needed for the calculation of the sensitivity indices.) 
+#'   Defaults to 1000.
+#' @param rfuncs [\code{character(k)}]\cr
+#'   names of the \code{k} functions used to generate the \code{n} random values
+#'   for the \code{k} parameters. This way, different distributions can be 
+#'   used for the \code{k} parameters. Defaults to \code{"runif"} for each of
+#'   the \code{k} parameters.
+#' @param rargs [\code{character(k)}]\cr
+#'   arguments to be passed to the \code{k} functions of rfuncs. Each element of
+#'   \code{rargs} has to be a string of type 
+#'   \code{"tag1 = value1, tag2 = value2, ..."}. 
+#'   By default, \code{min = 0} and \code{max = 1} are used for each of the 
+#'   \code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
+#'   on [0, 1].
 #' @param nboot [\code{integer(1)}]\cr
 #'   parameter \code{nboot} used in \code{\link{soboljansen}},
 #'   i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
@@ -71,6 +84,9 @@
 #'                    times = FHNtimes,
 #'                    seed = 2015,
 #'                    n = 10,                        # use n >> 10!
+#'                    rfuncs = c("runif", "runif", "rnorm"),
+#'                    rargs = c(rep("min = 0.18, max = 0.22", 2),
+#'                              "mean = 3, sd = 0.2 / 3"),
 #'                    nboot = 0,
 #'                    trafo = function(Y) Y[, 1],    # voltage only
 #'                    ncores = 4)
@@ -92,6 +108,8 @@ ODEsobol <- function(mod,
                      times,
                      seed = 2015,
                      n = 1000,
+                     rfuncs = rep("runif", length(pars)),
+                     rargs = rep("min = 0, max = 1", length(pars)),
                      nboot = 0,
                      trafo = function(Y) rowSums(Y^2),
                      ncores = 1) {
@@ -106,6 +124,11 @@ ODEsobol <- function(mod,
   stopifnot(!any(times == 0))
   assertNumeric(seed)
   assertIntegerish(n)
+  assertCharacter(rfuncs, len = length(pars))
+  assertCharacter(rargs, len = length(pars))
+  rfuncs_exist <- sapply(rfuncs, exists)
+  if(!all(rfuncs_exist)) stop(paste("At least of the supplied functions",
+                                    "in \"rfuncs\" not found"))
   assertIntegerish(nboot)
   assertFunction(trafo)
   notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
@@ -141,10 +164,11 @@ ODEsobol <- function(mod,
     ## # Zentrieren:
     ## res - mean(res)
   }
-
+  
   ##### Sensitivitaet ##################################################
-  X1 <- data.frame(matrix(runif(k * n), nrow = n))
-  X2 <- data.frame(matrix(runif(k * n), nrow = n))
+  rfunc_calls <- paste0(rfuncs, "(n, ", rargs, ")", collapse = ", ")
+  X1 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
+  X2 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   colnames(X1) <- colnames(X2) <- pars
   # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
   # interessierenden Zeitpunkten:

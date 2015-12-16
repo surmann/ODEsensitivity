@@ -5,7 +5,8 @@
 \title{Sobol SA for ODEs at All Timepoints Simultaneously}
 \usage{
 ODEsobol_ats(mod, pars, yini, times, y_idx = 1, seed = 2015, n = 1000,
-  nboot = 0)
+  rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
+  length(pars)), nboot = 0)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -30,11 +31,26 @@ output variable is used.}
 seed.}
 
 \item{n}{[\code{integer(1)}]\cr
-number of samples used to estimate the variance-based sensitivity
-indices by Monte-Carlo-method. (Variance-based methods for
-sensitivity analysis (like the Sobol- and also the Sobol-Jansen-
-method) rely on Monte-Carlo-simulation to estimate integrals needed for
-the calculation of the sensitivity indices.) Defaults to 1000.}
+number of random parameter values (\code{n} per input factor) used to 
+estimate the variance-based sensitivity indices by Monte-Carlo-method.
+(Variance-based methods for sensitivity analysis (like the Sobol- and also 
+the Sobol-Jansen-method) rely on Monte-Carlo-simulation to estimate the
+integrals needed for the calculation of the sensitivity indices.) 
+Defaults to 1000.}
+
+\item{rfuncs}{[\code{character(k)}]\cr
+names of the \code{k} functions used to generate the \code{n} random values
+for the \code{k} parameters. This way, different distributions can be 
+used for the \code{k} parameters. Defaults to \code{"runif"} for each of
+the \code{k} parameters.}
+
+\item{rargs}{[\code{character(k)}]\cr
+arguments to be passed to the \code{k} functions of rfuncs. Each element of
+\code{rargs} has to be a string of type 
+\code{"tag1 = value1, tag2 = value2, ..."}. 
+By default, \code{min = 0} and \code{max = 1} are used for each of the 
+\code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
+on [0, 1].}
 
 \item{nboot}{[\code{integer(1)}]\cr
 parameter \code{nboot} used in \code{\link{soboljansen}},
@@ -93,6 +109,9 @@ FHNres <- ODEsobol_ats(mod = FHNmod,
                        y_idx = 1,            # only Voltage
                        seed = 2015,
                        n = 10,               # use n >> 10!
+                       rfuncs = c("runif", "runif", "rnorm"),
+                       rargs = c(rep("min = 0.18, max = 0.22", 2),
+                                 "mean = 3, sd = 0.2 / 3"),
                        nboot = 0)
 
 }

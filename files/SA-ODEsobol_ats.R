@@ -26,7 +26,11 @@ FHNres_ats <- ODEsobol_ats(mod = FHNmod,
                            times = FHNtimes,
                            y_idx = 1,
                            seed = 2015,
-                           n = 10)
+                           n = 10,
+                           rfuncs = c("runif", "runif", "rnorm"),
+                           rargs = c(rep("min = 0.18, max = 0.22", 2),
+                                     "mean = 3, sd = 0.2 / 3"),
+                           nboot = 0)
 )
 # User      System verstrichen 
 # 1.77        0.00        1.92

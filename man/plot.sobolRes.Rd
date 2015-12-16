@@ -16,7 +16,7 @@ plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.}
 \item{legendPos}{[\code{character(1)}]\cr
 legend position, default is \code{"topleft"}.}
 
-\item{...}{additional arguments.}
+\item{...}{additional arguments passed to \code{\link{plot}}.}
 }
 \value{
 TRUE (invisible; for testing purposes).
@@ -27,6 +27,10 @@ TRUE (invisible; for testing purposes).
 \details{
 1st order and total Sobol SA indices are plotted for each input
 parameter against time.
+}
+\note{
+Unfortunately, the passing of arguments (e.g. "main") does not work
+  correctly.
 }
 \examples{
 

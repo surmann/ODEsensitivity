@@ -37,6 +37,10 @@ TRUE (invisible; for testing purposes).
 \code{plot} with \code{type = "trajec"} plots mu.star versus
   sigma for every point of time.
 }
+\note{
+Unfortunately, the passing of arguments (e.g. "main") does not work
+  correctly.
+}
 \examples{
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values

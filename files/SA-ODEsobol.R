@@ -25,7 +25,11 @@ FHNres <- ODEsobol(mod = FHNmod,
                    yini = FHNyini,
                    times = FHNtimes,
                    seed = 2015,
-                   n = 10,                        # use n >> 10!
+                   n = 10,
+                   rfuncs = c("runif", "runif", "rnorm"),
+                   rargs = c(rep("min = 0.18, max = 0.22", 2),
+                             "mean = 3, sd = 0.2 / 3"),
+                   nboot = 0,
                    trafo = function(Y) Y[, 1],    # voltage only
                    ncores = 2)
 )
