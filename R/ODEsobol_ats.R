@@ -40,6 +40,9 @@
 #'   By default, \code{min = 0} and \code{max = 1} are used for each of the 
 #'   \code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
 #'   on [0, 1].
+#' @param method [\code{character(1)}]\cr
+#'   one of "jansen" and "martinez", specifying which modification of the 
+#'   variance-based Sobol method shall be used.
 #' @param nboot [\code{integer(1)}]\cr
 #'   parameter \code{nboot} used in \code{\link{soboljansen}},
 #'   i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
@@ -92,10 +95,12 @@
 #'                        rfuncs = c("runif", "runif", "rnorm"),
 #'                        rargs = c(rep("min = 0.18, max = 0.22", 2),
 #'                                  "mean = 3, sd = 0.2 / 3"),
+#'                        method = "martinez",
 #'                        nboot = 0)
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
 #'   \code{\link[sensitivity]{soboljansen_matrix}},
+#'   \code{\link[sensitivity]{sobolmartinez_matrix}},
 #'   \code{\link{plot.sobolRes_ats}}
 #'
 #' @export
@@ -103,6 +108,7 @@
 #'   checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity soboljansen_matrix
+#' @importFrom sensitivity sobolmartinez_matrix
 #'
 
 ODEsobol_ats <- function(mod,
@@ -114,9 +120,10 @@ ODEsobol_ats <- function(mod,
                          n = 1000,
                          rfuncs = rep("runif", length(pars)),
                          rargs = rep("min = 0, max = 1", length(pars)),
+                         method = "martinez",
                          nboot = 0) {
 
-  ##### Check input #################################################
+  ##### Input-Checks #################################################
   ## stopifnot(!missing(...))
   assertFunction(mod)
   assertCharacter(pars)
@@ -130,8 +137,9 @@ ODEsobol_ats <- function(mod,
   assertCharacter(rfuncs, len = length(pars))
   assertCharacter(rargs, len = length(pars))
   rfuncs_exist <- sapply(rfuncs, exists)
-  if(!all(rfuncs_exist)) stop(paste("At least of the supplied functions",
-                                    "in \"rfuncs\" not found"))
+  if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
+                                    "in \"rfuncs\" was not found"))
+  stopifnot(method %in% c("jansen", "martinez"))
   assertIntegerish(nboot)
 
   ##### Vorarbeiten ####################################################
@@ -142,8 +150,8 @@ ODEsobol_ats <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
-  # Forme DGL-Modell um, sodass fuer soboljansen_matrix()-Argument 
-  # "model_matrix" passend:
+  # Forme DGL-Modell um, sodass fuer soboljansen_matrix()- bzw.
+  # sobolmartinez_matrix()-Argument "model_matrix" passend:
   model_fit <- function(X){
     # X   - (nxk)-Matrix mit den n einzugebenden Parameter-Konstellationen
     #       als Zeilen
@@ -152,13 +160,14 @@ ODEsobol_ats <- function(mod,
       ode(yini, times = c(0, times), 
           mod, parms = x)[2:(timesNum + 1), y_idx + 1]
     })
-    # (Each row in "res" represents one timepoint.)
+    # (Jede Zeile in "res" steht fuer einen Zeitpunkt.)
     
     if(timesNum == 1){
-      # Correction needed if timesNum == 1:
+      # Korrektur noetig, falls timesNum == 1:
       res <- matrix(res)
     } else{
-      # Transpose the results matrix, so columns represent timepoints:
+      # Transponiere die Ergebnis-Matrix, sodass jede Spalte fuer einen
+      # Zeitpunkt steht:
       res <- t(res)
     }
     return(res)
@@ -169,15 +178,23 @@ ODEsobol_ats <- function(mod,
   X1 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   X2 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   colnames(X1) <- colnames(X2) <- pars
+  
   # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
   # interessierenden Zeitpunkten:
   S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
   
-  x <- soboljansen_matrix(model_matrix = model_fit, X1, X2, nboot = nboot)
+  # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
+  # "sensitivity":
+  if(method == "jansen"){
+    x <- soboljansen_matrix(model_matrix = model_fit, X1, X2, nboot = nboot)
+  } else if(method == "martinez"){
+    x <- sobolmartinez_matrix(model_matrix = model_fit, X1, X2, nboot = nboot)
+  }
+  
+  # Verarbeitung der Ergebnisse:
   ST_original <- sapply(x$ST_by_col, function(ST_col){
     c(ST_col$S[, 1], ST_col$T[, 1])
   })
-  
   # ST_original wieder in 2 Matrizen S und T aufspalten:
   S <- rbind(times, ST_original[1:k, ])
   T <- rbind(times, ST_original[(k+1):(2*k), ])

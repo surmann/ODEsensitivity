@@ -6,7 +6,7 @@
 \usage{
 ODEsobol_ats(mod, pars, yini, times, y_idx = 1, seed = 2015, n = 1000,
   rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
-  length(pars)), nboot = 0)
+  length(pars)), method = "jansen", nboot = 0)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -51,6 +51,10 @@ arguments to be passed to the \code{k} functions of rfuncs. Each element of
 By default, \code{min = 0} and \code{max = 1} are used for each of the 
 \code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
 on [0, 1].}
+
+\item{method}{[\code{character(1)}]\cr
+one of "jansen" and "martinez", specifying which modification of the 
+variance-based Sobol method shall be used.}
 
 \item{nboot}{[\code{integer(1)}]\cr
 parameter \code{nboot} used in \code{\link{soboljansen}},
@@ -112,6 +116,7 @@ FHNres <- ODEsobol_ats(mod = FHNmod,
                        rfuncs = c("runif", "runif", "rnorm"),
                        rargs = c(rep("min = 0.18, max = 0.22", 2),
                                  "mean = 3, sd = 0.2 / 3"),
+                       method = "martinez",
                        nboot = 0)
 
 }
@@ -121,6 +126,7 @@ Frank Weber
 \seealso{
 \code{\link[sensitivity]{sobol}},
   \code{\link[sensitivity]{soboljansen_matrix}},
+  \code{\link[sensitivity]{sobolmartinez_matrix}},
   \code{\link{plot.sobolRes_ats}}
 }
 

@@ -16,7 +16,7 @@ Suggests:
     parallel,
     ODEnetwork
 Imports:
-    sensitivity (>= 1.13),
+    sensitivity (>= 1.13.3),
     checkmate,
     deSolve
 License: GPL-2

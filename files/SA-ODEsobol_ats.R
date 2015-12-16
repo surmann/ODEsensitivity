@@ -30,10 +30,20 @@ FHNres_ats <- ODEsobol_ats(mod = FHNmod,
                            rfuncs = c("runif", "runif", "rnorm"),
                            rargs = c(rep("min = 0.18, max = 0.22", 2),
                                      "mean = 3, sd = 0.2 / 3"),
+                           method = "martinez",
                            nboot = 0)
 )
 # User      System verstrichen 
 # 1.77        0.00        1.92
+# Mit neuen Argumenten "rfuncs" und "rargs":
+# User      System verstrichen 
+# 5.56        0.00        5.75
+# Mit neuen Argumenten "rfuncs" und "rargs" sowie method = "jansen":
+# User      System verstrichen 
+# 5.55        0.00        6.26
+# Mit neuen Argumenten "rfuncs" und "rargs" sowie method = "martinez":
+# User      System verstrichen 
+# 5.66        0.00        6.00
 
 # save(FHNres_ats, file = "SA-ODEsobol_ats.RData")
 

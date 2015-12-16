@@ -36,6 +36,9 @@
 #'   By default, \code{min = 0} and \code{max = 1} are used for each of the 
 #'   \code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
 #'   on [0, 1].
+#' @param method [\code{character(1)}]\cr
+#'   one of "jansen" and "martinez", specifying which modification of the 
+#'   variance-based Sobol method shall be used.
 #' @param nboot [\code{integer(1)}]\cr
 #'   parameter \code{nboot} used in \code{\link{soboljansen}},
 #'   i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
@@ -87,12 +90,14 @@
 #'                    rfuncs = c("runif", "runif", "rnorm"),
 #'                    rargs = c(rep("min = 0.18, max = 0.22", 2),
 #'                              "mean = 3, sd = 0.2 / 3"),
+#'                    method = "martinez",
 #'                    nboot = 0,
 #'                    trafo = function(Y) Y[, 1],    # voltage only
 #'                    ncores = 4)
 #'
 #' @seealso \code{\link[sensitivity]{sobol}},
 #'   \code{\link[sensitivity]{soboljansen}},
+#'   \code{\link[sensitivity]{sobolmartinez}},
 #'   \code{\link{plot.sobolRes}}
 #'
 #' @export
@@ -100,6 +105,7 @@
 #'   checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity soboljansen
+#' @importFrom sensitivity sobolmartinez
 #'
 
 ODEsobol <- function(mod,
@@ -110,11 +116,12 @@ ODEsobol <- function(mod,
                      n = 1000,
                      rfuncs = rep("runif", length(pars)),
                      rargs = rep("min = 0, max = 1", length(pars)),
+                     method = "martinez",
                      nboot = 0,
                      trafo = function(Y) rowSums(Y^2),
                      ncores = 1) {
 
-  ##### Plausibilitaet #################################################
+  ##### Input-Checks #################################################
   ## stopifnot(!missing(...))
   assertFunction(mod)
   assertCharacter(pars)
@@ -127,8 +134,9 @@ ODEsobol <- function(mod,
   assertCharacter(rfuncs, len = length(pars))
   assertCharacter(rargs, len = length(pars))
   rfuncs_exist <- sapply(rfuncs, exists)
-  if(!all(rfuncs_exist)) stop(paste("At least of the supplied functions",
-                                    "in \"rfuncs\" not found"))
+  if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
+                                    "in \"rfuncs\" was not found"))
+  stopifnot(method %in% c("jansen", "martinez"))
   assertIntegerish(nboot)
   assertFunction(trafo)
   notOk <- !testVector(trafo(matrix(1:30, nrow = 6)), len = 6)
@@ -149,7 +157,8 @@ ODEsobol <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
-  # Umformen DGL-Modell, sodass fuer soboljansen()-Argument model passend
+  # Forme DGL-Modell um, sodass fuer soboljansen()- bzw. sobolmartinez()-
+  # Argument "model" passend:
   modFun <- function(X, pot) {
     # X   - (nxk)-Matrix
     # pot - point of time
@@ -175,10 +184,19 @@ ODEsobol <- function(mod,
   S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
 
   # Calculates SA indices S and T for the i-th point of time:
-  STForPot <- function(i) {
-    pot <- times[i]
-    res <- soboljansen(model = modFun, X1, X2, nboot = nboot, pot = times[i])
-    return(c(res$S[, 1], res$T[, 1]))
+  if(method == "jansen"){
+    STForPot <- function(i) {
+      pot <- times[i]
+      res <- soboljansen(model = modFun, X1, X2, nboot = nboot, pot = times[i])
+      return(c(res$S[, 1], res$T[, 1]))
+    }
+  } else if(method == "martinez"){
+    STForPot <- function(i) {
+      pot <- times[i]
+      res <- sobolmartinez(model = modFun, X1, X2, nboot = nboot, 
+                           pot = times[i])
+      return(c(res$S[, 1], res$T[, 1]))
+    }
   }
   
   # Durchlaufe alle Zeitpunkte und bestimme die Sensitivitaet:
@@ -192,7 +210,8 @@ ODEsobol <- function(mod,
   parallel::clusterSetRNGStream(cl)
   parallel::clusterExport(cl, list("mod", "modFun", "X1", "X2", "times",
                                    "timesNum", "pars", "yini", "z", "STForPot",
-                                   "S", "T", "soboljansen", "ode", "trafo"),
+                                   "S", "T", "soboljansen", "sobolmartinez", 
+                                   "ode", "trafo"),
                           envir = environment())
   ## parallel::clusterExport(cl, list(ls(), "soboljansen", "ode"), 
   ##                         envir = environment())

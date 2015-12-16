@@ -177,11 +177,12 @@ ODEmorris_aos <- function(mod,
           mod, parms = X[i, ])[2:(timesNum + 1), 2:(z + 1)]
     })
     if(timesNum == 1){
-      # Correction needed if timesNum == 1:
+      # Korrektur noetig, falls timesNum == 1:
       res_vec <- unlist(res_per_par)
       res_matrix <- matrix(res_vec, ncol = 1)
     } else{
-      # Transpose the results matrices, so columns represent timepoints:
+      # Transponiere die Ergebnis-Matrix, sodass jede Spalte fuer einen
+      # Zeitpunkt steht:
       res_matrix <- t(do.call(cbind, res_per_par))
     }
     # Entferne verwirrende Zeilennamen:

@@ -133,11 +133,14 @@ dev.off()
 
 
 ##----------------------------------------------------------------------
-## soboljansen(.)
+## soboljansen(.) und sobolmartinez(.)
 ##----------------------------------------------------------------------
 
-# Nutze wegen
+# Ursprünglich wurde wegen
 #  http://stats.stackexchange.com/questions/43504/interpreting-results-from-sobol-sensitivity-analysis-in-r
-# diese Implementierung:
-soboljansen
-# (mit gleichen Argumenten).
+# die soboljansen()-Implementierung (mit gleichen Argumenten wie sobol() und
+# sobol2007()) in ODEsobol() verwendet. Seit Version 1.11 
+# des Pakets "sensitivity" gibt es jedoch auch die Funktion 
+# sobolmartinez(), die etwas schneller arbeitet als soboljansen(). Dem 
+# Anwender wird die Wahl zwischen den beiden Methoden gelassen, jedoch
+# ist sobolmartinez() der Standard.

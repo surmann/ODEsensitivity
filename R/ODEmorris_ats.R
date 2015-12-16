@@ -187,13 +187,14 @@ ODEmorris_ats <- function(mod,
       ode(yini, times = c(0, times), 
           mod, parms = x)[2:(timesNum + 1), y_idx + 1]
     })
-    # (Each row in "res" represents one timepoint.)
+    # (Jede Zeile in "res" steht fuer einen Zeitpunkt.)
     
     if(timesNum == 1){
-      # Correction needed if timesNum == 1:
+      # Korrektur noetig, falls timesNum == 1:
       res <- matrix(res)
     } else{
-      # Transpose the results matrix, so columns represent timepoints:
+      # Transponiere die Ergebnis-Matrix, sodass jede Spalte fuer einen
+      # Zeitpunkt steht:
       res <- t(res)
     }
     return(res)
