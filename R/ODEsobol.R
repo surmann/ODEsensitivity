@@ -221,7 +221,7 @@ ODEsobol <- function(mod,
   rownames(S) <- rownames(T) <- c("time", pars)
 
   # Rueckgabe:
-  res <- list(S = S, T = T)
+  res <- list(S = S, T = T, method = method)
   class(res) <- "sobolRes"
   return(res)
 }

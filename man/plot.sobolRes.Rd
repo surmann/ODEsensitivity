@@ -4,17 +4,23 @@
 \alias{plot.sobolRes}
 \title{Plotting the results of Sobol SA}
 \usage{
-\method{plot}{sobolRes}(x, type = "b", legendPos = "topleft", ...)
+\method{plot}{sobolRes}(x, type = "b", legendPos = "topleft",
+  overall_main = NULL, ...)
 }
 \arguments{
 \item{x}{[\code{sobolRes}]\cr
 resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.}
 
 \item{type}{[\code{character(1)}]\cr
-plot type, i.e. \code{"p", "l", "b", "c"} or \code{"n"}.}
+plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
+Defaults to \code{"b"}.}
 
 \item{legendPos}{[\code{character(1)}]\cr
 legend position, default is \code{"topleft"}.}
+
+\item{overall_main}{[\code{character(1)}]\cr
+the common title for the two graphics. Default is \code{NULL}, which means
+an automatic title is generated.}
 
 \item{...}{additional arguments passed to \code{\link{plot}}.}
 }
