@@ -21,6 +21,9 @@
 #'
 #' @method plot sobolRes_ats
 #'
+#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
+#'   correctly.
+#'
 #' @examples
 #'
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
@@ -43,19 +46,21 @@
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 20, by = 0.5)
 #'
-#' FHNres_ats <- ODEsobol_ats(mod = FHNmod,
-#'                            pars = names(FHNpars),
-#'                            yini = FHNyini,
-#'                            times = FHNtimes,
-#'                            y_idx = 1,
-#'                            seed = 2015,
-#'                            n = 10)               # use n >> 10!
+#' FHNres <- ODEsobol_ats(mod = FHNmod,
+#'                        pars = names(FHNpars),
+#'                        yini = FHNyini,
+#'                        times = FHNtimes,
+#'                        y_idx = 1,            # only Voltage
+#'                        seed = 2015,
+#'                        n = 10,               # use n >> 10!
+#'                        rfuncs = c("runif", "runif", "rnorm"),
+#'                        rargs = c(rep("min = 0.18, max = 0.22", 2),
+#'                                  "mean = 3, sd = 0.2 / 3"),
+#'                        method = "martinez",
+#'                        nboot = 0)
 #'
 #' # Plot:
-#' plot(FHNres_ats, type = "l", legendPos = "topright")
-#'
-#' @note Unfortunately, the passing of arguments (e.g. "main") does not work
-#'   correctly.
+#' plot(FHNres, type = "l", legendPos = "topright")
 #'
 #' @author Frank Weber
 #' @seealso \code{\link{ODEsobol_ats}},

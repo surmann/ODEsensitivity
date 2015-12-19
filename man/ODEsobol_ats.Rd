@@ -6,7 +6,7 @@
 \usage{
 ODEsobol_ats(mod, pars, yini, times, y_idx = 1, seed = 2015, n = 1000,
   rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
-  length(pars)), method = "jansen", nboot = 0)
+  length(pars)), method = "martinez", nboot = 0)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -33,10 +33,9 @@ seed.}
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values (\code{n} per input factor) used to 
 estimate the variance-based sensitivity indices by Monte-Carlo-method.
-(Variance-based methods for sensitivity analysis (like the Sobol- and also 
-the Sobol-Jansen-method) rely on Monte-Carlo-simulation to estimate the
-integrals needed for the calculation of the sensitivity indices.) 
-Defaults to 1000.}
+(Variance-based methods for sensitivity analysis rely on 
+Monte-Carlo-simulation to estimate the integrals needed for the calculation
+of the sensitivity indices.) Defaults to 1000.}
 
 \item{rfuncs}{[\code{character(k)}]\cr
 names of the \code{k} functions used to generate the \code{n} random values
@@ -45,24 +44,24 @@ used for the \code{k} parameters. Defaults to \code{"runif"} for each of
 the \code{k} parameters.}
 
 \item{rargs}{[\code{character(k)}]\cr
-arguments to be passed to the \code{k} functions of rfuncs. Each element of
-\code{rargs} has to be a string of type 
-\code{"tag1 = value1, tag2 = value2, ..."}. 
-By default, \code{min = 0} and \code{max = 1} are used for each of the 
-\code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
-on [0, 1].}
+arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
+element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
+tag2 = value2, ..."}. By default, \code{min = 0} and \code{max = 1} are 
+used for each of the \code{k} \code{runif}'s, meaning a uniform 
+distribution of all parameters on [0, 1].}
 
 \item{method}{[\code{character(1)}]\cr
-one of "jansen" and "martinez", specifying which modification of the 
-variance-based Sobol method shall be used.}
+either \code{"jansen"} or \code{"martinez"}, specifying which modification
+of the variance-based Sobol method shall be used. Defaults to 
+\code{"martinez"}, which is slightly faster than \code{"jansen"}.}
 
 \item{nboot}{[\code{integer(1)}]\cr
-parameter \code{nboot} used in \code{\link{soboljansen}},
-i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
-is done.}
+parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
+\code{\link{sobolmartinez_matrix}}, i.e. the number of bootstrap 
+replicates. Defaults to 0, so no bootstrapping is done.}
 }
 \value{
-list of Sobol SA results (i.e. 1st order sensitivity indices
+List of Sobol SA results (i.e. 1st order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of
   time of the \code{times} vector, of class \code{sobolRes_ats}.
 }
@@ -70,19 +69,21 @@ list of Sobol SA results (i.e. 1st order sensitivity indices
 \code{ODEsobol_ats} performs a sensitivity analysis for
 ordinary differential equations using the variance-based Sobol-Jansen method.
 The analysis is done for one output variable at all timepoints simultaneously
-using \code{\link[sensitivity]{soboljansen_matrix}}.
+using by choice either \code{\link[sensitivity]{soboljansen_matrix}} or 
+\code{\link[sensitivity]{sobolmartinez_matrix}} from the package 
+\code{sensitivity}.
 }
 \details{
 \code{ODEsobol_ats} is faster than \code{ODEsobol} since 
-\code{\link[sensitivity]{soboljansen_matrix}} can handle matrix output for 
-its model function. Thus, the adopted model function for 
-\code{\link[sensitivity]{soboljansen_matrix}} (and with it
-\code{\link[deSolve]{ode}} from the package \code{deSolve}) only needs to be
-executed once. The ODE-output for each timepoint is then transformed to one
-column of the output matrix (of the adopted model function).
+\code{\link[sensitivity]{soboljansen_matrix}} and
+\code{\link[sensitivity]{sobolmartinez_matrix}} can handle matrix output for 
+their model functions. In \code{ODEsobol_ats}, a model function is
+created returning a matrix with the \code{\link[deSolve]{ode}}-results for 
+all timepoints (one per column). Thus, \code{\link[deSolve]{ode}} only needs
+to be executed once.
 }
 \note{
-\code{ODEsobol_ats} is only purposed for analyzing one output 
+\code{ODEsobol_ats} is only purposed for analysing one output 
 variable.
 }
 \examples{

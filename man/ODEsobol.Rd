@@ -6,7 +6,7 @@
 \usage{
 ODEsobol(mod, pars, yini, times, seed = 2015, n = 1000,
   rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
-  length(pars)), method = "jansen", nboot = 0, trafo = function(Y)
+  length(pars)), method = "martinez", nboot = 0, trafo = function(Y)
   rowSums(Y^2), ncores = 1)
 }
 \arguments{
@@ -30,10 +30,9 @@ seed.}
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values (\code{n} per input factor) used to 
 estimate the variance-based sensitivity indices by Monte-Carlo-method.
-(Variance-based methods for sensitivity analysis (like the Sobol- and also 
-the Sobol-Jansen-method) rely on Monte-Carlo-simulation to estimate the
-integrals needed for the calculation of the sensitivity indices.) 
-Defaults to 1000.}
+(Variance-based methods for sensitivity analysis rely on 
+Monte-Carlo-simulation to estimate the integrals needed for the calculation
+of the sensitivity indices.) Defaults to 1000.}
 
 \item{rfuncs}{[\code{character(k)}]\cr
 names of the \code{k} functions used to generate the \code{n} random values
@@ -42,16 +41,16 @@ used for the \code{k} parameters. Defaults to \code{"runif"} for each of
 the \code{k} parameters.}
 
 \item{rargs}{[\code{character(k)}]\cr
-arguments to be passed to the \code{k} functions of rfuncs. Each element of
-\code{rargs} has to be a string of type 
-\code{"tag1 = value1, tag2 = value2, ..."}. 
-By default, \code{min = 0} and \code{max = 1} are used for each of the 
-\code{k} \code{runif}'s, meaning a uniform distribution of all parameters 
-on [0, 1].}
+arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
+element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
+tag2 = value2, ..."}. By default, \code{min = 0} and \code{max = 1} are 
+used for each of the \code{k} \code{runif}'s, meaning a uniform 
+distribution of all parameters on [0, 1].}
 
 \item{method}{[\code{character(1)}]\cr
-one of "jansen" and "martinez", specifying which modification of the 
-variance-based Sobol method shall be used.}
+either \code{"jansen"} or \code{"martinez"}, specifying which modification
+of the variance-based Sobol method shall be used. Defaults to 
+\code{"martinez"}, which is slightly faster than \code{"jansen"}.}
 
 \item{nboot}{[\code{integer(1)}]\cr
 parameter \code{nboot} used in \code{\link{soboljansen}},
@@ -68,19 +67,19 @@ number of processor cores to be used for calculating the sensitivity
 indices. Must be between 1 and 4.}
 }
 \value{
-list of Sobol SA results (i.e. 1st order sensitivity indices
+List of Sobol SA results (i.e. 1st order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of
   time of the \code{times} vector, of class \code{sobolRes}.
 }
 \description{
-\code{ODEsobol} performs a sensitivity analysis for
-ordinary differential equations using
-the variance-based Sobol method.
+\code{ODEsobol} performs a sensitivity analysis for ordinary differential 
+equations using the variance-based Sobol method.
 }
 \note{
-Package \code{parallel} is needed for this function. However, the use
-  of \code{\link{ODEsobol_ats}} is recommended if no transformation has
-  to be made.
+Package \code{parallel} is needed for this function. However, this 
+  function is outdated and the use of \code{\link{ODEsobol_ats}} is 
+  recommended if no transformation has to be made to the 
+  \code{\link[deSolve]{ode}}-results.
 }
 \examples{
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
@@ -115,16 +114,14 @@ FHNres <- ODEsobol(mod = FHNmod,
                    method = "martinez",
                    nboot = 0,
                    trafo = function(Y) Y[, 1],    # voltage only
-                   ncores = 4)
+                   ncores = 2)
 
 }
 \author{
 Stefan Theers
 }
 \seealso{
-\code{\link[sensitivity]{sobol}},
-  \code{\link[sensitivity]{soboljansen}},
-  \code{\link[sensitivity]{sobolmartinez}},
-  \code{\link{plot.sobolRes}}
+\code{\link[sensitivity]{sobol}, \link[sensitivity]{soboljansen},
+\link[sensitivity]{sobolmartinez}, \link{ODEsobol_ats}, \link{plot.sobolRes}}
 }
 

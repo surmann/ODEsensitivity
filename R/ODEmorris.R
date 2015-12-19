@@ -32,9 +32,9 @@
 #' @param scale [\code{logical(1)}]\cr
 #'   if \code{TRUE}, scaling is done for the input design of experiments after 
 #'   building the design and before calculating the elementary effects,
-#'   cf. \code{\link[sensitivity]{morris}}. Defaults to \code{FALSE}, but it is
-#'   highly recommended to use \code{scale = TRUE} if the factors have different
-#'   orders of magnitude.
+#'   cf. \code{\link[sensitivity]{morris}}. Defaults to \code{TRUE}, which is
+#'   highly recommended if the factors have different orders of magnitude, see
+#'   \code{\link[sensitivity]{morris}}.
 #' @param trafo [\code{function}]\cr
 #'   function to transform \code{z > 1} output variables to
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
@@ -43,13 +43,33 @@
 #'   number of processor cores to be used for calculating the sensitivity
 #'   indices. Must be between 1 and 4.
 #'
-#' @return list of class \code{morrisRes} with
+#' @return List of class \code{morrisRes} with
 #'   \itemize{
 #'     \item \code{res}, the matrix of Morris SA results
 #'       (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
 #'       time in the \code{times} vector and
 #'     \item \code{pars}, the parameter names.
 #'   }
+#'
+#' @note Package \code{parallel} is needed for this function. However, this 
+#'   function is outdated and the use of \code{\link{ODEmorris_ats}} (for one 
+#'   output variable) or \code{\link{ODEmorris_aos}} (for multiple output 
+#'   variables) is recommended if no transformation has to be made to the 
+#'   \code{\link[deSolve]{ode}}-results.
+#' 
+#' \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
+#'   sometimes cannot solve an ODE system if unrealistic parameters
+#'   are sampled by \code{\link[sensitivity]{morris}}. Hence
+#'   \code{NA}s might occur in the Morris sensitivity results, such
+#'   that \code{\link{ODEmorris}} fails for one or many points of time!
+#'   For this reason, if \code{NA}s occur, please make use of
+#'   \code{\link{ODEsobol}} instead or
+#'   restrict the input parameter value intervals usefully using
+#'   \code{binf}, \code{bsup} and \code{scale = TRUE}!
+#'   
+#'   If \code{\link[sensitivity]{morris}} throws a warning message saying
+#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
+#'   \code{levels} in the \code{design} argument.
 #'
 #' @author Stefan Theers
 #' @examples
@@ -87,33 +107,13 @@
 #'                     trafo = function(Y) Y[, 1],    # voltage only
 #'                     ncores = 4)
 #'
-#' @seealso \code{\link[sensitivity]{morris}},
-#'   \code{\link{plot.morrisRes}}
-#'
-#' @note Package \code{parallel} is needed for this function. However, the use
-#'   of \code{\link{ODEmorris_ats}} (for one output variable) or 
-#'   \code{\link{ODEmorris_aos}} (for multiple output variables) is 
-#'   recommended if no transformation has to be made.
-#' 
-#' \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
-#'   sometimes cannot solve an ODE system if unrealistic parameters
-#'   are sampled by \code{\link[sensitivity]{morris}}. Hence
-#'   \code{NA}s might occur in the Morris sensitivity results, such
-#'   that \code{\link{ODEmorris}} fails for one or many points of time!
-#'   For this reason, if \code{NA}s occur, please make use of
-#'   \code{\link{ODEsobol}} instead or
-#'   restrict the input parameter value intervals usefully using
-#'   \code{binf} and \code{bsup}!
-#'   
-#'   If \code{\link[sensitivity]{morris}} throws a warning message saying
-#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
-#'   \code{levels} in the \code{design} argument.
+#' @seealso \code{\link[sensitivity]{morris}, \link{ODEmorris_ats},
+#' \link{ODEmorris_aos}, \link{plot.morrisRes}}
 #'   
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
-#'
 #'
 #' @export
 #' @import

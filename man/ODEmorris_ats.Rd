@@ -6,7 +6,7 @@
 \usage{
 ODEmorris_ats(mod, pars, yini, times, y_idx = 1, seed = 2015, binf = 0,
   bsup = 1, r = 25, design = list(type = "oat", levels = 100, grid.jump =
-  1), scale = FALSE)
+  1), scale = TRUE)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -49,12 +49,12 @@ cf. \code{\link[sensitivity]{morris}}.}
 \item{scale}{[\code{logical(1)}]\cr
 if \code{TRUE}, scaling is done for the input design of experiments after 
 building the design and before calculating the elementary effects,
-cf. \code{\link[sensitivity]{morris}}. Defaults to \code{FALSE}, but it is
-highly recommended to use \code{scale = TRUE} if the factors have different
-orders of magnitude.}
+cf. \code{\link[sensitivity]{morris}}. Defaults to \code{TRUE}, which is
+highly recommended if the factors have different orders of magnitude, see
+\code{\link[sensitivity]{morris}}.}
 }
 \value{
-list of class \code{morrisRes_ats} with
+List of class \code{morrisRes_ats} with
   \itemize{
     \item \code{res}, a matrix containing the Morris SA results (i.e.
       \code{mu, mu.star} and \code{sigma} for every parameter) for one point
@@ -66,37 +66,31 @@ list of class \code{morrisRes_ats} with
 \code{ODEmorris_ats} performs a sensitivity analysis for
 ordinary differential equations using Morris's elementary effects 
 screening method. The analysis is done for one output variable at all
-timepoints simultaneously using \code{\link[sensitivity]{morris_matrix}}.
+timepoints simultaneously using \code{\link[sensitivity]{morris_matrix}} from
+the package \code{sensitivity}.
 }
 \details{
 \code{ODEmorris_ats} is faster than \code{ODEmorris} since 
-\code{\link[sensitivity]{morris_matrix}} can handle matrix output for its 
-model function. Thus, one random matrix of parameter combinations can be 
-generated and the adopted model function for 
-\code{\link[sensitivity]{morris_matrix}} can 
-return the values of the output variable for all parameter combinations 
-(rows) and all timepoints (columns) together. This saves time since the
-adopted model function for 
-\code{\link[sensitivity]{morris_matrix}} mainly relies on executing 
-\code{\link[deSolve]{ode}} from the
-package \code{deSolve}. Using \code{\link[deSolve]{ode}} for all timepoints
-simultaneously is a lot faster than \code{apply}-ing it on every timepoint
-separately.
+\code{\link[sensitivity]{morris_matrix}} can handle matrix output for 
+its model function. In \code{ODEmorris_ats}, a model function is
+created returning a matrix with the \code{\link[deSolve]{ode}}-results for 
+all timepoints (one per column). Thus, \code{\link[deSolve]{ode}} only needs
+to be executed once.
 }
 \note{
 \code{ODEmorris_ats} is only purposed for analyzing one output 
-variable. If multiple output variables shall be analysed simultaneously,
+variable. If multiple output variables shall be analyzed simultaneously,
 please use \code{\link{ODEmorris_aos}}.
 
 \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
   sometimes cannot solve an ODE system if unrealistic parameters
-  are sampled by \code{\link[sensitivity]{morris}}. Hence
+  are sampled by \code{\link[sensitivity]{morris_matrix}}. Hence
   \code{NA}s might occur in the Morris sensitivity results, such
   that \code{\link{ODEmorris_ats}} fails for one or many points of time!
   For this reason, if \code{NA}s occur, please make use of
-  \code{\link{ODEsobol}} instead or
+  \code{\link{ODEsobol_ats}} instead or
   restrict the input parameter value intervals usefully using
-  \code{binf} and \code{bsup}!
+  \code{binf}, \code{bsup} and \code{scale = TRUE}!
   
   If \code{\link[sensitivity]{morris_matrix}} throws a warning message saying
   "In ... keeping ... repetitions out of ...", try using a bigger number of 

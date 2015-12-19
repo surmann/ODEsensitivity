@@ -7,7 +7,7 @@ Simultaneously}
 \usage{
 ODEmorris_aos(mod, pars, yini, times, seed = 2015, binf = 0, bsup = 1,
   r = 25, design = list(type = "oat", levels = 100, grid.jump = 1),
-  scale = FALSE)
+  scale = TRUE)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -46,12 +46,12 @@ cf. \code{\link[sensitivity]{morris}}.}
 \item{scale}{[\code{logical(1)}]\cr
 if \code{TRUE}, scaling is done for the input design of experiments after 
 building the design and before calculating the elementary effects,
-cf. \code{\link[sensitivity]{morris}}. Defaults to \code{FALSE}, but it is
-highly recommended to use \code{scale = TRUE} if the factors have different
-orders of magnitude.}
+cf. \code{\link[sensitivity]{morris}}. Defaults to \code{TRUE}, which is
+highly recommended if the factors have different orders of magnitude, see
+\code{\link[sensitivity]{morris}}.}
 }
 \value{
-list of class \code{morrisRes_aos} with
+List of class \code{morrisRes_aos} with
   \itemize{
     \item \code{res}, a list containing in each element a matrix for one
       output variable. The matrices itself contain the Morris SA results 
@@ -64,7 +64,8 @@ list of class \code{morrisRes_aos} with
 \code{ODEmorris_aos} performs a sensitivity analysis for
 ordinary differential equations using Morris's elementary effects 
 screening method. The analysis is done for all output variables and all
-timepoints simultaneously using \code{\link[sensitivity]{morris_list}}.
+timepoints simultaneously using \code{\link[sensitivity]{morris_list}} from 
+the package \code{sensitivity}.
 }
 \details{
 \code{ODEmorris_aos} uses \code{\link[sensitivity]{morris_list}}
@@ -72,19 +73,18 @@ which can handle \code{list}s as output for its model function. Thus, each
 element of the list can be used to contain the results for one output
 variable. This saves time since \code{\link[deSolve]{ode}} from the
 package \code{deSolve} does its calculations for all output variables anyway.
-This way, \code{\link[deSolve]{ode}} only runs once and the rest is
-reformatting the data to a \code{list} output.
+This way, \code{\link[deSolve]{ode}} only needs to be executed once.
 }
 \note{
 \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
   sometimes cannot solve an ODE system if unrealistic parameters
-  are sampled by \code{\link[sensitivity]{morris}}. Hence
+  are sampled by \code{\link[sensitivity]{morris_list}}. Hence
   \code{NA}s might occur in the Morris sensitivity results, such
-  that \code{\link{ODEmorris}} fails for one or many points of time!
+  that \code{\link{ODEmorris_aos}} fails for one or many points of time!
   For this reason, if \code{NA}s occur, please make use of
-  \code{\link{ODEsobol}} instead or
+  \code{\link{ODEsobol_ats}} instead or
   restrict the input parameter value intervals usefully using
-  \code{binf} and \code{bsup}!
+  \code{binf}, \code{bsup} and \code{scale = TRUE}!
   
   If \code{\link[sensitivity]{morris_list}} throws a warning message saying
   "In ... keeping ... repetitions out of ...", try using a bigger number of 

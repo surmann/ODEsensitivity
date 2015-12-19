@@ -60,8 +60,13 @@ FHNres <- ODEsobol(mod = FHNmod,
                    times = FHNtimes,
                    seed = 2015,
                    n = 10,                        # use n >> 10!
+                   rfuncs = c("runif", "runif", "rnorm"),
+                   rargs = c(rep("min = 0.18, max = 0.22", 2),
+                             "mean = 3, sd = 0.2 / 3"),
+                   method = "martinez",
+                   nboot = 0,
                    trafo = function(Y) Y[, 1],    # voltage only
-                   ncores = 4)
+                   ncores = 2)
 
 # Plot:
 plot(FHNres, type = "l", legendPos = "topright")

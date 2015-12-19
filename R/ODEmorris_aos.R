@@ -5,7 +5,8 @@
 #' \code{ODEmorris_aos} performs a sensitivity analysis for
 #' ordinary differential equations using Morris's elementary effects 
 #' screening method. The analysis is done for all output variables and all
-#' timepoints simultaneously using \code{\link[sensitivity]{morris_list}}.
+#' timepoints simultaneously using \code{\link[sensitivity]{morris_list}} from 
+#' the package \code{sensitivity}.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -34,11 +35,11 @@
 #' @param scale [\code{logical(1)}]\cr
 #'   if \code{TRUE}, scaling is done for the input design of experiments after 
 #'   building the design and before calculating the elementary effects,
-#'   cf. \code{\link[sensitivity]{morris}}. Defaults to \code{FALSE}, but it is
-#'   highly recommended to use \code{scale = TRUE} if the factors have different
-#'   orders of magnitude.
+#'   cf. \code{\link[sensitivity]{morris}}. Defaults to \code{TRUE}, which is
+#'   highly recommended if the factors have different orders of magnitude, see
+#'   \code{\link[sensitivity]{morris}}.
 #'
-#' @return list of class \code{morrisRes_aos} with
+#' @return List of class \code{morrisRes_aos} with
 #'   \itemize{
 #'     \item \code{res}, a list containing in each element a matrix for one
 #'       output variable. The matrices itself contain the Morris SA results 
@@ -52,8 +53,21 @@
 #' element of the list can be used to contain the results for one output
 #' variable. This saves time since \code{\link[deSolve]{ode}} from the
 #' package \code{deSolve} does its calculations for all output variables anyway.
-#' This way, \code{\link[deSolve]{ode}} only runs once and the rest is
-#' reformatting the data to a \code{list} output.
+#' This way, \code{\link[deSolve]{ode}} only needs to be executed once.
+#' 
+#' @note \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
+#'   sometimes cannot solve an ODE system if unrealistic parameters
+#'   are sampled by \code{\link[sensitivity]{morris_list}}. Hence
+#'   \code{NA}s might occur in the Morris sensitivity results, such
+#'   that \code{\link{ODEmorris_aos}} fails for one or many points of time!
+#'   For this reason, if \code{NA}s occur, please make use of
+#'   \code{\link{ODEsobol_ats}} instead or
+#'   restrict the input parameter value intervals usefully using
+#'   \code{binf}, \code{bsup} and \code{scale = TRUE}!
+#'   
+#'   If \code{\link[sensitivity]{morris_list}} throws a warning message saying
+#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
+#'   \code{levels} in the \code{design} argument.
 #'
 #' @author Frank Weber
 #' @examples
@@ -94,25 +108,10 @@
 #'   \code{\link[sensitivity]{morris_list}},
 #'   \code{\link{plot.morrisRes_aos}}
 #'
-#' @note \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
-#'   sometimes cannot solve an ODE system if unrealistic parameters
-#'   are sampled by \code{\link[sensitivity]{morris}}. Hence
-#'   \code{NA}s might occur in the Morris sensitivity results, such
-#'   that \code{\link{ODEmorris}} fails for one or many points of time!
-#'   For this reason, if \code{NA}s occur, please make use of
-#'   \code{\link{ODEsobol}} instead or
-#'   restrict the input parameter value intervals usefully using
-#'   \code{binf} and \code{bsup}!
-#'   
-#'   If \code{\link[sensitivity]{morris_list}} throws a warning message saying
-#'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
-#'   \code{levels} in the \code{design} argument.
-#'
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
-#'   
 #'
 #' @export
 #' @import
@@ -131,10 +130,9 @@ ODEmorris_aos <- function(mod,
                           r = 25,
                           design =
                             list(type = "oat", levels = 100, grid.jump = 1),
-                          scale = FALSE) {
+                          scale = TRUE) {
   
   ##### Plausibilitaet #################################################
-  ## stopifnot(!missing(...))
   assertFunction(mod)
   assertCharacter(pars)
   assertNumeric(yini)
