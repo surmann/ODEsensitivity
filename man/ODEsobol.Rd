@@ -4,10 +4,10 @@
 \alias{ODEsobol}
 \title{Sobol SA for ODEs}
 \usage{
-ODEsobol(mod, pars, yini, times, seed = 2015, n = 1000,
-  rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
-  length(pars)), method = "martinez", nboot = 0, trafo = function(Y)
-  rowSums(Y^2), ncores = 1)
+ODEsobol(mod, pars, yini, times, ode_method = "lsoda", seed = 2015,
+  n = 1000, rfuncs = rep("runif", length(pars)),
+  rargs = rep("min = 0, max = 1", length(pars)), method = "martinez",
+  nboot = 0, trafo = function(Y) rowSums(Y^2), ncores = 1)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -23,6 +23,10 @@ vector of \code{z} initial values.}
 points of time at which the SA should be executed
 (vector of arbitrary length). Also the
 first point of time must be positive.}
+
+\item{ode_method}{[\code{character(1)}]\cr
+method to be used for solving the differential equations, see 
+\code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
 
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
@@ -80,6 +84,13 @@ Package \code{parallel} is needed for this function. However, this
   function is outdated and the use of \code{\link{ODEsobol_ats}} is 
   recommended if no transformation has to be made to the 
   \code{\link[deSolve]{ode}}-results.
+  
+  Sometimes, it is also helpful to try another ODE-solver (argument 
+  \code{ode_method}). Problems are known for the
+  \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
+  In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
+  \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
+  might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 }
 \examples{
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
@@ -95,17 +106,14 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 
-FHNpars  <- c(a = 0.2,     # parameter a
-              b = 0.3,     # parameter b
-              s = 3)       # parameter s (= c in the original notation)
-
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 20, by = 0.5)
 
 FHNres <- ODEsobol(mod = FHNmod,
-                   pars = names(FHNpars),
+                   pars = c("a", "b", "s"),
                    yini = FHNyini,
                    times = FHNtimes,
+                   ode_method = "adams",
                    seed = 2015,
                    n = 10,                        # use n >> 10!
                    rfuncs = c("runif", "runif", "rnorm"),

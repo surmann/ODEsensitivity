@@ -10,18 +10,15 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 
-FHNpars  <- c(a = 0.2,     # parameter a
-              b = 0.3,     # parameter b
-              s = 3)       # parameter s (= c in the original notation)
-
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 100, by = 10)
 
 system.time(
 FHNres_ats <- ODEmorris_ats(mod = FHNmod,
-                    pars = names(FHNpars),
+                    pars = c("a", "b", "s"),
                     yini = FHNyini,
                     times = FHNtimes,
+                    ode_method = "adams",
                     y_idx = 1,
                     seed = 2015,
                     binf = c(0.18, 0.18, 2.8),
@@ -32,7 +29,7 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                     scale = TRUE)
 )
 #  User      System verstrichen 
-# 20.01        0.01       22.39 
+# 11.66        0.01       11.95
 
 # save(FHNres_ats, file = "SA-ODEmorris_ats.RData")
 

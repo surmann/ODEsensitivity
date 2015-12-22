@@ -12,18 +12,15 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 
-FHNpars  <- c(a = 0.2,     # parameter a
-              b = 0.3,     # parameter b
-              s = 3)       # parameter s (= c in the original notation)
-
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 20, by = 0.5)
 
 system.time(
 FHNres_ats <- ODEsobol_ats(mod = FHNmod,
-                           pars = names(FHNpars),
+                           pars = c("a", "b", "s"),
                            yini = FHNyini,
                            times = FHNtimes,
+                           ode_method = "adams",
                            y_idx = 1,
                            seed = 2015,
                            n = 10,
@@ -44,6 +41,9 @@ FHNres_ats <- ODEsobol_ats(mod = FHNmod,
 # Mit neuen Argumenten "rfuncs" und "rargs" sowie method = "martinez":
 # User      System verstrichen 
 # 5.66        0.00        6.00
+# Mit ode_method = "adams":
+# User      System verstrichen 
+# 3.88        0.00        4.11
 
 # save(FHNres_ats, file = "SA-ODEsobol_ats.RData")
 

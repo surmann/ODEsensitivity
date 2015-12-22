@@ -39,15 +39,11 @@
 #'   })
 #' }
 #'
-#' FHNpars  <- c(a = 0.2,     # parameter a
-#'               b = 0.3,     # parameter b
-#'               s = 3)       # parameter s (= c in the original notation)
-#'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 100, by = 10)
 #'
 #' FHNres_ats <- ODEmorris_ats(mod = FHNmod,
-#'                             pars = names(FHNpars),
+#'                             pars = c("a", "b", "s"),
 #'                             yini = FHNyini,
 #'                             times = FHNtimes,
 #'                             y_idx = 1,        # voltage only

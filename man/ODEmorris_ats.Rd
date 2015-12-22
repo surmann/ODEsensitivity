@@ -4,9 +4,9 @@
 \alias{ODEmorris_ats}
 \title{Morris SA for ODEs at All Timepoints Simultaneously}
 \usage{
-ODEmorris_ats(mod, pars, yini, times, y_idx = 1, seed = 2015, binf = 0,
-  bsup = 1, r = 25, design = list(type = "oat", levels = 100, grid.jump =
-  1), scale = TRUE)
+ODEmorris_ats(mod, pars, yini, times, ode_method = "lsoda", y_idx = 1,
+  seed = 2015, binf = 0, bsup = 1, r = 25, design = list(type = "oat",
+  levels = 100, grid.jump = 1), scale = TRUE)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -22,6 +22,10 @@ vector of \code{z} initial values.}
 points of time at which the SA should be executed
 (vector of arbitrary length). Also the
 first point of time must be positive.}
+
+\item{ode_method}{[\code{character(1)}]\cr
+method to be used for solving the differential equations, see 
+\code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
 
 \item{y_idx}{[\code{integer(1)}]\cr
 index of the output variable to be analyzed. Defaults to 1, so the first
@@ -82,15 +86,19 @@ to be executed once.
 variable. If multiple output variables shall be analyzed simultaneously,
 please use \code{\link{ODEmorris_aos}}.
 
-\code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
-  sometimes cannot solve an ODE system if unrealistic parameters
-  are sampled by \code{\link[sensitivity]{morris_matrix}}. Hence
-  \code{NA}s might occur in the Morris sensitivity results, such
-  that \code{\link{ODEmorris_ats}} fails for one or many points of time!
-  For this reason, if \code{NA}s occur, please make use of
-  \code{\link{ODEsobol_ats}} instead or
+\code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
+  unrealistic parameter combinations are sampled by 
+  \code{\link[sensitivity]{morris_matrix}}. Hence \code{NA}s might occur in 
+  the Morris sensitivity results, such that \code{\link{ODEmorris_ats}} fails
+  for one or many points of time! For this reason, if \code{NA}s occur, 
+  please make use of \code{\link{ODEsobol_ats}} instead or
   restrict the input parameter value intervals usefully using
-  \code{binf}, \code{bsup} and \code{scale = TRUE}!
+  \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
+  another ODE-solver (argument \code{ode_method}). Problems are known for the
+  \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
+  In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
+  \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
+  might be even faster than the standard \code{ode_method} \code{"lsoda"}.
   
   If \code{\link[sensitivity]{morris_matrix}} throws a warning message saying
   "In ... keeping ... repetitions out of ...", try using a bigger number of 
@@ -110,18 +118,15 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 
-FHNpars  <- c(a = 0.2,     # parameter a
-              b = 0.3,     # parameter b
-              s = 3)       # parameter s (= c in the original notation)
-
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 100, by = 10)
 
 FHNres_ats <- ODEmorris_ats(mod = FHNmod,
-                            pars = names(FHNpars),
+                            pars = c("a", "b", "s"),
                             yini = FHNyini,
                             times = FHNtimes,
-                            y_idx = 1,        # voltage only
+                            y_idx = 1,                 # voltage only
+                            ode_method = "adams",
                             seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),

@@ -43,15 +43,11 @@
 #'   })
 #' }
 #'
-#' FHNpars  <- c(a = 0.2,     # parameter a
-#'               b = 0.3,     # parameter b
-#'               s = 3)       # parameter s (= c in the original notation)
-#'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 20, by = 0.5)
 #'
 #' FHNres <- ODEsobol_ats(mod = FHNmod,
-#'                        pars = names(FHNpars),
+#'                        pars = c("a", "b", "s"),
 #'                        yini = FHNyini,
 #'                        times = FHNtimes,
 #'                        y_idx = 1,            # only Voltage
@@ -104,7 +100,7 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
   minMaxT <- c(0.95 * min(x$T[-1, ]), 1.05 * max(x$T[-1, ]))
   # Gemeinsamer Titel fuer beide Grafiken:
   if(is.null(overall_main)){
-    overall_main <- paste0("Sobol sensitivity indices with y_idx = ", x$y_idx,
+    overall_main <- paste0("Sobol sensitivity indices for y_idx = ", x$y_idx,
                            " and method = \"", x$method, "\"")
   }
   

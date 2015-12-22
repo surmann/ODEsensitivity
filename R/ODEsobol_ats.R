@@ -18,6 +18,9 @@
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
 #'   first point of time must be positive.
+#' @param ode_method [\code{character(1)}]\cr
+#'   method to be used for solving the differential equations, see 
+#'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
 #' @param y_idx [\code{integer(1)}]\cr
 #'   index of the output variable to be analyzed. Defaults to 1, so the first
 #'   output variable is used.
@@ -63,6 +66,13 @@
 #'
 #' @note \code{ODEsobol_ats} is only purposed for analysing one output 
 #' variable.
+#' 
+#'   Sometimes, it is also helpful to try another ODE-solver (argument 
+#'   \code{ode_method}). Problems are known for the
+#'   \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
+#'   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
+#'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
+#'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 #'
 #' @author Frank Weber
 #' @examples
@@ -79,18 +89,15 @@
 #'   })
 #' }
 #'
-#' FHNpars  <- c(a = 0.2,     # parameter a
-#'               b = 0.3,     # parameter b
-#'               s = 3)       # parameter s (= c in the original notation)
-#'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 20, by = 0.5)
 #'
 #' FHNres <- ODEsobol_ats(mod = FHNmod,
-#'                        pars = names(FHNpars),
+#'                        pars = c("a", "b", "s"),
 #'                        yini = FHNyini,
 #'                        times = FHNtimes,
-#'                        y_idx = 1,            # only Voltage
+#'                        ode_method = "adams",
+#'                        y_idx = 1,            # only voltage
 #'                        seed = 2015,
 #'                        n = 10,               # use n >> 10!
 #'                        rfuncs = c("runif", "runif", "rnorm"),
@@ -116,6 +123,7 @@ ODEsobol_ats <- function(mod,
                          pars,
                          yini,
                          times,
+                         ode_method = "lsoda",
                          y_idx = 1,
                          seed = 2015,
                          n = 1000,
@@ -131,6 +139,10 @@ ODEsobol_ats <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
+  stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
+                              "daspk", "euler", "rk4", "ode23", "ode45", 
+                              "radau", "bdf", "bdf_d", "adams", "impAdams", 
+                              "impAdams_d" ,"iteration"))
   assertIntegerish(y_idx)
   assertNumeric(seed)
   assertIntegerish(n)
@@ -157,8 +169,8 @@ ODEsobol_ats <- function(mod,
     #       als Zeilen
     colnames(X) <- pars
     res <- apply(X, 1, function(x){
-      ode(yini, times = c(0, times), 
-          mod, parms = x)[2:(timesNum + 1), y_idx + 1]
+      ode(yini, times = c(0, times), mod, parms = x, 
+          method = ode_method)[2:(timesNum + 1), y_idx + 1]
     })
     # (Jede Zeile in "res" steht fuer einen Zeitpunkt.)
     

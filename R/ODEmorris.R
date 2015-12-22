@@ -15,6 +15,9 @@
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
 #'   first point of time must be positive.
+#' @param ode_method [\code{character(1)}]\cr
+#'   method to be used for solving the differential equations, see 
+#'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param binf [\code{numeric(k)}]\cr
@@ -57,15 +60,19 @@
 #'   variables) is recommended if no transformation has to be made to the 
 #'   \code{\link[deSolve]{ode}}-results.
 #' 
-#' \code{\link[deSolve]{ode}} or rather its standard solver \code{lsoda}
-#'   sometimes cannot solve an ODE system if unrealistic parameters
-#'   are sampled by \code{\link[sensitivity]{morris}}. Hence
-#'   \code{NA}s might occur in the Morris sensitivity results, such
-#'   that \code{\link{ODEmorris}} fails for one or many points of time!
-#'   For this reason, if \code{NA}s occur, please make use of
-#'   \code{\link{ODEsobol}} instead or
+#' \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
+#'   unrealistic parameter combinations are sampled by 
+#'   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
+#'   Morris sensitivity results, such that \code{\link{ODEmorris}} fails for 
+#'   one or many points of time! For this reason, if \code{NA}s occur, please 
+#'   make use of \code{\link{ODEsobol}} instead or
 #'   restrict the input parameter value intervals usefully using
-#'   \code{binf}, \code{bsup} and \code{scale = TRUE}!
+#'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
+#'   another ODE-solver (argument \code{ode_method}). Problems are known for the
+#'   \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
+#'   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
+#'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
+#'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 #'   
 #'   If \code{\link[sensitivity]{morris}} throws a warning message saying
 #'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
@@ -86,17 +93,14 @@
 #'   })
 #' }
 #'
-#' FHNpars  <- c(a = 0.2,     # parameter a
-#'               b = 0.3,     # parameter b
-#'               s = 3)       # parameter s (= c in the original notation)
-#'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 100, by = 10)
 #'
 #' FHNres <- ODEmorris(mod = FHNmod,
-#'                     pars = names(FHNpars),
+#'                     pars = c("a", "b", "s"),
 #'                     yini = FHNyini,
 #'                     times = FHNtimes,
+#'                     ode_method = "adams",
 #'                     seed = 2015,
 #'                     binf = c(0.18, 0.18, 2.8),
 #'                     bsup = c(0.22, 0.22, 3.2),
@@ -126,6 +130,7 @@ ODEmorris <- function(mod,
                       pars,
                       yini,
                       times,
+                      ode_method = "lsoda",
                       seed = 2015,
                       binf = 0,
                       bsup = 1,
@@ -144,6 +149,10 @@ ODEmorris <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
+  stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
+                              "daspk", "euler", "rk4", "ode23", "ode45", 
+                              "radau", "bdf", "bdf_d", "adams", "impAdams", 
+                              "impAdams_d" ,"iteration"))
   assertNumeric(seed)
   assertNumeric(binf)
   notOk <- length(binf) != length(pars) & length(binf) != 1
@@ -182,8 +191,8 @@ ODEmorris <- function(mod,
     colnames(X) <- pars
     res <-
       t(apply(X, 1, function(x)
-              ode(yini, times = c(0, pot), mod, parms = x)[2, 2:(z+1)]))
-
+              ode(yini, times = c(0, pot), mod, parms = x,
+                  method = ode_method)[2, 2:(z+1)]))
     # Transformation der Output-Variablen nach IR:
     trafo(res)
   }
@@ -226,9 +235,11 @@ ODEmorris <- function(mod,
   # Warnungen, falls NAs auftreten (unrealistische Paramter => nicht
   # loesbare ODEs):
   if(any(is.na(res[1:(1 + k*2), ]))){
-    warning("deSolve/ lsoda cannot solve the ODE system!
-          This might be due to arising unrealistic parameters by means of Morris
-          Screening. Use ODEsobol() instead or set binf and bsup differently!")
+    warning(paste("The ODE system can't be solved. This might be due to", 
+      "arising unrealistic parameters by means of Morris Screening. Use",
+      "ODEsobol() instead or set binf and bsup differently together with",
+      "scale = TRUE. It might also be helpful to try another ODE-solver by",
+      "using the \"ode_method\"-argument."))
   } else if(all(is.na(res[(2 + k*2):(1 + k*3), ])) && r == 1){
     warning("Calculation of sigma requires r >= 2.")
   } else if(any(is.na(res[(2 + k*2):(1 + k*3), ]))){
