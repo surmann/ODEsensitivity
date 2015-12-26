@@ -1,12 +1,12 @@
-#' @title Sobol SA for ODEs at All Timepoints Simultaneously
+#' @title Sobol SA for ODEs for All Output Variables and All Timepoints
+#' Simultaneously
 #'
 #' @description
-#' \code{ODEsobol_ats} performs a variance-based sensitivity analysis for
-#' ordinary differential equations according to either the Sobol-Jansen- or the
-#' Sobol-Martinez-method. The analysis is done for one output variable at all 
-#' timepoints simultaneously using \code{\link[sensitivity]{soboljansen_matrix}}
-#' resp. \code{\link[sensitivity]{sobolmartinez_matrix}} from the package 
-#' \code{sensitivity}.
+#' \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
+#' ordinary differential equations according to the Sobol-Martinez-method. 
+#' The analysis is done for all output variables at all timepoints 
+#' simultaneously using \code{\link[sensitivity]{sobolmartinez_list}} from the 
+#' package \code{sensitivity}.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -21,9 +21,6 @@
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
-#' @param y_idx [\code{integer(1)}]\cr
-#'   index of the output variable to be analyzed. Defaults to 1, so the first
-#'   output variable is used.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param n [\code{integer(1)}]\cr
@@ -56,17 +53,15 @@
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
 #'   time of the \code{times} vector, of class \code{sobolRes_ats}.
 #'
-#' @details \code{ODEsobol_ats} is faster than \code{ODEsobol} since 
-#' \code{\link[sensitivity]{soboljansen_matrix}} and
-#' \code{\link[sensitivity]{sobolmartinez_matrix}} can handle matrix output for 
-#' their model functions. In \code{ODEsobol_ats}, a model function is
-#' created returning a matrix with the \code{\link[deSolve]{ode}}-results for 
-#' all timepoints (one per column). Thus, \code{\link[deSolve]{ode}} only needs
-#' to be executed once.
+#' @details \code{ODEmorris_aos} uses 
+#' \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
+#' as output for its model function. Thus, each element of the list can be used
+#' to contain the results for one output variable. This saves time since 
+#' \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
+#' calculations for all output variables anyway, so \code{\link[deSolve]{ode}} 
+#' only needs to be executed once.
 #'
-#' @note \code{ODEsobol_ats} is only purposed for analysing one output 
-#' variable.
-#' 
+#' @note 
 #'   Sometimes, it is also helpful to try another ODE-solver (argument 
 #'   \code{ode_method}). Problems are known for the
 #'   \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
@@ -92,12 +87,11 @@
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 20, by = 0.5)
 #'
-#' FHNres <- ODEsobol_ats(mod = FHNmod,
+#' FHNres <- ODEsobol_aos(mod = FHNmod,
 #'                        pars = c("a", "b", "s"),
 #'                        yini = FHNyini,
 #'                        times = FHNtimes,
 #'                        ode_method = "adams",
-#'                        y_idx = 1,            # only voltage
 #'                        seed = 2015,
 #'                        n = 10,               # use n >> 10!
 #'                        rfuncs = c("runif", "runif", "rnorm"),
@@ -106,25 +100,22 @@
 #'                        method = "martinez",
 #'                        nboot = 0)
 #'
-#' @seealso \code{\link[sensitivity]{sobol},
-#' \link[sensitivity]{soboljansen_matrix},
-#' \link[sensitivity]{sobolmartinez_matrix},
-#' \link{plot.sobolRes_ats}}
+#' @seealso \code{\link[sensitivity]{sobol}, 
+#' \link[sensitivity]{sobolmartinez_list},
+#' \link{plot.sobolRes_aos}}
 #'
 #' @export
 #' @import
 #'   checkmate
 #' @importFrom deSolve ode
-#' @importFrom sensitivity soboljansen_matrix
-#' @importFrom sensitivity sobolmartinez_matrix
+#' @importFrom sensitivity sobolmartinez_list
 #'
 
-ODEsobol_ats <- function(mod,
+ODEsobol_aos <- function(mod,
                          pars,
                          yini,
                          times,
                          ode_method = "lsoda",
-                         y_idx = 1,
                          seed = 2015,
                          n = 1000,
                          rfuncs = rep("runif", length(pars)),
@@ -143,7 +134,6 @@ ODEsobol_ats <- function(mod,
                               "daspk", "euler", "rk4", "ode23", "ode45", 
                               "radau", "bdf", "bdf_d", "adams", "impAdams", 
                               "impAdams_d" ,"iteration"))
-  assertIntegerish(y_idx)
   assertNumeric(seed)
   assertIntegerish(n)
   assertCharacter(rfuncs, len = length(pars))

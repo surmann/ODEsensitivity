@@ -52,11 +52,11 @@
 #'   }
 #'
 #' @details \code{ODEmorris_aos} uses \code{\link[sensitivity]{morris_list}}
-#' which can handle \code{list}s as output for its model function. Thus, each
+#' which can handle lists as output for its model function. Thus, each
 #' element of the list can be used to contain the results for one output
 #' variable. This saves time since \code{\link[deSolve]{ode}} from the
-#' package \code{deSolve} does its calculations for all output variables anyway.
-#' This way, \code{\link[deSolve]{ode}} only needs to be executed once.
+#' package \code{deSolve} does its calculations for all output variables anyway,
+#' so \code{\link[deSolve]{ode}} only needs to be executed once.
 #' 
 #' @note \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
 #'   unrealistic parameter combinations are sampled by 
