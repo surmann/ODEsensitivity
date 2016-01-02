@@ -119,14 +119,14 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 100, by = 10)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                             pars = c("a", "b", "s"),
                             yini = FHNyini,
                             times = FHNtimes,
-                            y_idx = 1,                 # voltage only
                             ode_method = "adams",
+                            y_idx = 1,                 # voltage only
                             seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),

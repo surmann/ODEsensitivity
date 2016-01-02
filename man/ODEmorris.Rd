@@ -117,7 +117,7 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 100, by = 10)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 FHNres <- ODEmorris(mod = FHNmod,
                     pars = c("a", "b", "s"),

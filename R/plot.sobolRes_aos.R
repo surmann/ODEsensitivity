@@ -3,7 +3,7 @@
 #'
 #' @description
 #' \code{plot.sobolRes_aos} plots the results of Sobol SA for objects of class 
-#' \code{\link{sobolRes_aos}}.
+#' \code{sobolRes_aos}.
 #'
 #' @param x [\code{sobolRes_aos}-object]\cr
 #'   resulting output of \code{\link{ODEsobol_aos}}, of class 
@@ -152,7 +152,7 @@ plot.sobolRes_aos <- function(x, y_idx = 1, type = "b", legendPos = "topleft",
   }
   
   # Gemeinsamer Titel:
-  mtext(overall_main, side = 3, line = 0, outer = TRUE, cex = 2)
+  mtext(overall_main, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
   
   par(oldpar)
   return(invisible(TRUE))

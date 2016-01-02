@@ -15,6 +15,9 @@
 #'   resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, choose between \code{"sep"} and \code{"trajec"}.
+#' @param main_title [\code{character(1)}]\cr
+#'   title for the plot. If \code{type = "sep"}, this is the overall title for
+#'   the two separate plots. Defaults to NULL, so a standard title is generated.
 #' @param legendPos [\code{character(1)}]\cr
 #'   legend position, default is \code{"topleft"}.
 #' @param ... additional arguments passed to \code{\link{plot}}.

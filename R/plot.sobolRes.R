@@ -3,7 +3,7 @@
 #'
 #' @description
 #' \code{plot.sobolRes} plots the results of Sobol SA for objects of class 
-#' \code{\link{sobolRes}}.
+#' \code{sobolRes}.
 #'
 #' @details
 #' 1st order and total Sobol SA indices are plotted for each input
@@ -148,7 +148,7 @@ plot.sobolRes <- function(x, type = "b", legendPos = "topleft",
   }
   
   # Gemeinsamer Titel:
-  mtext(overall_main, side = 3, line = 0, outer = TRUE, cex = 2)
+  mtext(overall_main, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
   
   par(oldpar)
   return(invisible(TRUE))

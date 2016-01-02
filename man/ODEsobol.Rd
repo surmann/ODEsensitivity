@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEsobol.R
 \name{ODEsobol}
 \alias{ODEsobol}
-\title{Sobol SA for ODEs}
+\title{Sobol' SA for ODEs}
 \usage{
 ODEsobol(mod, pars, yini, times, ode_method = "lsoda", seed = 2015,
   n = 1000, rfuncs = rep("runif", length(pars)),
@@ -77,7 +77,7 @@ List of Sobol SA results (i.e. 1st order sensitivity indices
 }
 \description{
 \code{ODEsobol} performs a sensitivity analysis for ordinary differential 
-equations using the variance-based Sobol method.
+equations using the variance-based Sobol' method.
 }
 \note{
 Package \code{parallel} is needed for this function. However, this 
@@ -107,7 +107,7 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 20, by = 0.5)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),

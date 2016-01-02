@@ -113,7 +113,7 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 20, by = 0.5)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 FHNres <- ODEsobol_ats(mod = FHNmod,
                        pars = c("a", "b", "s"),

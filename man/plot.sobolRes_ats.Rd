@@ -30,7 +30,7 @@ TRUE (invisible; for testing purposes).
 }
 \description{
 \code{plot.sobolRes_ats} plots the results of Sobol SA for objects of class 
-\code{\link{sobolRes_ats}}.
+\code{sobolRes_ats}.
 }
 \details{
 1st order and total Sobol SA indices are plotted for each input
@@ -56,23 +56,23 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 20, by = 0.5)
+FHNtimes <- seq(0.1, 50, by = 5)
 
-FHNres <- ODEsobol_ats(mod = FHNmod,
-                       pars = c("a", "b", "s"),
-                       yini = FHNyini,
-                       times = FHNtimes,
-                       y_idx = 1,            # only Voltage
-                       seed = 2015,
-                       n = 10,               # use n >> 10!
-                       rfuncs = c("runif", "runif", "rnorm"),
-                       rargs = c(rep("min = 0.18, max = 0.22", 2),
+FHNres_ats <- ODEsobol_ats(mod = FHNmod,
+                           pars = c("a", "b", "s"),
+                           yini = FHNyini,
+                           times = FHNtimes,
+                           y_idx = 1,            # only Voltage
+                           seed = 2015,
+                           n = 10,               # use n >> 10!
+                           rfuncs = c("runif", "runif", "rnorm"),
+                           rargs = c(rep("min = 0.18, max = 0.22", 2),
                                  "mean = 3, sd = 0.2 / 3"),
-                       method = "martinez",
-                       nboot = 0)
+                           method = "martinez",
+                           nboot = 0)
 
 # Plot:
-plot(FHNres, type = "l", legendPos = "topright")
+plot(FHNres_ats, type = "l", legendPos = "topright")
 
 }
 \author{

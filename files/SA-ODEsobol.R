@@ -44,7 +44,7 @@ FHNres <- ODEsobol(mod = FHNmod,
 # 0.11        0.08       53.84
 # Mit "FHNtimes <- seq(0.1, 50, by = 5)":
 # User      System verstrichen 
-# 0.21        0.07       33.67
+# 0.17        0.09       31.50
 
 # save(FHNres, file = "SA-ODEsobol.RData")
 

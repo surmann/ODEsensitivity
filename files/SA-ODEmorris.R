@@ -32,7 +32,7 @@ FHNres <- ODEmorris(mod = FHNmod,
                     ncores = 2)
 )
 # User      System verstrichen 
-# 0.42        0.19       31.10
+# 0.17        0.05       25.58
 
 # save(FHNres, file = "SA-ODEmorris.RData")
 

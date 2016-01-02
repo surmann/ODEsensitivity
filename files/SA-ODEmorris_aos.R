@@ -30,7 +30,7 @@ FHNres_aos <- ODEmorris_aos(mod = FHNmod,
                             scale = TRUE)
 )
 # User      System verstrichen 
-# 5.84        0.02        6.14 
+# 9.18        0.02        9.51
 
 # save(FHNres_aos, file = "SA-ODEmorris_aos.RData")
 

@@ -5,7 +5,7 @@
 \title{Plotting the results of Morris SA for objects of class \code{morrisRes_aos}}
 \usage{
 \method{plot}{morrisRes_aos}(x, y_idx = 1, type = "sep",
-  legendPos = "topleft", ...)
+  main_title = NULL, legendPos = "topleft", ...)
 }
 \arguments{
 \item{x}{[\code{morrisRes_aos}]\cr
@@ -17,6 +17,10 @@ index of the output variable to be plotted. Defaults to 1.}
 
 \item{type}{[\code{character(1)}]\cr
 plot type, choose between \code{"sep"} and \code{"trajec"}.}
+
+\item{main_title}{[\code{character(1)}]\cr
+title for the plot. If \code{type = "sep"}, this is the overall title for
+the two separate plots. Defaults to NULL, so a standard title is generated.}
 
 \item{legendPos}{[\code{character(1)}]\cr
 legend position, default is \code{"topleft"}.}
@@ -56,12 +60,13 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 100, by = 10)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 FHNres_aos <- ODEmorris_aos(mod = FHNmod,
                             pars = c("a", "b", "s"),
                             yini = FHNyini,
                             times = FHNtimes,
+                            ode_method = "adams",
                             seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),

@@ -28,7 +28,8 @@ an automatic title is generated.}
 TRUE (invisible; for testing purposes).
 }
 \description{
-\code{plot.sobolRes} plots the results of Sobol SA.
+\code{plot.sobolRes} plots the results of Sobol SA for objects of class 
+\code{sobolRes}.
 }
 \details{
 1st order and total Sobol SA indices are plotted for each input
@@ -54,7 +55,7 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 20, by = 0.5)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),
