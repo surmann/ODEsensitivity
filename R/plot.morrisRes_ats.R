@@ -17,6 +17,9 @@
 #'   \code{morrisRes_ats}.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, choose between \code{"sep"} and \code{"trajec"}.
+#' @param main_title [\code{character(1)}]\cr
+#'   title for the plot. If \code{type = "sep"}, this is the overall title for
+#'   the two separate plots. Defaults to NULL, so a standard title is generated.
 #' @param legendPos [\code{character(1)}]\cr
 #'   legend position, default is \code{"topleft"}.
 #' @param ... additional arguments passed to \code{\link{plot}}.
@@ -40,12 +43,13 @@
 #' }
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 100, by = 10)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #'
 #' FHNres_ats <- ODEmorris_ats(mod = FHNmod,
 #'                             pars = c("a", "b", "s"),
 #'                             yini = FHNyini,
 #'                             times = FHNtimes,
+#'                             ode_method = "adams",
 #'                             y_idx = 1,        # voltage only
 #'                             seed = 2015,
 #'                             binf = c(0.18, 0.18, 2.8),
@@ -72,7 +76,8 @@
 #'   checkmate
 #'
 
-plot.morrisRes_ats <- function(x, type = "sep", legendPos = "topleft", ...) {
+plot.morrisRes_ats <- function(x, type = "sep", main_title = NULL, 
+                               legendPos = "topleft", ...) {
 
   ##### Check input #################################################
   assertClass(x, "morrisRes_ats")
@@ -88,10 +93,38 @@ plot.morrisRes_ats <- function(x, type = "sep", legendPos = "topleft", ...) {
     stop("legendPos must be one of \"bottomright\", \"bottom\",
       \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
       \"right\", \"center\"!")
+  stopifnot(is.character(main_title) && length(main_title) == 1 ||
+              is.null(main_title))
 
-  ##### Plot ###########################################################
-  if(type == "sep")    plotSep(x$res, x$pars, legendPos, ...)
-  if(type == "trajec") plotTrajectories(x$res, x$pars, legendPos, ...)
+  ##### Plots ###########################################################
+  
+  # Extrahiere die Parameter-Namen:
+  k <- (nrow(x$res) - 1) / 3
+  pars_tmp <- rownames(x$res)[2:(k + 1)]
+  pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
+  
+  # Separate Plots fuer mu.star und sigma:
+  if(type == "sep"){
+    oldpar <- par(mfrow = c(1, 2), mar = c(4, 4, 1, 2) + 0.2,
+                  oma = c(0, 0, 2, 0))
+    # Erstelle die separaten Plots:
+    plotSep(x$res, pars, legendPos, ...)
+    # Erstelle die Gesamtueberschrift:
+    if(is.null(main_title)){
+      main_title <- paste0("Morris SA for y_idx = ", x$y_idx)
+    }
+    mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
+    par(oldpar)
+  }
+  
+  # Trajectories:
+  if(type == "trajec"){
+    # Erstelle die Ueberschrift:
+    if(is.null(main_title)){
+      main_title <- paste0("Morris SA for y_idx = ", x$y_idx, ": Trajectories")
+    }
+    plotTrajectories(x$res, pars, legendPos, main_title, ...)
+  }
   
   # For testing purposes:
   return(invisible(TRUE))

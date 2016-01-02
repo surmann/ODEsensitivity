@@ -1,8 +1,8 @@
 Package: ODEsensitivity
 Type: Package
 Title: Sensitivity Analysis of ODE Models
-Version: 0.7.3
-Date: 2015-12-13
+Version: 0.7.4
+Date: 2016-01-01
 Authors@R: c(person("Frank", "Weber", email =
            "frank.weber@tu-dortmund.de", role = c("aut", "cre")),
     person("Stefan", "Theers", email =
@@ -16,7 +16,7 @@ Suggests:
     parallel,
     ODEnetwork
 Imports:
-    sensitivity (>= 1.13.3),
+    sensitivity (>= 1.13.4),
     checkmate,
     deSolve
 License: GPL-2

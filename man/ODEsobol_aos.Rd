@@ -63,9 +63,11 @@ parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
 replicates. Defaults to 0, so no bootstrapping is done.}
 }
 \value{
-List of Sobol SA results (i.e. 1st order sensitivity indices
+List of length \code{length(yini)} and of class \code{sobolRes_aos} 
+  containing in each element a list of the Sobol SA results for the 
+  corresponding \code{yini}-variable (i.e. 1st order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of
-  time of the \code{times} vector, of class \code{sobolRes_ats}.
+  time of the \code{times} vector.
 }
 \description{
 \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
@@ -114,7 +116,7 @@ FHNres <- ODEsobol_aos(mod = FHNmod,
                        times = FHNtimes,
                        ode_method = "adams",
                        seed = 2015,
-                       n = 10,               # use n >> 10!
+                       n = 10,                      # use n >> 10!
                        rfuncs = c("runif", "runif", "rnorm"),
                        rargs = c(rep("min = 0.18, max = 0.22", 2),
                                  "mean = 3, sd = 0.2 / 3"),

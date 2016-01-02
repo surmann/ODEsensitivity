@@ -90,7 +90,7 @@
 #' }
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 20, by = 0.5)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #'
 #' FHNres <- ODEsobol_ats(mod = FHNmod,
 #'                        pars = c("a", "b", "s"),
@@ -193,7 +193,7 @@ ODEsobol_ats <- function(mod,
   
   # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
   # interessierenden Zeitpunkten:
-  S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
+  # S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
   
   # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
   # "sensitivity":

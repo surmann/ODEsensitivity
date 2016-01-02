@@ -49,9 +49,11 @@
 #'   \code{\link{sobolmartinez_matrix}}, i.e. the number of bootstrap 
 #'   replicates. Defaults to 0, so no bootstrapping is done.
 #'
-#' @return List of Sobol SA results (i.e. 1st order sensitivity indices
+#' @return List of length \code{length(yini)} and of class \code{sobolRes_aos} 
+#'   containing in each element a list of the Sobol SA results for the 
+#'   corresponding \code{yini}-variable (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
-#'   time of the \code{times} vector, of class \code{sobolRes_ats}.
+#'   time of the \code{times} vector.
 #'
 #' @details \code{ODEmorris_aos} uses 
 #' \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
@@ -85,7 +87,7 @@
 #' }
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 20, by = 0.5)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #'
 #' FHNres <- ODEsobol_aos(mod = FHNmod,
 #'                        pars = c("a", "b", "s"),
@@ -93,7 +95,7 @@
 #'                        times = FHNtimes,
 #'                        ode_method = "adams",
 #'                        seed = 2015,
-#'                        n = 10,               # use n >> 10!
+#'                        n = 10,                      # use n >> 10!
 #'                        rfuncs = c("runif", "runif", "rnorm"),
 #'                        rargs = c(rep("min = 0.18, max = 0.22", 2),
 #'                                  "mean = 3, sd = 0.2 / 3"),
@@ -152,27 +154,33 @@ ODEsobol_aos <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
-  # Forme DGL-Modell um, sodass fuer soboljansen_matrix()- bzw.
-  # sobolmartinez_matrix()-Argument "model" passend:
+  # Forme DGL-Modell um, sodass fuer soboljansen_list()- bzw.
+  # sobolmartinez_list()-Argument "model" passend:
   model_fit <- function(X){
     # X   - (nxk)-Matrix mit den n einzugebenden Parameter-Konstellationen
     #       als Zeilen
     colnames(X) <- pars
-    res <- apply(X, 1, function(x){
-      ode(yini, times = c(0, times), mod, parms = x, 
-          method = ode_method)[2:(timesNum + 1), y_idx + 1]
+    res_per_par <- lapply(1:nrow(X), function(i){
+      ode(yini, times = c(0, times), mod, parms = X[i, ], 
+          method = ode_method)[2:(timesNum + 1), 2:(z + 1)]
     })
-    # (Jede Zeile in "res" steht fuer einen Zeitpunkt.)
-    
     if(timesNum == 1){
       # Korrektur noetig, falls timesNum == 1:
-      res <- matrix(res)
+      res_vec <- unlist(res_per_par)
+      res_matrix <- matrix(res_vec, ncol = 1)
     } else{
       # Transponiere die Ergebnis-Matrix, sodass jede Spalte fuer einen
       # Zeitpunkt steht:
-      res <- t(res)
+      res_matrix <- t(do.call(cbind, res_per_par))
     }
-    return(res)
+    # Entferne verwirrende Zeilennamen:
+    rownames(res_matrix) <- NULL
+    nrow_res_matrix <- nrow(res_matrix)
+    res_per_y <- lapply(1:z, function(i){
+      res_matrix[seq(i, nrow_res_matrix, z), , drop = FALSE]
+    })
+    names(res_per_y) <- names(yini)
+    return(res_per_y)
   }
   
   ##### Sensitivitaet ##################################################
@@ -183,27 +191,34 @@ ODEsobol_aos <- function(mod,
   
   # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
   # interessierenden Zeitpunkten:
-  S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
+  # S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
   
   # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
   # "sensitivity":
   if(method == "jansen"){
-    x <- soboljansen_matrix(model = model_fit, X1, X2, nboot = nboot)
+    stop("Sobol-Jansen-method not implemented yet")
+    # x <- soboljansen_list(model = model_fit, X1, X2, nboot = nboot)
   } else if(method == "martinez"){
-    x <- sobolmartinez_matrix(model = model_fit, X1, X2, nboot = nboot)
+    x <- sobolmartinez_list(model = model_fit, X1, X2, nboot = nboot)
   }
   
   # Verarbeitung der Ergebnisse:
-  ST_original <- sapply(x$ST_by_col, function(ST_col){
-    c(ST_col$S[, 1], ST_col$T[, 1])
+  ST_original_by_y <- lapply(x$ST_by_y, function(L){
+    ST_original <- sapply(L, function(ST_col){
+      c(ST_col$S[, 1], ST_col$T[, 1])
+    })
+    return(ST_original)
   })
   # ST_original wieder in 2 Matrizen S und T aufspalten:
-  S <- rbind(times, ST_original[1:k, ])
-  T <- rbind(times, ST_original[(k+1):(2*k), ])
-  rownames(S) <- rownames(T) <- c("time", pars)
+  ST_by_y <- lapply(ST_original_by_y, function(ST_original){
+    S <- rbind(times, ST_original[1:k, ])
+    T <- rbind(times, ST_original[(k+1):(2*k), ])
+    rownames(S) <- rownames(T) <- c("time", pars)
+    return(list(S = S, T = T))
+  })
   
   # Rueckgabe:
-  res <- list(S = S, T = T, method = method, y_idx = y_idx)
-  class(res) <- "sobolRes_ats"
+  res <- list(ST_by_y = ST_by_y, method = method)
+  class(res) <- "sobolRes_aos"
   return(res)
 }

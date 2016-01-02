@@ -94,7 +94,7 @@
 #' }
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 100, by = 10)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #'
 #' FHNres <- ODEmorris(mod = FHNmod,
 #'                     pars = c("a", "b", "s"),
@@ -213,11 +213,8 @@ ODEmorris <- function(mod,
 
     # Ergebnisse:
     res <- c(pot, mu, mu.star, sigma)
-    # k <- ncol(x$ee)
-    names(res) <- c("time",
-                    paste("mu", 1:k, sep = ""),
-                    paste("mu.star", 1:k, sep = ""),
-                    paste("sigma", 1:k, sep = ""))
+    names(res) <- c("time", paste0("mu_", pars), paste0("mu.star_", pars),
+                    paste0("sigma_", pars))
     return(res)
   }
 
@@ -247,7 +244,6 @@ ODEmorris <- function(mod,
   }
   
   # Rueckgabe:
-  res <- list(res = res, pars = pars)
   class(res) <- "morrisRes"
   return(res)
 }

@@ -1,6 +1,7 @@
+# Make sure that ODEsobol() still works as before:
+
 devtools::load_all()
 
-# FHN-example:
 FHNmod <- function(Time, State, Pars) {
   with(as.list(c(State, Pars)), {
     
@@ -12,7 +13,7 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 100, by = 10)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 system.time(
 FHNres <- ODEmorris(mod = FHNmod,
@@ -31,7 +32,7 @@ FHNres <- ODEmorris(mod = FHNmod,
                     ncores = 2)
 )
 # User      System verstrichen 
-# 0.22        0.12       48.66
+# 0.42        0.19       31.10
 
 # save(FHNres, file = "SA-ODEmorris.RData")
 

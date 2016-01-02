@@ -1,8 +1,8 @@
-#' @title Sobol SA for ODEs
+#' @title Sobol' SA for ODEs
 #'
 #' @description
 #' \code{ODEsobol} performs a sensitivity analysis for ordinary differential 
-#' equations using the variance-based Sobol method.
+#' equations using the variance-based Sobol' method.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -84,7 +84,7 @@
 #' }
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 20, by = 0.5)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #'
 #' FHNres <- ODEsobol(mod = FHNmod,
 #'                    pars = c("a", "b", "s"),

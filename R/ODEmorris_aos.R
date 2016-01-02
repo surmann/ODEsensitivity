@@ -92,7 +92,7 @@
 #' }
 #'
 #' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 100, by = 10)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #'
 #' FHNres_aos <- ODEmorris_aos(mod = FHNmod,
 #'                             pars = c("a", "b", "s"),
@@ -247,7 +247,6 @@ ODEmorris_aos <- function(mod,
     }
   }
   
-  res <- list(res = out_all_y, pars = pars)
-  class(res) <- "morrisRes_aos"
-  return(res)
+  class(out_all_y) <- "morrisRes_aos"
+  return(out_all_y)
 }

@@ -1,4 +1,4 @@
-# Testing ODEsobol_ats():
+# Testing ODEsobol_aos():
 
 devtools::load_all()
 
@@ -16,12 +16,11 @@ FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
 system.time(
-FHNres_ats <- ODEsobol_ats(mod = FHNmod,
+FHNres_aos <- ODEsobol_aos(mod = FHNmod,
                            pars = c("a", "b", "s"),
                            yini = FHNyini,
                            times = FHNtimes,
                            ode_method = "adams",
-                           y_idx = 1,
                            seed = 2015,
                            n = 10,
                            rfuncs = c("runif", "runif", "rnorm"),
@@ -30,26 +29,15 @@ FHNres_ats <- ODEsobol_ats(mod = FHNmod,
                            method = "martinez",
                            nboot = 0)
 )
-# User      System verstrichen 
-# 1.77        0.00        1.92
-# Mit neuen Argumenten "rfuncs" und "rargs":
-# User      System verstrichen 
-# 5.56        0.00        5.75
-# Mit neuen Argumenten "rfuncs" und "rargs" sowie method = "jansen":
-# User      System verstrichen 
-# 5.55        0.00        6.26
-# Mit neuen Argumenten "rfuncs" und "rargs" sowie method = "martinez":
-# User      System verstrichen 
-# 5.66        0.00        6.00
 # Mit ode_method = "adams":
-# User      System verstrichen 
-# 3.88        0.00        4.11
+# User      System verstrichen
+# 4.27        0.02        4.36
 # Mit "FHNtimes <- seq(0.1, 50, by = 5)":
 # User      System verstrichen 
-# 7.31        0.00        7.85
+# 7.91        0.02        8.69
 
-# save(FHNres_ats, file = "SA-ODEsobol_ats.RData")
+# save(FHNres_aos, file = "SA-ODEsobol_aos.RData")
 
-# pdf("SA-ODEsobol_ats.pdf", width = 10, height = 7)
-plot(FHNres_ats, type = "l", legendPos = "topright")
+# pdf("SA-ODEsobol_aos.pdf", width = 10, height = 7)
+plot(FHNres_aos, y_idx = 1, type = "l", legendPos = "topright")
 # dev.off()

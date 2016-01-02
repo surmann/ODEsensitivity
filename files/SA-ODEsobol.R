@@ -13,7 +13,7 @@ FHNmod <- function(Time, State, Pars) {
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 20, by = 0.5)
+FHNtimes <- seq(0.1, 50, by = 5)
 
 system.time(
 FHNres <- ODEsobol(mod = FHNmod,
@@ -42,6 +42,9 @@ FHNres <- ODEsobol(mod = FHNmod,
 # Mit ode_method = "adams":
 # User      System verstrichen 
 # 0.11        0.08       53.84
+# Mit "FHNtimes <- seq(0.1, 50, by = 5)":
+# User      System verstrichen 
+# 0.21        0.07       33.67
 
 # save(FHNres, file = "SA-ODEsobol.RData")
 
