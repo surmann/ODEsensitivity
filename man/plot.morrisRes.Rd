@@ -2,14 +2,17 @@
 % Please edit documentation in R/plot.morrisRes.R
 \name{plot.morrisRes}
 \alias{plot.morrisRes}
-\title{Plotting the results of Morris SA}
+\title{Plotting the results of Morris SA for objects of class \code{morrisRes_aos}}
 \usage{
-\method{plot}{morrisRes}(x, type = "sep", main_title = NULL,
+\method{plot}{morrisRes}(x, y_idx = 1, type = "sep", main_title = NULL,
   legendPos = "topleft", ...)
 }
 \arguments{
 \item{x}{[\code{morrisRes}]\cr
 resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.}
+
+\item{y_idx}{[\code{integer(1)}]\cr
+index of the output variable to be plotted. Defaults to 1.}
 
 \item{type}{[\code{character(1)}]\cr
 plot type, choose between \code{"sep"} and \code{"trajec"}.}
@@ -27,7 +30,8 @@ legend position, default is \code{"topleft"}.}
 TRUE (invisible; for testing purposes).
 }
 \description{
-\code{plot} plots the results of Morris SA.
+\code{plot} plots the results of Morris SA for objects of class 
+\code{morrisRes}.
 }
 \details{
 \code{plot} with \code{type = "sep"} plots mu.star and
@@ -57,31 +61,32 @@ FHNmod <- function(Time, State, Pars) {
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
-FHNres <- ODEmorris(mod = FHNmod,
-                    pars = c("a", "b", "s"),
-                    yini = FHNyini,
-                    times = FHNtimes,
-                    ode_method = "adams",
-                    seed = 2015,
-                    binf = c(0.18, 0.18, 2.8),
-                    bsup = c(0.22, 0.22, 3.2),
-                    r = 25,
-                    design =
-                        list(type = "oat", levels = 100, grid.jump = 1),
-                    scale = TRUE,
-                    trafo = function(Y)  Y[, 1],          # voltage only
-                    ncores = 2)    
+FHNres_aos <- ODEmorris_aos(mod = FHNmod,
+                            pars = c("a", "b", "s"),
+                            yini = FHNyini,
+                            times = FHNtimes,
+                            ode_method = "adams",
+                            seed = 2015,
+                            binf = c(0.18, 0.18, 2.8),
+                            bsup = c(0.22, 0.22, 3.2),
+                            r = 25,
+                            design =
+                               list(type = "oat", levels = 100, 
+                                    grid.jump = 1),
+                            scale = TRUE)
 
 # Plots:
-plot(FHNres, type = "sep")
-plot(FHNres, type = "trajec")
+plot(FHNres_aos, y_idx = 1, type = "sep")
+plot(FHNres_aos, y_idx = 1, type = "trajec")
+plot(FHNres_aos, y_idx = 2, type = "sep")
+plot(FHNres_aos, y_idx = 2, type = "trajec")
 
 }
 \author{
-Stefan Theers
+Frank Weber
 }
 \seealso{
 \code{\link{ODEmorris}},
-  \code{\link[sensitivity]{morris}}
+  \code{\link[sensitivity]{morris_list}}
 }
 

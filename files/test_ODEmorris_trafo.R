@@ -1,4 +1,4 @@
-# Make sure that ODEsobol() still works as before:
+# Make sure that ODEmorris_trafo() still works as before:
 
 devtools::load_all()
 
@@ -16,7 +16,7 @@ FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
 system.time(
-FHNres <- ODEmorris(mod = FHNmod,
+FHNres_trafo <- ODEmorris_trafo(mod = FHNmod,
                     pars = c("a", "b", "s"),
                     yini = FHNyini,
                     times = FHNtimes,
@@ -34,9 +34,9 @@ FHNres <- ODEmorris(mod = FHNmod,
 # User      System verstrichen 
 # 0.17        0.05       25.58
 
-# save(FHNres, file = "SA-ODEmorris.RData")
+# save(FHNres_trafo, file = "SA-ODEmorris.RData")
 
-# pdf("SA-ODEmorris.pdf", width = 10, height = 7)
-plot(FHNres, type = "sep")
-plot(FHNres, type = "trajec")
+# pdf("SA-ODEmorris_trafo.pdf", width = 10, height = 7)
+plot(FHNres_trafo, type = "sep")
+plot(FHNres_trafo, type = "trajec")
 # dev.off()

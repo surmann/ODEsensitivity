@@ -2,22 +2,15 @@
 % Please edit documentation in R/ODEmorris.R
 \name{ODEmorris}
 \alias{ODEmorris}
-\title{Morris SA for ODEs}
+\title{Morris SA for objects of class \code{ODEnetwork}}
 \usage{
-ODEmorris(mod, pars, yini, times, ode_method = "lsoda", seed = 2015,
-  binf = 0, bsup = 1, r = 25, design = list(type = "oat", levels = 100,
-  grid.jump = 1), scale = TRUE, trafo = function(Y) rowSums(Y^2),
-  ncores = 1)
+\method{ODEmorris}{ODEnetwork}(odenet, times, ode_method = "lsoda",
+  seed = 2015, binf = 0, bsup = 1, r = 25, design = list(type = "oat",
+  levels = 100, grid.jump = 1), scale = TRUE)
 }
 \arguments{
-\item{mod}{[\code{function(Time, State, Pars)}]\cr
-model to examine, cf. example below.}
-
-\item{pars}{[\code{character(k)}]\cr
-vector of \code{k} input variable names.}
-
-\item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values.}
+\item{odenet}{[\code{ODEnetwork}]\cr
+list of class \code{\link{ODEnetwork}}.}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
@@ -32,12 +25,12 @@ method to be used for solving the differential equations, see
 seed.}
 
 \item{binf}{[\code{numeric(k)}]\cr
-vector of lower borders of possible input parameter values.
-If they are all equal, a single value can be set.}
+vector of lower borders of possible values for the \code{k} input 
+parameters. If they are all equal, a single value can be set.}
 
 \item{bsup}{[\code{numeric(k)}]\cr
-vector of upper borders of possible input parameter values.
-If they are all equal, a single value can be set.}
+vector of upper borders of possible values for the \code{k} input 
+parameters. If they are all equal, a single value can be set.}
 
 \item{r}{[\code{integer(1)}]\cr
 number of repetitions of the \code{design},
@@ -53,43 +46,38 @@ building the design and before calculating the elementary effects,
 cf. \code{\link[sensitivity]{morris}}. Defaults to \code{TRUE}, which is
 highly recommended if the factors have different orders of magnitude, see
 \code{\link[sensitivity]{morris}}.}
-
-\item{trafo}{[\code{function}]\cr
-function to transform \code{z > 1} output variables to
-IR [only needed, if \code{z > 1}]. Must be able to deal with a
-matrix.}
-
-\item{ncores}{[\code{integer(1)}]\cr
-number of processor cores to be used for calculating the sensitivity
-indices. Must be between 1 and 4.}
 }
 \value{
 List of class \code{morrisRes} with
   \itemize{
-    \item \code{res}, the matrix of Morris SA results
-      (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
-      time in the \code{times} vector and
+    \item \code{res}, a list containing in each element a matrix for one
+      output variable. The matrices itself contain the Morris SA results 
+      (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for one 
+      point of time per column
     \item \code{pars}, the parameter names.
   }
 }
 \description{
-\code{ODEmorris} performs a sensitivity analysis for
-ordinary differential equations using
-Morris's elementary effects screening method.
+\code{ODEmorris} performs a sensitivity analysis for objects of class
+\code{ODEnetwork} using Morris's elementary effects screening method. 
+The sensitivity analysis is done for all output variables, since 
+\code{ODEmorris} is an adapted version of \code{\link{ODEmorris_aos}}.
+}
+\details{
+\code{ODEmorris} uses \code{\link[sensitivity]{morris_list}}
+which can handle lists as output for its model function. Thus, each
+element of the list can be used to contain the results for one output
+variable. This saves time since \code{\link[deSolve]{ode}} from the
+package \code{deSolve} does its calculations for all output variables anyway,
+so \code{\link[deSolve]{ode}} only needs to be executed once.
 }
 \note{
-Package \code{parallel} is needed for this function. However, this 
-  function is outdated and the use of \code{\link{ODEmorris_ats}} (for one 
-  output variable) or \code{\link{ODEmorris_aos}} (for multiple output 
-  variables) is recommended if no transformation has to be made to the 
-  \code{\link[deSolve]{ode}}-results.
-
 \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
   unrealistic parameter combinations are sampled by 
-  \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
-  Morris sensitivity results, such that \code{\link{ODEmorris}} fails for 
+  \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
+  Morris sensitivity results, such that \code{\link{ODEmorris_aos}} fails for 
   one or many points of time! For this reason, if \code{NA}s occur, please 
-  make use of \code{\link{ODEsobol}} instead or
+  make use of \code{\link{ODEsobol_ats}} instead or
   restrict the input parameter value intervals usefully using
   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
   another ODE-solver (argument \code{ode_method}). Problems are known for the
@@ -98,54 +86,20 @@ Package \code{parallel} is needed for this function. However, this
   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
   
-  If \code{\link[sensitivity]{morris}} throws a warning message saying
+  If \code{\link[sensitivity]{morris_list}} throws a warning message saying
   "In ... keeping ... repetitions out of ...", try using a bigger number of 
   \code{levels} in the \code{design} argument.
 }
 \examples{
-##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-# definition of the model itself, parameters, initial values
-# and the times vector:
-FHNmod <- function(Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
-
-    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-    dCurrent <- - 1 / s *(Voltage - a + b * Current)
-
-    return(list(c(dVoltage, dCurrent)))
-  })
-}
-
-FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
-
-FHNres <- ODEmorris(mod = FHNmod,
-                    pars = c("a", "b", "s"),
-                    yini = FHNyini,
-                    times = FHNtimes,
-                    ode_method = "adams",
-                    seed = 2015,
-                    binf = c(0.18, 0.18, 2.8),
-                    bsup = c(0.22, 0.22, 3.2),
-                    r = 25,
-                    design =
-                        list(type = "oat", levels = 100, grid.jump = 1),
-                    scale = TRUE,
-                    trafo = function(Y) Y[, 1],    # voltage only
-                    ncores = 4)
+ # Still missing!
 
 }
 \author{
-Stefan Theers
-}
-\references{
-J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
-  \emph{Parameter estimation for differential equations: a generalized 
-  smoothing approach}, Journal of the Royal Statistical Society, Series B, 
-  69, Part 5, 741--796.
+Frank Weber
 }
 \seealso{
-\code{\link[sensitivity]{morris}, \link{ODEmorris_ats},
-\link{ODEmorris_aos}, \link{plot.morrisRes}}
+\code{\link[sensitivity]{morris}},
+  \code{\link[sensitivity]{morris_list}},
+  \code{\link{plot.morrisRes}}
 }
 
