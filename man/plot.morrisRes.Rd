@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot.morrisRes.R
 \name{plot.morrisRes}
 \alias{plot.morrisRes}
-\title{Plotting the results of Morris SA for objects of class \code{morrisRes_aos}}
+\title{Plot of the results of Morris SA for objects of class \code{morrisRes}}
 \usage{
-\method{plot}{morrisRes}(x, y_idx = 1, type = "sep", main_title = NULL,
-  legendPos = "topleft", ...)
+\method{plot}{morrisRes}(x, y_idx = 1, type = "sep", colors_pars = NULL,
+  main_title = NULL, legendPos = "outside", ...)
 }
 \arguments{
 \item{x}{[\code{morrisRes}]\cr
@@ -16,6 +16,13 @@ index of the output variable to be plotted. Defaults to 1.}
 
 \item{type}{[\code{character(1)}]\cr
 plot type, choose between \code{"sep"} and \code{"trajec"}.}
+
+\item{colors_pars}{[\code{character(>= k)}]\cr
+vector of the colors to be used for the \code{k} different parameters 
+(where \code{k} is the length of the vector returned by 
+\code{\link[ODEnetwork]{createParamVecs}} applied to the \code{ODEnetwork}-
+object for which the sensitivity analysis was done). Must be at least of
+length \code{k}.}
 
 \item{main_title}{[\code{character(1)}]\cr
 title for the plot. If \code{type = "sep"}, this is the overall title for
@@ -30,7 +37,7 @@ legend position, default is \code{"topleft"}.}
 TRUE (invisible; for testing purposes).
 }
 \description{
-\code{plot} plots the results of Morris SA for objects of class 
+\code{plot.morrisRes} plots the results of Morris SA for objects of class 
 \code{morrisRes}.
 }
 \details{
@@ -45,41 +52,40 @@ Unfortunately, the passing of arguments (e.g. "main") does not work
   correctly.
 }
 \examples{
-##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-# definition of the model itself, parameters, initial values
-# and the times vector:
-FHNmod <- function(Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
+library(ODEnetwork)
+masses <- c(1, 1)
+dampers <- diag(c(1, 1))
+springs <- diag(c(1, 1))
+springs[1, 2] <- 1
+distances <- diag(c(0, 2))
+distances[1, 2] <- 1
+odenet <- ODEnetwork(masses, dampers, springs, 
+                     cartesian = TRUE, distances = distances)
+odenet <- setState(odenet, c(0.5, 1), c(0, 0))
 
-    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-    dCurrent <- - 1 / s *(Voltage - a + b * Current)
+ODEtimes <- seq(0.01, 20, by = 0.1)
+ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
+ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
 
-    return(list(c(dVoltage, dCurrent)))
-  })
-}
+ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
+                    binf = ODEbinf, bsup = ODEbsup, r = 20)
 
-FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
+# Standard (separate plots):
+plot(ODEres, y_idx = 1, type = "sep", legendPos = "topleft")
+plot(ODEres, y_idx = 1, type = "sep", legendPos = "outside")
+# Palette "Dark2" from the package "RColorBrewer" with some 
+# additional colors:
+my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+             "darkblue", "darkgreen")
+plot(ODEres, y_idx = 1, type = "sep", colors_pars = my_cols, 
+     legendPos = "outside")
 
-FHNres_aos <- ODEmorris_aos(mod = FHNmod,
-                            pars = c("a", "b", "s"),
-                            yini = FHNyini,
-                            times = FHNtimes,
-                            ode_method = "adams",
-                            seed = 2015,
-                            binf = c(0.18, 0.18, 2.8),
-                            bsup = c(0.22, 0.22, 3.2),
-                            r = 25,
-                            design =
-                               list(type = "oat", levels = 100, 
-                                    grid.jump = 1),
-                            scale = TRUE)
-
-# Plots:
-plot(FHNres_aos, y_idx = 1, type = "sep")
-plot(FHNres_aos, y_idx = 1, type = "trajec")
-plot(FHNres_aos, y_idx = 2, type = "sep")
-plot(FHNres_aos, y_idx = 2, type = "trajec")
+# Trajectories:
+plot(ODEres, y_idx = 1, type = "trajec", legendPos = "topleft")
+plot(ODEres, y_idx = 1, type = "trajec", legendPos = "outside")
+plot(ODEres, y_idx = 1, type = "trajec", colors_pars = my_cols, 
+     legendPos = "outside")
 
 }
 \author{

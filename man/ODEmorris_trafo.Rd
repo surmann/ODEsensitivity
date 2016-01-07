@@ -66,13 +66,9 @@ number of processor cores to be used for calculating the sensitivity
 indices. Must be between 1 and 4.}
 }
 \value{
-List of class \code{morrisRes_trafo} with
-  \itemize{
-    \item \code{res}, the matrix of Morris SA results
-      (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
-      time in the \code{times} vector and
-    \item \code{pars}, the parameter names.
-  }
+Matrix of class \code{morrisRes_trafo} containing the Morris SA
+  results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
+  all timepoints (columns).
 }
 \description{
 \code{ODEmorris_trafo} performs a sensitivity analysis for

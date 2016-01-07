@@ -2,12 +2,11 @@
 #'
 #' @description
 #' \code{ODEmorris} performs a sensitivity analysis for objects of class
-#' \code{ODEnetwork} using Morris's elementary effects screening method. 
-#' The sensitivity analysis is done for all output variables, since 
-#' \code{ODEmorris} is an adapted version of \code{\link{ODEmorris_aos}}.
+#' \code{ODEnetwork} using Morris's elementary effects screening method. Package
+#' \code{ODEnetwork} is required for this function to work. 
 #'
 #' @param odenet [\code{ODEnetwork}]\cr
-#'   list of class \code{\link{ODEnetwork}}.
+#'   list of class \code{ODEnetwork}.
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
@@ -36,21 +35,14 @@
 #'   highly recommended if the factors have different orders of magnitude, see
 #'   \code{\link[sensitivity]{morris}}.
 #'
-#' @return List of class \code{morrisRes} with
-#'   \itemize{
-#'     \item \code{res}, a list containing in each element a matrix for one
-#'       output variable. The matrices itself contain the Morris SA results 
-#'       (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for one 
-#'       point of time per column
-#'     \item \code{pars}, the parameter names.
-#'   }
+#' @return List of class \code{morrisRes} of length 
+#'   \code{2 * nrow(odenet$state)} containing in each element a matrix for 
+#'   one state variable. The matrices itself contain in their rows the Morris SA
+#'   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
+#'   all timepoints (columns).
 #'
-#' @details \code{ODEmorris} uses \code{\link[sensitivity]{morris_list}}
-#' which can handle lists as output for its model function. Thus, each
-#' element of the list can be used to contain the results for one output
-#' variable. This saves time since \code{\link[deSolve]{ode}} from the
-#' package \code{deSolve} does its calculations for all output variables anyway,
-#' so \code{\link[deSolve]{ode}} only needs to be executed once.
+#' @details The sensitivity analysis is done for all output variables, since 
+#' \code{ODEmorris} is an adapted version of \code{\link{ODEmorris_aos}}.
 #' 
 #' @note \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
 #'   unrealistic parameter combinations are sampled by 
@@ -71,19 +63,33 @@
 #'   \code{levels} in the \code{design} argument.
 #'
 #' @author Frank Weber
-#' @examples
-#'  # Still missing!
-#'
 #' @seealso \code{\link[sensitivity]{morris}},
 #'   \code{\link[sensitivity]{morris_list}},
 #'   \code{\link{plot.morrisRes}}
+#' 
+#' @examples
+#' library(ODEnetwork)
+#' masses <- c(1, 1)
+#' dampers <- diag(c(1, 1))
+#' springs <- diag(c(1, 1))
+#' springs[1, 2] <- 1
+#' distances <- diag(c(0, 2))
+#' distances[1, 2] <- 1
+#' odenet <- ODEnetwork(masses, dampers, springs, 
+#'                      cartesian = TRUE, distances = distances)
+#' odenet <- setState(odenet, c(0.5, 1), c(0, 0))
+#' 
+#' ODEtimes <- seq(0.01, 20, by = 0.1)
+#' ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
+#' ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
+#' 
+#' ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
+#'                     binf = ODEbinf, bsup = ODEbsup, r = 20)
 #'
 #' @import
 #'   checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity morris_list
-#' 
-#' @method ODEmorris ODEnetwork
 #' @export
 #'
 
@@ -100,6 +106,9 @@ ODEmorris <- function(odenet,
                       scale = TRUE){
   UseMethod("ODEmorris", odenet)
 }
+
+#' @method ODEmorris ODEnetwork
+#' @export
 
 ODEmorris.ODEnetwork <- function(odenet, 
                                  times, 

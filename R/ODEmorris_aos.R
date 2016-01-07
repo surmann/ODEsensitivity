@@ -42,14 +42,11 @@
 #'   highly recommended if the factors have different orders of magnitude, see
 #'   \code{\link[sensitivity]{morris}}.
 #'
-#' @return List of class \code{morrisRes_aos} with
-#'   \itemize{
-#'     \item \code{res}, a list containing in each element a matrix for one
-#'       output variable. The matrices itself contain the Morris SA results 
-#'       (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for one 
-#'       point of time per column
-#'     \item \code{pars}, the parameter names.
-#'   }
+#' @return List of class \code{morrisRes_aos} of length 
+#'   \code{length(yini)} containing in each element a matrix for one 
+#'   yini-variable. The matrices itself contain in their rows the Morris SA
+#'   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
+#'   all timepoints (columns).
 #'
 #' @details \code{ODEmorris_aos} uses \code{\link[sensitivity]{morris_list}}
 #' which can handle lists as output for its model function. Thus, each
@@ -77,6 +74,14 @@
 #'   \code{levels} in the \code{design} argument.
 #'
 #' @author Frank Weber
+#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+#'   \emph{Parameter estimation for differential equations: a generalized 
+#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+#'   69, Part 5, 741--796.
+#' @seealso \code{\link[sensitivity]{morris}},
+#'   \code{\link[sensitivity]{morris_list}},
+#'   \code{\link{plot.morrisRes_aos}}
+#' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -108,20 +113,11 @@
 #'                                     grid.jump = 1),
 #'                             scale = TRUE)
 #'
-#' @seealso \code{\link[sensitivity]{morris}},
-#'   \code{\link[sensitivity]{morris_list}},
-#'   \code{\link{plot.morrisRes_aos}}
-#'
-#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
-#'   \emph{Parameter estimation for differential equations: a generalized 
-#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
-#'   69, Part 5, 741--796.
-#'
-#' @export
 #' @import
 #'   checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity morris_list
+#' @export
 #'
 
 ODEmorris_aos <- function(mod,

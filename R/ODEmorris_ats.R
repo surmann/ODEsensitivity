@@ -46,10 +46,11 @@
 #'
 #' @return List of class \code{morrisRes_ats} with
 #'   \itemize{
-#'     \item \code{res}, a matrix containing the Morris SA results (i.e.
-#'       \code{mu, mu.star} and \code{sigma} for every parameter) for one point
-#'       of time per column
-#'     \item \code{pars}, the parameter names.
+#'     \item \code{res}, a list of length \code{length(yini)} containing in each
+#'       element a matrix for one yini-variable. The matrices itself contain in 
+#'       their rows the Morris SA results (i.e. \code{mu, mu.star} and 
+#'       \code{sigma} for every parameter) for all timepoints (columns).
+#'     \item \code{y_idx}, the index of the analyzed yini-variable.
 #'   }
 #' 
 #' @details \code{ODEmorris_ats} is faster than \code{ODEmorris} since 
@@ -82,6 +83,15 @@
 #'   \code{levels} in the \code{design} argument.
 #' 
 #' @author Frank Weber
+#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+#'   \emph{Parameter estimation for differential equations: a generalized 
+#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+#'   69, Part 5, 741--796.
+#' @seealso \code{\link[sensitivity]{morris}},
+#'   \code{\link[sensitivity]{morris_matrix}},
+#'   \code{\link{ODEmorris_aos}},
+#'   \code{\link{plot.morrisRes_ats}}
+#' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -114,21 +124,11 @@
 #'                                    grid.jump = 1),
 #'                             scale = TRUE)
 #'
-#' @seealso \code{\link[sensitivity]{morris}},
-#'   \code{\link[sensitivity]{morris_matrix}},
-#'   \code{\link{ODEmorris_aos}},
-#'   \code{\link{plot.morrisRes_ats}}
-#'
-#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
-#'   \emph{Parameter estimation for differential equations: a generalized 
-#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
-#'   69, Part 5, 741--796.
-#'
-#' @export
 #' @import
 #'   checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity morris_matrix
+#' @export
 #'
 
 ODEmorris_ats <- function(mod,

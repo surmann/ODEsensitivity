@@ -60,10 +60,11 @@ highly recommended if the factors have different orders of magnitude, see
 \value{
 List of class \code{morrisRes_ats} with
   \itemize{
-    \item \code{res}, a matrix containing the Morris SA results (i.e.
-      \code{mu, mu.star} and \code{sigma} for every parameter) for one point
-      of time per column
-    \item \code{pars}, the parameter names.
+    \item \code{res}, a list of length \code{length(yini)} containing in each
+      element a matrix for one yini-variable. The matrices itself contain in 
+      their rows the Morris SA results (i.e. \code{mu, mu.star} and 
+      \code{sigma} for every parameter) for all timepoints (columns).
+    \item \code{y_idx}, the index of the analyzed yini-variable.
   }
 }
 \description{

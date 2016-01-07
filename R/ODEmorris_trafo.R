@@ -50,13 +50,9 @@
 #'   number of processor cores to be used for calculating the sensitivity
 #'   indices. Must be between 1 and 4.
 #'
-#' @return List of class \code{morrisRes_trafo} with
-#'   \itemize{
-#'     \item \code{res}, the matrix of Morris SA results
-#'       (i.e. \code{mu, mu.star} and \code{sigma}) for every point of
-#'       time in the \code{times} vector and
-#'     \item \code{pars}, the parameter names.
-#'   }
+#' @return Matrix of class \code{morrisRes_trafo} containing the Morris SA
+#'   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
+#'   all timepoints (columns).
 #'
 #' @note 
 #'   \code{ODEmorris_trafo} uses the original 
@@ -92,6 +88,13 @@
 #'   \code{levels} in the \code{design} argument.
 #'
 #' @author Stefan Theers
+#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+#'   \emph{Parameter estimation for differential equations: a generalized 
+#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+#'   69, Part 5, 741--796.
+#' @seealso \code{\link[sensitivity]{morris}, \link{ODEmorris_ats},
+#' \link{ODEmorris_aos}, \link{plot.morrisRes_trafo}}
+#' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
@@ -124,20 +127,12 @@
 #'                                 scale = TRUE,
 #'                                 trafo = function(Y) Y[, 1],    # voltage only
 #'                                 ncores = 2)
-#'
-#' @seealso \code{\link[sensitivity]{morris}, \link{ODEmorris_ats},
-#' \link{ODEmorris_aos}, \link{plot.morrisRes_trafo}}
-#'   
-#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
-#'   \emph{Parameter estimation for differential equations: a generalized 
-#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
-#'   69, Part 5, 741--796.
-#'
-#' @export
+#' 
 #' @import
 #'   checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity morris
+#' @export
 #'
 
 ODEmorris_trafo <- function(mod,

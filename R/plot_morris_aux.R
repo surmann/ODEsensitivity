@@ -1,17 +1,33 @@
 # Helper functions for Morris-SA
 
 ##### auxiliary function: plotting mu.star and sigma separately ###########
-plotSep <- function(res, pars, legendPos, ...) {
+plotSep <- function(res, pars, colors_pars = NULL, 
+                    state_name, common_title = NULL, legendPos, ...) {
   t.vec <- res[1, ]
-  k     <- (nrow(res) - 1) / 3
-  my.cols <- rainbow(k)
+  k     <- length(pars)
+  if(is.null(colors_pars)){
+    my.cols <- rainbow(k)
+  } else{
+    my.cols <- colors_pars
+  }
+  if(is.null(common_title)){
+    common_title <- paste("Morris SA for State Variable", state_name)
+  }
+  if(legendPos == "outside"){
+    oldpar <- par(mfrow = c(1, 2),
+                  oma = c(2, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+  } else{
+    oldpar <- par(mfrow = c(1, 2),
+                  oma = c(0, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+  }
+  
   # mu.star:
   plot(t.vec, y = res[k + 2, ], type = "l", col = my.cols[1], lwd = 1,
        ylim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
                 max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
        ## min(max(res[(k+2):(2*k+1), ], na.rm = TRUE),  # willkuerlich!
        ##     5 * median(res[(k+2):(2*k+1), ], na.rm = TRUE)) ),
-       xlab = "Time", ylab = "mu.star", ...)
+       xlab = "Time", ylab = expression(mu*"*"), ...)
   if(k > 1) {
     j <- 2
     for(i in (k+3):(2*k+1)) {
@@ -19,12 +35,15 @@ plotSep <- function(res, pars, legendPos, ...) {
       j <- j + 1
     }
   }
-  legend(legendPos, legend = pars, lty = 1, col = my.cols)
+  if(legendPos != "outside"){
+    legend(legendPos, legend = pars, lty = 1, col = my.cols)
+  }
+  
   # sigma:
   plot(t.vec, y = res[2+2*k, ], type = "l", col = my.cols[1], lwd = 1,
        ylim = c(min(res[(2*k+2):(3*k+1), ], na.rm = TRUE),
                 max(res[(2*k+2):(3*k+1), ], na.rm = TRUE)),
-       xlab = "Time", ylab = "sigma", ...)
+       xlab = "Time", ylab = expression(sigma), ...)
   if(k > 1) {
     j <- 2
     for(i in (2*k+3):(3*k+1)) {
@@ -32,16 +51,51 @@ plotSep <- function(res, pars, legendPos, ...) {
       j <- j + 1
     }
   }
-  legend(legendPos, legend = pars, lty = 1, col = my.cols)
-  par(mfrow = c(1, 1))
+  if(legendPos != "outside"){
+    legend(legendPos, legend = pars, lty = 1, col = my.cols)
+  }
+  
+  # Create the big common title for the two plots:
+  mtext(common_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
+  
+  # Legend outside of the plotting region:
+  if(legendPos == "outside"){
+    oldpar2 <- par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+                   fig = c(0, 1, 0, 1), new = TRUE)
+    plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+    if(k > 6){
+      # Mehrzeilige Legende:
+      legend_ncol <- 6
+    } else{
+      legend_ncol <- k
+    }
+    legend("bottom", legend = pars, lty = 1, col = my.cols, cex = 0.75, 
+           bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
+    par(oldpar2)
+  }
+  
+  par(oldpar)
 }
 
 ##### auxiliary function: plotting trajectories ######################
-plotTrajectories <- function(res, pars, legendPos, main_title, ...) {
+plotTrajectories <- function(res, pars, colors_pars = NULL, 
+                             state_name, main_title = NULL, legendPos, ...) {
   t.vec <- res[1, ]
   k     <- length(pars)
-  my.cols <- rainbow(k)
-  # Zeichne Trajektoren:
+  if(is.null(colors_pars)){
+    my.cols <- rainbow(k)
+  } else{
+    my.cols <- colors_pars
+  }
+  if(is.null(main_title)){
+    main_title <- paste0("Morris SA for State Variable ", state_name, 
+                         ": Trajectories")
+  }
+  if(legendPos == "outside"){
+    oldpar <- par(oma = c(2, 0, 0, 0))
+  }
+  
+  # Trajectories:
   plot(x = res[k+2, ], y = res[2+2*k, ], type = "b", col = my.cols[1], lwd = 1,
        main = main_title,
        xlim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
@@ -56,5 +110,22 @@ plotTrajectories <- function(res, pars, legendPos, main_title, ...) {
       j <- j + 1
     }
   }
-  legend(legendPos, legend = pars, lty = 1, col = my.cols)
+  if(legendPos != "outside"){
+    legend(legendPos, legend = pars, lty = 1, col = my.cols)
+  } else{
+    oldpar2 <- par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+                   fig = c(0, 1, 0, 1), new = TRUE)
+    plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+    if(k > 6){
+      # Mehrzeilige Legende:
+      legend_ncol <- 6
+    } else{
+      legend_ncol <- k
+    }
+    legend("bottom", legend = pars, lty = 1, col = my.cols, cex = 0.75, 
+           bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
+    
+    par(oldpar2)
+    par(oldpar)
+  }
 }

@@ -1,16 +1,9 @@
 #' @title
-#' Plotting the results of Morris SA for objects of class \code{morrisRes_aos}
+#' Plot of the results of Morris SA for objects of class \code{morrisRes}
 #'
 #' @description
-#' \code{plot} plots the results of Morris SA for objects of class 
+#' \code{plot.morrisRes} plots the results of Morris SA for objects of class 
 #' \code{morrisRes}.
-#'
-#' @details
-#' \code{plot} with \code{type = "sep"} plots mu.star and
-#'   sigma separately versus time.
-#'
-#' \code{plot} with \code{type = "trajec"} plots mu.star versus
-#'   sigma for every point of time.
 #'
 #' @param x [\code{morrisRes}]\cr
 #'   resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.
@@ -18,6 +11,12 @@
 #'   index of the output variable to be plotted. Defaults to 1.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, choose between \code{"sep"} and \code{"trajec"}.
+#' @param colors_pars [\code{character(>= k)}]\cr
+#'   vector of the colors to be used for the \code{k} different parameters 
+#'   (where \code{k} is the length of the vector returned by 
+#'   \code{\link[ODEnetwork]{createParamVecs}} applied to the \code{ODEnetwork}-
+#'   object for which the sensitivity analysis was done). Must be at least of
+#'   length \code{k}.
 #' @param main_title [\code{character(1)}]\cr
 #'   title for the plot. If \code{type = "sep"}, this is the overall title for
 #'   the two separate plots. Defaults to NULL, so a standard title is generated.
@@ -27,44 +26,12 @@
 #'
 #' @return TRUE (invisible; for testing purposes).
 #'
-#' @method plot morrisRes
+#' @details
+#' \code{plot} with \code{type = "sep"} plots mu.star and
+#'   sigma separately versus time.
 #'
-#' @examples
-#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-#' # definition of the model itself, parameters, initial values
-#' # and the times vector:
-#' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
-#'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
-#' }
-#'
-#' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 50, by = 5)
-#'
-#' FHNres_aos <- ODEmorris_aos(mod = FHNmod,
-#'                             pars = c("a", "b", "s"),
-#'                             yini = FHNyini,
-#'                             times = FHNtimes,
-#'                             ode_method = "adams",
-#'                             seed = 2015,
-#'                             binf = c(0.18, 0.18, 2.8),
-#'                             bsup = c(0.22, 0.22, 3.2),
-#'                             r = 25,
-#'                             design =
-#'                                list(type = "oat", levels = 100, 
-#'                                     grid.jump = 1),
-#'                             scale = TRUE)
-#'
-#' # Plots:
-#' plot(FHNres_aos, y_idx = 1, type = "sep")
-#' plot(FHNres_aos, y_idx = 1, type = "trajec")
-#' plot(FHNres_aos, y_idx = 2, type = "sep")
-#' plot(FHNres_aos, y_idx = 2, type = "trajec")
+#' \code{plot} with \code{type = "trajec"} plots mu.star versus
+#'   sigma for every point of time.
 #'
 #' @note Unfortunately, the passing of arguments (e.g. "main") does not work
 #'   correctly.
@@ -73,27 +40,67 @@
 #' @seealso \code{\link{ODEmorris}},
 #'   \code{\link[sensitivity]{morris_list}}
 #'
-#' @export
+#' @examples
+#' library(ODEnetwork)
+#' masses <- c(1, 1)
+#' dampers <- diag(c(1, 1))
+#' springs <- diag(c(1, 1))
+#' springs[1, 2] <- 1
+#' distances <- diag(c(0, 2))
+#' distances[1, 2] <- 1
+#' odenet <- ODEnetwork(masses, dampers, springs, 
+#'                      cartesian = TRUE, distances = distances)
+#' odenet <- setState(odenet, c(0.5, 1), c(0, 0))
+#' 
+#' ODEtimes <- seq(0.01, 20, by = 0.1)
+#' ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
+#' ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
+#' 
+#' ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
+#'                     binf = ODEbinf, bsup = ODEbsup, r = 20)
+#' 
+#' # Standard (separate plots):
+#' plot(ODEres, y_idx = 1, type = "sep", legendPos = "topleft")
+#' plot(ODEres, y_idx = 1, type = "sep", legendPos = "outside")
+#' # Palette "Dark2" from the package "RColorBrewer" with some 
+#' # additional colors:
+#' my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+#'              "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+#'              "darkblue", "darkgreen")
+#' plot(ODEres, y_idx = 1, type = "sep", colors_pars = my_cols, 
+#'      legendPos = "outside")
+#' 
+#' # Trajectories:
+#' plot(ODEres, y_idx = 1, type = "trajec", legendPos = "topleft")
+#' plot(ODEres, y_idx = 1, type = "trajec", legendPos = "outside")
+#' plot(ODEres, y_idx = 1, type = "trajec", colors_pars = my_cols, 
+#'      legendPos = "outside")
+#'
 #' @import
 #'   checkmate
+#' @method plot morrisRes
+#' @export
 #'
 
-plot.morrisRes <- function(x, y_idx = 1, type = "sep", main_title = NULL, 
-                           legendPos = "topleft", ...) {
+plot.morrisRes <- function(x, y_idx = 1, type = "sep", colors_pars = NULL,
+                           main_title = NULL, legendPos = "outside", ...) {
 
   ##### Check input #################################################
   assertClass(x, "morrisRes")
   assertIntegerish(y_idx, lower = 1, upper = length(x))
   assertCharacter(type, len = 1)
-  notOk <- !any(rep(type, 2) == c("sep", "trajec"))
+  notOk <- !type %in% c("sep", "trajec")
   if(notOk)
     stop("type must be one of \"sep\" or \"trajec\"!")
+  stopifnot((is.character(colors_pars) && 
+              length(colors_pars) >= (nrow(x[[y_idx]]) - 1) / 3) || 
+              is.null(colors_pars))
   assertCharacter(legendPos, len = 1)
-  notOk <- !any(rep(legendPos, 9) == c("bottomright", "bottom",
+  notOk <- !legendPos %in% c("outside", "bottomright", "bottom",
     "bottomleft", "left", "topleft", "top", "topright", "right",
-    "center"))
+    "center")
   if(notOk)
-    stop("legendPos must be one of \"bottomright\", \"bottom\",
+    stop("legendPos must be one of \"outside\", \"bottomright\", \"bottom\",
       \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
       \"right\", \"center\"!")
 
@@ -103,29 +110,18 @@ plot.morrisRes <- function(x, y_idx = 1, type = "sep", main_title = NULL,
   k <- (nrow(x[[y_idx]]) - 1) / 3
   pars_tmp <- rownames(x[[y_idx]])[2:(k + 1)]
   pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
+  state_name <- names(x)[y_idx]
   
   # Separate Plots fuer mu.star und sigma:
   if(type == "sep"){
-    oldpar <- par(mfrow = c(1, 2), mar = c(4, 4, 1, 2) + 0.2,
-                  oma = c(0, 0, 2, 0))
-    # Erstelle die separaten Plots:
-    plotSep(x[[y_idx]], pars, legendPos, ...)
-    # Erstelle die Gesamtueberschrift:
-    if(is.null(main_title)){
-      main_title <- paste0("Morris SA for y_idx = ", y_idx)
-    }
-    mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
-    par(oldpar)
+    plotSep(x[[y_idx]], pars, colors_pars, 
+            state_name, common_title = main_title, legendPos, ...)
   }
   
   # Trajectories:
   if(type == "trajec"){
-    # Erstelle die Ueberschrift:
-    if(is.null(main_title)){
-      main_title <- paste0("Morris SA for y_idx = ", y_idx, ": Trajectories")
-    }
-    # Erstelle den Plot:
-    plotTrajectories(x[[y_idx]], pars, legendPos, main_title, ...)
+    plotTrajectories(x[[y_idx]], pars, colors_pars, 
+                     state_name, main_title, legendPos, ...)
   }
   
   # For testing purposes:
