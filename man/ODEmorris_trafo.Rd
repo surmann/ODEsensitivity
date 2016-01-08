@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEmorris_trafo.R
 \name{ODEmorris_trafo}
 \alias{ODEmorris_trafo}
-\title{Morris SA for ODEs}
+\title{Morris SA for ODEs (Supporting Transformations)}
 \usage{
 ODEmorris_trafo(mod, pars, yini, times, ode_method = "lsoda", seed = 2015,
   binf = 0, bsup = 1, r = 25, design = list(type = "oat", levels = 100,
@@ -98,7 +98,7 @@ method and supports transformations of the adapted
   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
   Morris sensitivity results, such that \code{\link{ODEmorris_trafo}} fails 
   for one or many points of time! For this reason, if \code{NA}s occur, 
-  please make use of \code{\link{ODEsobol}} instead or
+  please make use of \code{\link{ODEsobol_trafo}} instead or
   restrict the input parameter value intervals usefully using
   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
   another ODE-solver (argument \code{ode_method}). Problems are known for the

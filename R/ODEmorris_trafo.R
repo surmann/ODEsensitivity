@@ -1,4 +1,4 @@
-#' @title Morris SA for ODEs
+#' @title Morris SA for ODEs (Supporting Transformations)
 #'
 #' @description
 #' \code{ODEmorris_trafo} performs a sensitivity analysis for
@@ -75,7 +75,7 @@
 #'   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
 #'   Morris sensitivity results, such that \code{\link{ODEmorris_trafo}} fails 
 #'   for one or many points of time! For this reason, if \code{NA}s occur, 
-#'   please make use of \code{\link{ODEsobol}} instead or
+#'   please make use of \code{\link{ODEsobol_trafo}} instead or
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
 #'   another ODE-solver (argument \code{ode_method}). Problems are known for the
