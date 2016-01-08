@@ -58,9 +58,9 @@ highly recommended if the factors have different orders of magnitude, see
 \value{
 List of class \code{morrisRes_aos} of length 
   \code{length(yini)} containing in each element a matrix for one 
-  yini-variable. The matrices itself contain in their rows the Morris SA
-  results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
-  all timepoints (columns).
+  \code{yini}-variable. The matrices itself contain in their rows the Morris 
+  SA results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) 
+  for all timepoints (columns).
 }
 \description{
 \code{ODEmorris_aos} performs a sensitivity analysis for

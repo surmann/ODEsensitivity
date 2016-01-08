@@ -20,12 +20,13 @@
 #'   length \code{k}. If \code{NULL} (the default), \code{rainbow(k)} is used.
 #' @param main_title [\code{character(1)}]\cr
 #'   title for the plot. If \code{type = "sep"}, this is the overall title for
-#'   the two separate plots. Defaults to NULL, so a standard title is generated.
+#'   the two separate plots. Defaults to \code{NULL}, so a standard title is 
+#'   generated.
 #' @param legendPos [\code{character(1)}]\cr
 #'   keyword for the legend position, either one of those specified in
-#'   \code{\link{legend}} or "outside", which means the legend is placed under
-#'   the plot (useful, if there are many parameters are in the model). Default 
-#'   is \code{"outside"}.
+#'   \code{\link{legend}} or \code{"outside"} (the default), which means the 
+#'   legend is placed under the plot (useful, if there are many parameters in 
+#'   the model).
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
 #' @return \code{TRUE} (invisible; for testing purposes).

@@ -51,7 +51,7 @@
 #'       element a matrix for one yini-variable. The matrices itself contain in 
 #'       their rows the Morris SA results (i.e. \code{mu, mu.star} and 
 #'       \code{sigma} for every parameter) for all timepoints (columns).
-#'     \item \code{y_idx}, the index of the analyzed yini-variable.
+#'     \item \code{y_analyzed}, the name of the analyzed \code{yini}-variable.
 #'   }
 #' 
 #' @details \code{ODEmorris_ats} is faster than \code{ODEmorris} since 

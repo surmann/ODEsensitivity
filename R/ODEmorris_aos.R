@@ -45,9 +45,9 @@
 #'
 #' @return List of class \code{morrisRes_aos} of length 
 #'   \code{length(yini)} containing in each element a matrix for one 
-#'   yini-variable. The matrices itself contain in their rows the Morris SA
-#'   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
-#'   all timepoints (columns).
+#'   \code{yini}-variable. The matrices itself contain in their rows the Morris 
+#'   SA results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) 
+#'   for all timepoints (columns).
 #'
 #' @details \code{ODEmorris_aos} uses \code{\link[sensitivity]{morris_list}}
 #' which can handle lists as output for its model function. Thus, each

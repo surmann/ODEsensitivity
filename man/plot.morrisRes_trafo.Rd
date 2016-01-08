@@ -2,7 +2,8 @@
 % Please edit documentation in R/plot.morrisRes_trafo.R
 \name{plot.morrisRes_trafo}
 \alias{plot.morrisRes_trafo}
-\title{Plotting the results of Morris SA}
+\title{Plotting the results of Morris SA for objects of class 
+\code{morrisRes_trafo}.}
 \usage{
 \method{plot}{morrisRes_trafo}(x, type = "sep", colors_pars = NULL,
   main_title = NULL, legendPos = "outside", ...)
@@ -23,18 +24,19 @@ Must be at least of length \code{k}. If \code{NULL} (the default),
 
 \item{main_title}{[\code{character(1)}]\cr
 title for the plot. If \code{type = "sep"}, this is the overall title for
-the two separate plots. Defaults to NULL, so a standard title is generated.}
+the two separate plots. Defaults to \code{NULL}, so a standard title is 
+generated.}
 
 \item{legendPos}{[\code{character(1)}]\cr
 keyword for the legend position, either one of those specified in
-\code{\link{legend}} or "outside", which means the legend is placed under
-the plot (useful, if there are many parameters are in the model). Default 
-is \code{"outside"}.}
+\code{\link{legend}} or \code{"outside"} (the default), which means the 
+legend is placed under the plot (useful, if there are many parameters in 
+the model).}
 
 \item{...}{additional arguments passed to \code{\link{plot}}.}
 }
 \value{
-TRUE (invisible; for testing purposes).
+\code{TRUE} (invisible; for testing purposes).
 }
 \description{
 \code{plot.morrisRes_trafo} plots the results of Morris SA for objects of 
