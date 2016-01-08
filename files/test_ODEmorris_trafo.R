@@ -34,9 +34,18 @@ FHNres_trafo <- ODEmorris_trafo(mod = FHNmod,
 # User      System verstrichen 
 # 0.17        0.05       25.58
 
-# save(FHNres_trafo, file = "SA-ODEmorris.RData")
+# save(FHNres_trafo, file = "test_ODEmorris_trafo.RData")
 
-# pdf("SA-ODEmorris_trafo.pdf", width = 10, height = 7)
+# pdf("test_ODEmorris_trafo.pdf", width = 10, height = 7)
+# Palette "Dark2" from the package "RColorBrewer" with some 
+# additional colors:
+my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+             "darkblue", "darkgreen")
 plot(FHNres_trafo, type = "sep")
+plot(FHNres_trafo, type = "sep", legendPos = "topleft")
+plot(FHNres_trafo, type = "sep", colors_pars = my_cols)
 plot(FHNres_trafo, type = "trajec")
+plot(FHNres_trafo, type = "trajec", legendPos = "topleft")
+plot(FHNres_trafo, type = "trajec", colors_pars = my_cols)
 # dev.off()

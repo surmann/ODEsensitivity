@@ -12,14 +12,15 @@
 #' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param yini [\code{numeric(z)}]\cr
-#'   vector of \code{z} initial values.
+#'   vector of \code{z} initial values. Must be named and must not contain
+#'   duplicated names.
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
 #'   first point of time must be positive.
-#' @param y_idx [\code{integer(1)}]\cr
-#'   index of the output variable to be analyzed. Defaults to 1, so the first
-#'   output variable is used.
+#' @param y_analyzed [\code{character(1)}]\cr
+#'   name of the \code{yini}-variable to be analyzed. Defaults to the name of 
+#'   the first \code{yini}-variable.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
@@ -97,30 +98,29 @@
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
 #' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
-#'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
+#' with(as.list(c(State, Pars)), {
+#'   
+#'   dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
+#'   dCurrent <- - 1 / s *(Voltage - a + b * Current)
+#'   
+#'   return(list(c(dVoltage, dCurrent)))
+#' })
 #' }
-#'
+#' 
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 50, by = 5)
-#'
 #' FHNres_ats <- ODEmorris_ats(mod = FHNmod,
 #'                             pars = c("a", "b", "s"),
 #'                             yini = FHNyini,
 #'                             times = FHNtimes,
+#'                             y_analyzed = "Voltage",
 #'                             ode_method = "adams",
-#'                             y_idx = 1,                 # voltage only
 #'                             seed = 2015,
 #'                             binf = c(0.18, 0.18, 2.8),
 #'                             bsup = c(0.22, 0.22, 3.2),
-#'                             r = 25,
+#'                             r = 10,
 #'                             design =
-#'                               list(type = "oat", levels = 100, 
+#'                               list(type = "oat", levels = 30, 
 #'                                    grid.jump = 1),
 #'                             scale = TRUE)
 #'
@@ -135,8 +135,8 @@ ODEmorris_ats <- function(mod,
                           pars,
                           yini,
                           times,
+                          y_analyzed = names(yini)[1],
                           ode_method = "lsoda",
-                          y_idx = 1,
                           seed = 2015,
                           binf = 0,
                           bsup = 1,
@@ -149,14 +149,16 @@ ODEmorris_ats <- function(mod,
   assertFunction(mod)
   assertCharacter(pars)
   assertNumeric(yini)
+  checkNamed(yini, type = "unique")
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
+  assertCharacter(y_analyzed, len = 1)
+  stopifnot(y_analyzed %in% names(yini))
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
                               "daspk", "euler", "rk4", "ode23", "ode45", 
                               "radau", "bdf", "bdf_d", "adams", "impAdams", 
                               "impAdams_d" ,"iteration"))
-  assertIntegerish(y_idx)
   assertNumeric(seed)
   assertNumeric(binf)
   notOk <- length(binf) != length(pars) & length(binf) != 1
@@ -179,6 +181,8 @@ ODEmorris_ats <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
+  # Index der zu analysierenden y-Variable:
+  y_idx <- which(y_analyzed == names(yini))
   # Forme DGL-Modell um, sodass fuer morris_matrix()-Argument "model_matrix" 
   # passend:
   model_fit <- function(X){
@@ -232,7 +236,7 @@ ODEmorris_ats <- function(mod,
   }
   
   # Rueckgabe:
-  res <- list(res = out_y_idx, y_idx = y_idx)
+  res <- list(res = out_y_idx, y_analyzed = y_analyzed)
   class(res) <- "morrisRes_ats"
   return(res)
 }

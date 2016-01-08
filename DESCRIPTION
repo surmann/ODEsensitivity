@@ -1,8 +1,8 @@
 Package: ODEsensitivity
 Type: Package
 Title: Sensitivity Analysis of ODE Models
-Version: 0.8
-Date: 2016-01-03
+Version: 0.8.1
+Date: 2016-01-08
 Authors@R: c(person("Frank", "Weber", email =
            "frank.weber@tu-dortmund.de", role = c("aut", "cre")),
     person("Stefan", "Theers", email =

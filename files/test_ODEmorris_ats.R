@@ -20,8 +20,8 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                             pars = c("a", "b", "s"),
                             yini = FHNyini,
                             times = FHNtimes,
+                            y_analyzed = "Voltage",
                             ode_method = "adams",
-                            y_idx = 1,
                             seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),
@@ -33,9 +33,18 @@ FHNres_ats <- ODEmorris_ats(mod = FHNmod,
 # User      System verstrichen 
 # 5.71        0.00        5.74
 
-# save(FHNres_ats, file = "SA-ODEmorris_ats.RData")
+# save(FHNres_ats, file = "test_ODEmorris_ats.RData")
 
-# pdf("SA-ODEmorris_ats.pdf", width = 10, height = 7)
+# pdf("test_ODEmorris_ats.pdf", width = 10, height = 7)
+# Palette "Dark2" from the package "RColorBrewer" with some 
+# additional colors:
+my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+             "darkblue", "darkgreen")
 plot(FHNres_ats, type = "sep")
+plot(FHNres_ats, type = "sep", legendPos = "topleft")
+plot(FHNres_ats, type = "sep", colors_pars = my_cols)
 plot(FHNres_ats, type = "trajec")
+plot(FHNres_ats, type = "trajec", legendPos = "topleft")
+plot(FHNres_ats, type = "trajec", colors_pars = my_cols)
 # dev.off()

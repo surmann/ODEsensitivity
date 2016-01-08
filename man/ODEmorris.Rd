@@ -50,7 +50,8 @@ highly recommended if the factors have different orders of magnitude, see
 \value{
 List of class \code{morrisRes} of length 
   \code{2 * nrow(odenet$state)} containing in each element a matrix for 
-  one state variable. The matrices itself contain in their rows the Morris SA
+  one state variable (all components of the 2 state variables are analyzed
+  independently). The matrices itself contain in their rows the Morris SA
   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
   all timepoints (columns).
 }
@@ -67,9 +68,9 @@ The sensitivity analysis is done for all output variables, since
 \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
   unrealistic parameter combinations are sampled by 
   \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
-  Morris sensitivity results, such that \code{\link{ODEmorris_aos}} fails for 
+  Morris sensitivity results, such that \code{\link{ODEmorris}} fails for 
   one or many points of time! For this reason, if \code{NA}s occur, please 
-  make use of \code{\link{ODEsobol_ats}} instead or
+  make use of \code{\link{ODEsobol}} instead or
   restrict the input parameter value intervals usefully using
   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
   another ODE-solver (argument \code{ode_method}). Problems are known for the

@@ -1,8 +1,8 @@
 # Helper functions for Morris-SA
 
 ##### auxiliary function: plotting mu.star and sigma separately ###########
-plotSep <- function(res, pars, colors_pars = NULL, 
-                    state_name, common_title = NULL, legendPos, ...) {
+plotSep <- function(res, pars, y_name = NULL, colors_pars = NULL, 
+                    common_title = NULL, legendPos, ...) {
   t.vec <- res[1, ]
   k     <- length(pars)
   if(is.null(colors_pars)){
@@ -10,8 +10,10 @@ plotSep <- function(res, pars, colors_pars = NULL,
   } else{
     my.cols <- colors_pars
   }
-  if(is.null(common_title)){
-    common_title <- paste("Morris SA for State Variable", state_name)
+  if(is.null(common_title) && !is.null(y_name)){
+    common_title <- paste0("Morris SA for State Variable \"", y_name, "\"")
+  } else if(is.null(common_title) && is.null(y_name)){
+    common_title <- "Morris SA"
   }
   if(legendPos == "outside"){
     oldpar <- par(mfrow = c(1, 2),
@@ -78,8 +80,8 @@ plotSep <- function(res, pars, colors_pars = NULL,
 }
 
 ##### auxiliary function: plotting trajectories ######################
-plotTrajectories <- function(res, pars, colors_pars = NULL, 
-                             state_name, main_title = NULL, legendPos, ...) {
+plotTrajectories <- function(res, pars, y_name = NULL, colors_pars = NULL, 
+                             main_title = NULL, legendPos, ...) {
   t.vec <- res[1, ]
   k     <- length(pars)
   if(is.null(colors_pars)){
@@ -87,9 +89,11 @@ plotTrajectories <- function(res, pars, colors_pars = NULL,
   } else{
     my.cols <- colors_pars
   }
-  if(is.null(main_title)){
-    main_title <- paste0("Morris SA for State Variable ", state_name, 
-                         ": Trajectories")
+  if(is.null(main_title) && !is.null(y_name)){
+    main_title <- paste0("Morris SA for State Variable \"", y_name, 
+                         "\": Trajectories")
+  } else if(is.null(main_title) && is.null(y_name)){
+    main_title <- "Morris SA: Trajectories"
   }
   if(legendPos == "outside"){
     oldpar <- par(oma = c(2, 0, 0, 0))

@@ -17,7 +17,8 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values.}
+vector of \code{z} initial values. Must be named and must not contain
+duplicated names.}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
@@ -82,7 +83,7 @@ so \code{\link[deSolve]{ode}} only needs to be executed once.
   \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
   Morris sensitivity results, such that \code{\link{ODEmorris_aos}} fails for 
   one or many points of time! For this reason, if \code{NA}s occur, please 
-  make use of \code{\link{ODEsobol_ats}} instead or
+  make use of \code{\link{ODEsobol_aos}} instead or
   restrict the input parameter value intervals usefully using
   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
   another ODE-solver (argument \code{ode_method}). Problems are known for the
@@ -120,9 +121,9 @@ FHNres_aos <- ODEmorris_aos(mod = FHNmod,
                             seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),
-                            r = 25,
+                            r = 10,
                             design =
-                               list(type = "oat", levels = 100, 
+                               list(type = "oat", levels = 30, 
                                     grid.jump = 1),
                             scale = TRUE)
 

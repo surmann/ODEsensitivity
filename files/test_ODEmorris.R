@@ -25,21 +25,25 @@ system.time(
 # User      System verstrichen 
 # 6.90        0.03        7.17
 
+# save(ODEres, file = "test_ODEmorris.Rdata")
+
 # pdf("test_ODEmorris.pdf", width = 12, height = 10)
+# Checking defaults:
+plot(ODEres)
 # Standard (separate plots):
-plot(ODEres, y_idx = 1, type = "sep", legendPos = "topleft")
-plot(ODEres, y_idx = 1, type = "sep", legendPos = "outside")
+plot(ODEres, state_plot = "x.2", type = "sep", legendPos = "topleft")
+plot(ODEres, state_plot = "x.2", type = "sep", legendPos = "outside")
 # Palette "Dark2" from the package "RColorBrewer" with some 
 # additional colors:
 my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
              "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
              "darkblue", "darkgreen")
-plot(ODEres, y_idx = 1, type = "sep", colors_pars = my_cols, 
+plot(ODEres, state_plot = "x.2", type = "sep", colors_pars = my_cols, 
      legendPos = "outside")
 
 # Trajectories:
-plot(ODEres, y_idx = 1, type = "trajec", legendPos = "topleft")
-plot(ODEres, y_idx = 1, type = "trajec", legendPos = "outside")
-plot(ODEres, y_idx = 1, type = "trajec", colors_pars = my_cols, 
+plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "topleft")
+plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "outside")
+plot(ODEres, state_plot = "x.2", type = "trajec", colors_pars = my_cols, 
      legendPos = "outside")
 # dev.off()

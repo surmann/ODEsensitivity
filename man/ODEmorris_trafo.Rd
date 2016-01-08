@@ -17,7 +17,8 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values.}
+vector of \code{z} initial values. Must be named and must not contain
+duplicated names.}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
@@ -116,10 +117,10 @@ method and supports transformations of the adapted
 # and the times vector:
 FHNmod <- function(Time, State, Pars) {
   with(as.list(c(State, Pars)), {
-
+    
     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-
+    
     return(list(c(dVoltage, dCurrent)))
   })
 }
@@ -135,9 +136,9 @@ FHNres_trafo <- ODEmorris_trafo(mod = FHNmod,
                                 seed = 2015,
                                 binf = c(0.18, 0.18, 2.8),
                                 bsup = c(0.22, 0.22, 3.2),
-                                r = 25,
+                                r = 10,
                                 design =
-                                  list(type = "oat", levels = 100, 
+                                  list(type = "oat", levels = 30, 
                                        grid.jump = 1),
                                 scale = TRUE,
                                 trafo = function(Y) Y[, 1],    # voltage only

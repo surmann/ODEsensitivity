@@ -2,7 +2,7 @@
 #' Plotting the results of Morris SA for objects of class \code{morrisRes_ats}
 #'
 #' @description
-#' \code{plot} plots the results of Morris SA for objects of class 
+#' \code{plot.morrisRes_ats} plots the results of Morris SA for objects of class 
 #' \code{morrisRes_ats}.
 #'
 #' @details
@@ -17,11 +17,19 @@
 #'   \code{morrisRes_ats}.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, choose between \code{"sep"} and \code{"trajec"}.
+#' @param colors_pars [\code{character(>= k)}]\cr
+#'   vector of the colors to be used for the \code{k} different parameters 
+#'   (where \code{k} is the of parameters in the model for which SA was done). 
+#'   Must be at least of length \code{k}. If \code{NULL} (the default), 
+#'   \code{rainbow(k)} is used.
 #' @param main_title [\code{character(1)}]\cr
 #'   title for the plot. If \code{type = "sep"}, this is the overall title for
 #'   the two separate plots. Defaults to NULL, so a standard title is generated.
 #' @param legendPos [\code{character(1)}]\cr
-#'   legend position, default is \code{"topleft"}.
+#'   keyword for the legend position, either one of those specified in
+#'   \code{\link{legend}} or "outside", which means the legend is placed under
+#'   the plot (useful, if there are many parameters are in the model). Default 
+#'   is \code{"outside"}.
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
 #' @return TRUE (invisible; for testing purposes).
@@ -33,36 +41,43 @@
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
 #' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
-#'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
+#' with(as.list(c(State, Pars)), {
+#'   
+#'   dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
+#'   dCurrent <- - 1 / s *(Voltage - a + b * Current)
+#'   
+#'   return(list(c(dVoltage, dCurrent)))
+#' })
 #' }
-#'
+#' 
 #' FHNyini  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 50, by = 5)
-#'
 #' FHNres_ats <- ODEmorris_ats(mod = FHNmod,
 #'                             pars = c("a", "b", "s"),
 #'                             yini = FHNyini,
 #'                             times = FHNtimes,
+#'                             y_analyzed = "Voltage",
 #'                             ode_method = "adams",
-#'                             y_idx = 1,        # voltage only
 #'                             seed = 2015,
 #'                             binf = c(0.18, 0.18, 2.8),
 #'                             bsup = c(0.22, 0.22, 3.2),
-#'                             r = 25,
+#'                             r = 10,
 #'                             design =
-#'                               list(type = "oat", levels = 100, 
+#'                               list(type = "oat", levels = 30, 
 #'                                    grid.jump = 1),
-#'                             scale = TRUE)  
-#'
-#' # Plots:
+#'                             scale = TRUE)
+#' 
+#' # Palette "Dark2" from the package "RColorBrewer" with some 
+#' # additional colors:
+#' my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+#'              "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+#'              "darkblue", "darkgreen")
 #' plot(FHNres_ats, type = "sep")
+#' plot(FHNres_ats, type = "sep", legendPos = "topleft")
+#' plot(FHNres_ats, type = "sep", colors_pars = my_cols)
 #' plot(FHNres_ats, type = "trajec")
+#' plot(FHNres_ats, type = "trajec", legendPos = "topleft")
+#' plot(FHNres_ats, type = "trajec", colors_pars = my_cols)
 #'
 #' @note Unfortunately, the passing of arguments (e.g. "main") does not work
 #'   correctly.
@@ -76,25 +91,26 @@
 #'   checkmate
 #'
 
-plot.morrisRes_ats <- function(x, type = "sep", main_title = NULL, 
-                               legendPos = "topleft", ...) {
+plot.morrisRes_ats <- function(x, type = "sep", colors_pars = NULL, 
+                               main_title = NULL, legendPos = "outside", ...) {
 
   ##### Check input #################################################
   assertClass(x, "morrisRes_ats")
   assertCharacter(type, len = 1)
-  notOk <- !any(rep(type, 2) == c("sep", "trajec"))
+  notOk <- !type %in% c("sep", "trajec")
   if(notOk)
     stop("type must be one of \"sep\" or \"trajec\"!")
+  stopifnot(is.null(colors_pars) || (is.character(colors_pars) && 
+            length(colors_pars) >= (nrow(x$res) - 1) / 3))
+  stopifnot(is.null(main_title) || (is.character(main_title) && 
+            length(main_title) == 1))
   assertCharacter(legendPos, len = 1)
-  notOk <- !any(rep(legendPos, 9) == c("bottomright", "bottom",
-    "bottomleft", "left", "topleft", "top", "topright", "right",
-    "center"))
+  notOk <- !legendPos %in% c("outside", "bottomright", "bottom",
+    "bottomleft", "left", "topleft", "top", "topright", "right", "center")
   if(notOk)
-    stop("legendPos must be one of \"bottomright\", \"bottom\",
-      \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
-      \"right\", \"center\"!")
-  stopifnot(is.character(main_title) && length(main_title) == 1 ||
-              is.null(main_title))
+    stop("legendPos must be one of \"outside\", \"bottomright\", \"bottom\",
+         \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
+         \"right\", \"center\"!")
 
   ##### Plots ###########################################################
   
@@ -105,25 +121,15 @@ plot.morrisRes_ats <- function(x, type = "sep", main_title = NULL,
   
   # Separate Plots fuer mu.star und sigma:
   if(type == "sep"){
-    oldpar <- par(mfrow = c(1, 2), mar = c(4, 4, 1, 2) + 0.2,
-                  oma = c(0, 0, 2, 0))
-    # Erstelle die separaten Plots:
-    plotSep(x$res, pars, legendPos, ...)
-    # Erstelle die Gesamtueberschrift:
-    if(is.null(main_title)){
-      main_title <- paste0("Morris SA for y_idx = ", x$y_idx)
-    }
-    mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
-    par(oldpar)
+    plotSep(x$res, pars, y_name = x$y_analyzed, colors_pars = colors_pars,
+            common_title = main_title, legendPos = legendPos, ...)
   }
   
   # Trajectories:
   if(type == "trajec"){
-    # Erstelle die Ueberschrift:
-    if(is.null(main_title)){
-      main_title <- paste0("Morris SA for y_idx = ", x$y_idx, ": Trajectories")
-    }
-    plotTrajectories(x$res, pars, legendPos, main_title, ...)
+    plotTrajectories(x$res, pars, y_name = x$y_analyzed, 
+                     colors_pars = colors_pars, 
+                     main_title = main_title, legendPos = legendPos, ...)
   }
   
   # For testing purposes:

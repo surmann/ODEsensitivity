@@ -13,7 +13,8 @@
 #' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param yini [\code{numeric(z)}]\cr
-#'   vector of \code{z} initial values.
+#'   vector of \code{z} initial values. Must be named and must not contain
+#'   duplicated names.
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
@@ -60,7 +61,7 @@
 #'   \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
 #'   Morris sensitivity results, such that \code{\link{ODEmorris_aos}} fails for 
 #'   one or many points of time! For this reason, if \code{NA}s occur, please 
-#'   make use of \code{\link{ODEsobol_ats}} instead or
+#'   make use of \code{\link{ODEsobol_aos}} instead or
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
 #'   another ODE-solver (argument \code{ode_method}). Problems are known for the
@@ -107,9 +108,9 @@
 #'                             seed = 2015,
 #'                             binf = c(0.18, 0.18, 2.8),
 #'                             bsup = c(0.22, 0.22, 3.2),
-#'                             r = 25,
+#'                             r = 10,
 #'                             design =
-#'                                list(type = "oat", levels = 100, 
+#'                                list(type = "oat", levels = 30, 
 #'                                     grid.jump = 1),
 #'                             scale = TRUE)
 #'
@@ -137,6 +138,7 @@ ODEmorris_aos <- function(mod,
   assertFunction(mod)
   assertCharacter(pars)
   assertNumeric(yini)
+  checkNamed(yini, type = "unique")
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))

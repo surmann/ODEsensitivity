@@ -4,9 +4,9 @@
 \alias{ODEmorris_ats}
 \title{Morris SA for ODEs at All Timepoints Simultaneously}
 \usage{
-ODEmorris_ats(mod, pars, yini, times, ode_method = "lsoda", y_idx = 1,
-  seed = 2015, binf = 0, bsup = 1, r = 25, design = list(type = "oat",
-  levels = 100, grid.jump = 1), scale = TRUE)
+ODEmorris_ats(mod, pars, yini, times, y_analyzed = names(yini)[1],
+  ode_method = "lsoda", seed = 2015, binf = 0, bsup = 1, r = 25,
+  design = list(type = "oat", levels = 100, grid.jump = 1), scale = TRUE)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -16,20 +16,21 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values.}
+vector of \code{z} initial values. Must be named and must not contain
+duplicated names.}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
 (vector of arbitrary length). Also the
 first point of time must be positive.}
 
+\item{y_analyzed}{[\code{character(1)}]\cr
+name of the \code{yini}-variable to be analyzed. Defaults to the name of 
+the first \code{yini}-variable.}
+
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
 \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
-
-\item{y_idx}{[\code{integer(1)}]\cr
-index of the output variable to be analyzed. Defaults to 1, so the first
-output variable is used.}
 
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
@@ -110,30 +111,29 @@ please use \code{\link{ODEmorris_aos}}.
 # definition of the model itself, parameters, initial values
 # and the times vector:
 FHNmod <- function(Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
-
-    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-    dCurrent <- - 1 / s *(Voltage - a + b * Current)
-
-    return(list(c(dVoltage, dCurrent)))
-  })
+with(as.list(c(State, Pars)), {
+  
+  dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
+  dCurrent <- - 1 / s *(Voltage - a + b * Current)
+  
+  return(list(c(dVoltage, dCurrent)))
+})
 }
 
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
-
 FHNres_ats <- ODEmorris_ats(mod = FHNmod,
                             pars = c("a", "b", "s"),
                             yini = FHNyini,
                             times = FHNtimes,
+                            y_analyzed = "Voltage",
                             ode_method = "adams",
-                            y_idx = 1,                 # voltage only
                             seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),
-                            r = 25,
+                            r = 10,
                             design =
-                              list(type = "oat", levels = 100, 
+                              list(type = "oat", levels = 30, 
                                    grid.jump = 1),
                             scale = TRUE)
 

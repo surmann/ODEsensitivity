@@ -7,24 +7,28 @@
 #'
 #' @param x [\code{morrisRes}]\cr
 #'   resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.
-#' @param y_idx [\code{integer(1)}]\cr
-#'   index of the output variable to be plotted. Defaults to 1.
+#' @param state_plot [\code{character(1)}]\cr
+#'   name of the state variable to be plotted. Defaults to the name of the
+#'   first state variable.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, choose between \code{"sep"} and \code{"trajec"}.
 #' @param colors_pars [\code{character(>= k)}]\cr
 #'   vector of the colors to be used for the \code{k} different parameters 
 #'   (where \code{k} is the length of the vector returned by 
-#'   \code{\link[ODEnetwork]{createParamVecs}} applied to the \code{ODEnetwork}-
+#'   \code{\link[ODEnetwork]{createParamVec}} applied to the \code{ODEnetwork}-
 #'   object for which the sensitivity analysis was done). Must be at least of
-#'   length \code{k}.
+#'   length \code{k}. If \code{NULL} (the default), \code{rainbow(k)} is used.
 #' @param main_title [\code{character(1)}]\cr
 #'   title for the plot. If \code{type = "sep"}, this is the overall title for
 #'   the two separate plots. Defaults to NULL, so a standard title is generated.
 #' @param legendPos [\code{character(1)}]\cr
-#'   legend position, default is \code{"topleft"}.
+#'   keyword for the legend position, either one of those specified in
+#'   \code{\link{legend}} or "outside", which means the legend is placed under
+#'   the plot (useful, if there are many parameters are in the model). Default 
+#'   is \code{"outside"}.
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
-#' @return TRUE (invisible; for testing purposes).
+#' @return \code{TRUE} (invisible; for testing purposes).
 #'
 #' @details
 #' \code{plot} with \code{type = "sep"} plots mu.star and
@@ -60,20 +64,20 @@
 #'                     binf = ODEbinf, bsup = ODEbsup, r = 20)
 #' 
 #' # Standard (separate plots):
-#' plot(ODEres, y_idx = 1, type = "sep", legendPos = "topleft")
-#' plot(ODEres, y_idx = 1, type = "sep", legendPos = "outside")
+#' plot(ODEres, state_plot = "x.2", type = "sep", legendPos = "topleft")
+#' plot(ODEres, state_plot = "x.2", type = "sep", legendPos = "outside")
 #' # Palette "Dark2" from the package "RColorBrewer" with some 
 #' # additional colors:
 #' my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
 #'              "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
 #'              "darkblue", "darkgreen")
-#' plot(ODEres, y_idx = 1, type = "sep", colors_pars = my_cols, 
+#' plot(ODEres, state_plot = "x.2", type = "sep", colors_pars = my_cols, 
 #'      legendPos = "outside")
 #' 
 #' # Trajectories:
-#' plot(ODEres, y_idx = 1, type = "trajec", legendPos = "topleft")
-#' plot(ODEres, y_idx = 1, type = "trajec", legendPos = "outside")
-#' plot(ODEres, y_idx = 1, type = "trajec", colors_pars = my_cols, 
+#' plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "topleft")
+#' plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "outside")
+#' plot(ODEres, state_plot = "x.2", type = "trajec", colors_pars = my_cols, 
 #'      legendPos = "outside")
 #'
 #' @import
@@ -82,46 +86,50 @@
 #' @export
 #'
 
-plot.morrisRes <- function(x, y_idx = 1, type = "sep", colors_pars = NULL,
-                           main_title = NULL, legendPos = "outside", ...) {
+plot.morrisRes <- function(x, state_plot = names(x)[1], type = "sep", 
+                           colors_pars = NULL, main_title = NULL, 
+                           legendPos = "outside", ...) {
 
   ##### Check input #################################################
   assertClass(x, "morrisRes")
-  assertIntegerish(y_idx, lower = 1, upper = length(x))
+  assertCharacter(state_plot, len = 1)
+  stopifnot(state_plot %in% names(x))
   assertCharacter(type, len = 1)
   notOk <- !type %in% c("sep", "trajec")
   if(notOk)
     stop("type must be one of \"sep\" or \"trajec\"!")
-  stopifnot((is.character(colors_pars) && 
-              length(colors_pars) >= (nrow(x[[y_idx]]) - 1) / 3) || 
-              is.null(colors_pars))
+  stopifnot(is.null(colors_pars) || (is.character(colors_pars) && 
+    length(colors_pars) >= (nrow(x[[which(names(x) == state_plot)]]) - 1) / 3))
+  stopifnot(is.null(main_title) || (is.character(main_title) && 
+    length(main_title) == 1))
   assertCharacter(legendPos, len = 1)
   notOk <- !legendPos %in% c("outside", "bottomright", "bottom",
-    "bottomleft", "left", "topleft", "top", "topright", "right",
-    "center")
+    "bottomleft", "left", "topleft", "top", "topright", "right", "center")
   if(notOk)
     stop("legendPos must be one of \"outside\", \"bottomright\", \"bottom\",
-      \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
-      \"right\", \"center\"!")
+         \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
+         \"right\", \"center\"!")
 
   ##### Plot ###########################################################
   
+  # Index der zu plottenden state-Variable:
+  y_idx <- which(names(x) == state_plot)
   # Extrahiere die Parameter-Namen:
   k <- (nrow(x[[y_idx]]) - 1) / 3
   pars_tmp <- rownames(x[[y_idx]])[2:(k + 1)]
   pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
-  state_name <- names(x)[y_idx]
   
   # Separate Plots fuer mu.star und sigma:
   if(type == "sep"){
-    plotSep(x[[y_idx]], pars, colors_pars, 
-            state_name, common_title = main_title, legendPos, ...)
+    plotSep(x[[y_idx]], pars, y_name = state_plot, colors_pars = colors_pars, 
+            common_title = main_title, legendPos = legendPos, ...)
   }
   
   # Trajectories:
   if(type == "trajec"){
-    plotTrajectories(x[[y_idx]], pars, colors_pars, 
-                     state_name, main_title, legendPos, ...)
+    plotTrajectories(x[[y_idx]], pars, y_name = state_plot, 
+                     colors_pars = colors_pars,
+                     main_title, legendPos = legendPos, ...)
   }
   
   # For testing purposes:

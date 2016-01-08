@@ -32,13 +32,26 @@ FHNres_aos <- ODEmorris_aos(mod = FHNmod,
 # User      System verstrichen 
 # 9.18        0.02        9.51
 
-# save(FHNres_aos, file = "SA-ODEmorris_aos.RData")
+# save(FHNres_aos, file = "test_ODEmorris_aos.RData")
 
-# pdf("SA-ODEmorris_aos.pdf", width = 10, height = 7)
+# pdf("test_ODEmorris_aos.pdf", width = 10, height = 7)
+# Palette "Dark2" from the package "RColorBrewer" with some 
+# additional colors:
+my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+             "darkblue", "darkgreen")
 # Voltage:
-plot(FHNres_aos, y_idx = 1, type = "sep")
-plot(FHNres_aos, y_idx = 1, type = "trajec")
+plot(FHNres_aos, y_plot = "Voltage", type = "sep")
+plot(FHNres_aos, y_plot = "Voltage", type = "sep", legendPos = "topleft")
+plot(FHNres_aos, y_plot = "Voltage", type = "sep", colors_pars = my_cols)
+plot(FHNres_aos, y_plot = "Voltage", type = "trajec")
+plot(FHNres_aos, y_plot = "Voltage", type = "trajec", legendPos = "topleft")
+plot(FHNres_aos, y_plot = "Voltage", type = "trajec", colors_pars = my_cols)
 # Current:
-plot(FHNres_aos, y_idx = 2, type = "sep")
-plot(FHNres_aos, y_idx = 2, type = "trajec")
+plot(FHNres_aos, y_plot = "Current", type = "sep")
+plot(FHNres_aos, y_plot = "Current", type = "sep", legendPos = "topleft")
+plot(FHNres_aos, y_plot = "Current", type = "sep", colors_pars = my_cols)
+plot(FHNres_aos, y_plot = "Current", type = "trajec")
+plot(FHNres_aos, y_plot = "Current", type = "trajec", legendPos = "topleft")
+plot(FHNres_aos, y_plot = "Current", type = "trajec", colors_pars = my_cols)
 # dev.off()
