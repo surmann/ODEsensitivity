@@ -5,13 +5,6 @@
 #' \code{plot.morrisRes_aos} plots the results of Morris SA for objects of class 
 #' \code{morrisRes_aos}.
 #'
-#' @details
-#' \code{plot} with \code{type = "sep"} plots mu.star and
-#'   sigma separately versus time.
-#'
-#' \code{plot} with \code{type = "trajec"} plots mu.star versus
-#'   sigma for every point of time.
-#'
 #' @param x [\code{morrisRes_aos}]\cr
 #'   resulting output of \code{\link{ODEmorris_aos}}, of class 
 #'   \code{morrisRes_aos}.
@@ -37,8 +30,13 @@
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
 #' @return \code{TRUE} (invisible; for testing purposes).
+#' 
+#' @details
+#' \code{plot} with \code{type = "sep"} plots mu.star and
+#'   sigma separately versus time.
 #'
-#' @method plot morrisRes_aos
+#' \code{plot} with \code{type = "trajec"} plots mu.star versus
+#'   sigma for every point of time.
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
@@ -98,9 +96,10 @@
 #' @seealso \code{\link{ODEmorris_aos}},
 #'   \code{\link[sensitivity]{morris_list}}
 #'
-#' @export
 #' @import
 #'   checkmate
+#' @method plot morrisRes_aos
+#' @export
 #'
 
 plot.morrisRes_aos <- function(x, y_plot = names(x)[1], type = "sep", 

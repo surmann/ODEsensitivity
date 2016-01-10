@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEsobol_aos.R
 \name{ODEsobol_aos}
 \alias{ODEsobol_aos}
-\title{Sobol SA for ODEs for All Output Variables and All Timepoints
+\title{Sobol' SA for ODEs for All Output Variables and All Timepoints
 Simultaneously}
 \usage{
 ODEsobol_aos(mod, pars, yini, times, ode_method = "lsoda", seed = 2015,
@@ -54,7 +54,7 @@ distribution of all parameters on [0, 1].}
 
 \item{method}{[\code{character(1)}]\cr
 either \code{"jansen"} or \code{"martinez"}, specifying which modification
-of the variance-based Sobol method shall be used. Defaults to 
+of the variance-based Sobol' method shall be used. Defaults to 
 \code{"martinez"}, which is slightly faster than \code{"jansen"}.}
 
 \item{nboot}{[\code{integer(1)}]\cr
@@ -64,14 +64,14 @@ replicates. Defaults to 0, so no bootstrapping is done.}
 }
 \value{
 List of length \code{length(yini)} and of class \code{sobolRes_aos} 
-  containing in each element a list of the Sobol SA results for the 
+  containing in each element a list of the Sobol' SA results for the 
   corresponding \code{yini}-variable (i.e. 1st order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of
   time of the \code{times} vector.
 }
 \description{
 \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
-ordinary differential equations according to the Sobol-Martinez-method. 
+ordinary differential equations according to the Sobol'-Martinez-method. 
 The analysis is done for all output variables at all timepoints 
 simultaneously using \code{\link[sensitivity]{sobolmartinez_list}} from the 
 package \code{sensitivity}.
@@ -97,39 +97,19 @@ Sometimes, it is also helpful to try another ODE-solver (argument
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values
 # and the times vector:
-FHNmod <- function(Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
-
-    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-    dCurrent <- - 1 / s *(Voltage - a + b * Current)
-
-    return(list(c(dVoltage, dCurrent)))
-  })
-}
-
-FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
-
-FHNres <- ODEsobol_aos(mod = FHNmod,
-                       pars = c("a", "b", "s"),
-                       yini = FHNyini,
-                       times = FHNtimes,
-                       ode_method = "adams",
-                       seed = 2015,
-                       n = 10,                      # use n >> 10!
-                       rfuncs = c("runif", "runif", "rnorm"),
-                       rargs = c(rep("min = 0.18, max = 0.22", 2),
-                                 "mean = 3, sd = 0.2 / 3"),
-                       method = "martinez",
-                       nboot = 0)
 
 }
 \author{
 Frank Weber
 }
+\references{
+J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+  \emph{Parameter estimation for differential equations: a generalized 
+  smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+  69, Part 5, 741--796.
+}
 \seealso{
-\code{\link[sensitivity]{sobol}, 
-\link[sensitivity]{sobolmartinez_list},
+\code{\link[sensitivity]{sobolmartinez_list},
 \link{plot.sobolRes_aos}}
 }
 

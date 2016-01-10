@@ -1,9 +1,9 @@
-#' @title Sobol SA for ODEs for All Output Variables and All Timepoints
+#' @title Sobol' SA for ODEs for All Output Variables and All Timepoints
 #' Simultaneously
 #'
 #' @description
 #' \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
-#' ordinary differential equations according to the Sobol-Martinez-method. 
+#' ordinary differential equations according to the Sobol'-Martinez-method. 
 #' The analysis is done for all output variables at all timepoints 
 #' simultaneously using \code{\link[sensitivity]{sobolmartinez_list}} from the 
 #' package \code{sensitivity}.
@@ -42,7 +42,7 @@
 #'   distribution of all parameters on [0, 1].
 #' @param method [\code{character(1)}]\cr
 #'   either \code{"jansen"} or \code{"martinez"}, specifying which modification
-#'   of the variance-based Sobol method shall be used. Defaults to 
+#'   of the variance-based Sobol' method shall be used. Defaults to 
 #'   \code{"martinez"}, which is slightly faster than \code{"jansen"}.
 #' @param nboot [\code{integer(1)}]\cr
 #'   parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
@@ -50,7 +50,7 @@
 #'   replicates. Defaults to 0, so no bootstrapping is done.
 #'
 #' @return List of length \code{length(yini)} and of class \code{sobolRes_aos} 
-#'   containing in each element a list of the Sobol SA results for the 
+#'   containing in each element a list of the Sobol' SA results for the 
 #'   corresponding \code{yini}-variable (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
 #'   time of the \code{times} vector.
@@ -72,45 +72,22 @@
 #'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 #'
 #' @author Frank Weber
+#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+#'   \emph{Parameter estimation for differential equations: a generalized 
+#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+#'   69, Part 5, 741--796.
+#' @seealso \code{\link[sensitivity]{sobolmartinez_list},
+#' \link{plot.sobolRes_aos}}
+#' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
-#' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
 #'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
-#' }
-#'
-#' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 50, by = 5)
-#'
-#' FHNres <- ODEsobol_aos(mod = FHNmod,
-#'                        pars = c("a", "b", "s"),
-#'                        yini = FHNyini,
-#'                        times = FHNtimes,
-#'                        ode_method = "adams",
-#'                        seed = 2015,
-#'                        n = 10,                      # use n >> 10!
-#'                        rfuncs = c("runif", "runif", "rnorm"),
-#'                        rargs = c(rep("min = 0.18, max = 0.22", 2),
-#'                                  "mean = 3, sd = 0.2 / 3"),
-#'                        method = "martinez",
-#'                        nboot = 0)
-#'
-#' @seealso \code{\link[sensitivity]{sobol}, 
-#' \link[sensitivity]{sobolmartinez_list},
-#' \link{plot.sobolRes_aos}}
-#'
-#' @export
-#' @import
-#'   checkmate
+#' @import checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity sobolmartinez_list
+#' @export
 #'
 
 ODEsobol_aos <- function(mod,
@@ -196,7 +173,7 @@ ODEsobol_aos <- function(mod,
   # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
   # "sensitivity":
   if(method == "jansen"){
-    stop("Sobol-Jansen-method not implemented yet")
+    stop("Sobol'-Jansen-method not implemented yet")
     # x <- soboljansen_list(model = model_fit, X1, X2, nboot = nboot)
   } else if(method == "martinez"){
     x <- sobolmartinez_list(model = model_fit, X1, X2, nboot = nboot)

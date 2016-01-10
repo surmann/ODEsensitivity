@@ -20,8 +20,8 @@ FHNres_ats <- ODEsobol_ats(mod = FHNmod,
                            pars = c("a", "b", "s"),
                            yini = FHNyini,
                            times = FHNtimes,
+                           y_analyzed = "Voltage",
                            ode_method = "adams",
-                           y_idx = 1,
                            seed = 2015,
                            n = 10,
                            rfuncs = c("runif", "runif", "rnorm"),
@@ -48,8 +48,8 @@ FHNres_ats <- ODEsobol_ats(mod = FHNmod,
 # User      System verstrichen 
 # 7.44        0.02        7.62
 
-# save(FHNres_ats, file = "SA-ODEsobol_ats.RData")
+# save(FHNres_ats, file = "test_ODEsobol_ats.RData")
 
-# pdf("SA-ODEsobol_ats.pdf", width = 10, height = 7)
+# pdf("test_ODEsobol_ats.pdf", width = 10, height = 7)
 plot(FHNres_ats, type = "l", legendPos = "topright")
 # dev.off()

@@ -84,7 +84,7 @@ method and supports transformations of the adapted
   to be applied to the adapted \code{\link[deSolve]{ode}}-results used for 
   \code{\link[sensitivity]{morris}} (e.g. choosing only one output variable),
   so that this adapted model function returns a vector. This also means that 
-  only one timepoint per can be analyzed per execution of
+  only one timepoint can be analyzed per execution of
   \code{\link[sensitivity]{morris}}. Therefore, a parallelization has to be
   made which results (in general) in \code{ODEmorris_trafo} being very slow.
   Because of the parallelization, package \code{parallel} is needed for this

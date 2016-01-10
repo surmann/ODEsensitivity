@@ -2,12 +2,12 @@
 % Please edit documentation in R/ODEsobol_ats.R
 \name{ODEsobol_ats}
 \alias{ODEsobol_ats}
-\title{Sobol SA for ODEs at All Timepoints Simultaneously}
+\title{Sobol' SA for ODEs at All Timepoints Simultaneously}
 \usage{
-ODEsobol_ats(mod, pars, yini, times, ode_method = "lsoda", y_idx = 1,
-  seed = 2015, n = 1000, rfuncs = rep("runif", length(pars)),
-  rargs = rep("min = 0, max = 1", length(pars)), method = "martinez",
-  nboot = 0)
+ODEsobol_ats(mod, pars, yini, times, y_analyzed = names(yini)[1],
+  ode_method = "lsoda", seed = 2015, n = 1000, rfuncs = rep("runif",
+  length(pars)), rargs = rep("min = 0, max = 1", length(pars)),
+  method = "martinez", nboot = 0)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -24,13 +24,13 @@ points of time at which the SA should be executed
 (vector of arbitrary length). Also the
 first point of time must be positive.}
 
+\item{y_analyzed}{[\code{character(1)}]\cr
+name of the \code{yini}-variable to be analyzed. Defaults to the name of 
+the first \code{yini}-variable.}
+
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
 \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
-
-\item{y_idx}{[\code{integer(1)}]\cr
-index of the output variable to be analyzed. Defaults to 1, so the first
-output variable is used.}
 
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
@@ -57,7 +57,7 @@ distribution of all parameters on [0, 1].}
 
 \item{method}{[\code{character(1)}]\cr
 either \code{"jansen"} or \code{"martinez"}, specifying which modification
-of the variance-based Sobol method shall be used. Defaults to 
+of the variance-based Sobol' method shall be used. Defaults to 
 \code{"martinez"}, which is slightly faster than \code{"jansen"}.}
 
 \item{nboot}{[\code{integer(1)}]\cr
@@ -66,14 +66,14 @@ parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
 replicates. Defaults to 0, so no bootstrapping is done.}
 }
 \value{
-List of Sobol SA results (i.e. 1st order sensitivity indices
+List of Sobol' SA results (i.e. 1st order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of
   time of the \code{times} vector, of class \code{sobolRes_ats}.
 }
 \description{
 \code{ODEsobol_ats} performs a variance-based sensitivity analysis for
-ordinary differential equations according to either the Sobol-Jansen- or the
-Sobol-Martinez-method. The analysis is done for one output variable at all 
+ordinary differential equations according to either the Sobol'-Jansen- or the
+Sobol'-Martinez-method. The analysis is done for one output variable at all 
 timepoints simultaneously using \code{\link[sensitivity]{soboljansen_matrix}}
 resp. \code{\link[sensitivity]{sobolmartinez_matrix}} from the package 
 \code{sensitivity}.
@@ -88,7 +88,7 @@ all timepoints (one per column). Thus, \code{\link[deSolve]{ode}} only needs
 to be executed once.
 }
 \note{
-\code{ODEsobol_ats} is only purposed for analysing one output 
+\code{ODEsobol_ats} is only purposed for analyzing one output 
 variable.
 
   Sometimes, it is also helpful to try another ODE-solver (argument 
@@ -102,40 +102,19 @@ variable.
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values
 # and the times vector:
-FHNmod <- function(Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
-
-    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-    dCurrent <- - 1 / s *(Voltage - a + b * Current)
-
-    return(list(c(dVoltage, dCurrent)))
-  })
-}
-
-FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
-
-FHNres <- ODEsobol_ats(mod = FHNmod,
-                       pars = c("a", "b", "s"),
-                       yini = FHNyini,
-                       times = FHNtimes,
-                       ode_method = "adams",
-                       y_idx = 1,            # only voltage
-                       seed = 2015,
-                       n = 10,               # use n >> 10!
-                       rfuncs = c("runif", "runif", "rnorm"),
-                       rargs = c(rep("min = 0.18, max = 0.22", 2),
-                                 "mean = 3, sd = 0.2 / 3"),
-                       method = "martinez",
-                       nboot = 0)
 
 }
 \author{
 Frank Weber
 }
+\references{
+J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+  \emph{Parameter estimation for differential equations: a generalized 
+  smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+  69, Part 5, 741--796.
+}
 \seealso{
-\code{\link[sensitivity]{sobol},
-\link[sensitivity]{soboljansen_matrix},
+\code{\link[sensitivity]{soboljansen_matrix},
 \link[sensitivity]{sobolmartinez_matrix},
 \link{plot.sobolRes_ats}}
 }

@@ -36,8 +36,8 @@ FHNres_aos <- ODEsobol_aos(mod = FHNmod,
 # User      System verstrichen 
 # 7.38        0.00        7.40
 
-# save(FHNres_aos, file = "SA-ODEsobol_aos.RData")
+# save(FHNres_aos, file = "test_ODEsobol_aos.RData")
 
-# pdf("SA-ODEsobol_aos.pdf", width = 10, height = 7)
-plot(FHNres_aos, y_idx = 1, type = "l", legendPos = "topright")
+# pdf("test_ODEsobol_aos.pdf", width = 10, height = 7)
+plot(FHNres_aos, y_plot = "Voltage", type = "l", legendPos = "topright")
 # dev.off()

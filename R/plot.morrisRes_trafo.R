@@ -6,13 +6,6 @@
 #' \code{plot.morrisRes_trafo} plots the results of Morris SA for objects of 
 #' class \code{morrisRes_trafo}.
 #'
-#' @details
-#' \code{plot} with \code{type = "sep"} plots mu.star and
-#'   sigma separately versus time.
-#'
-#' \code{plot} with \code{type = "trajec"} plots mu.star versus
-#'   sigma for every point of time.
-#'
 #' @param x [\code{morrisRes_trafo}]\cr
 #'   resulting output of \code{\link{ODEmorris_trafo}}, of class 
 #'   \code{morrisRes_trafo}.
@@ -35,8 +28,13 @@
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
 #' @return \code{TRUE} (invisible; for testing purposes).
+#' 
+#' @details
+#' \code{plot} with \code{type = "sep"} plots mu.star and
+#'   sigma separately versus time.
 #'
-#' @method plot morrisRes_trafo
+#' \code{plot} with \code{type = "trajec"} plots mu.star versus
+#'   sigma for every point of time.
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
@@ -90,9 +88,10 @@
 #' @seealso \code{\link{ODEmorris_trafo}},
 #'   \code{\link[sensitivity]{morris}}
 #'
-#' @export
 #' @import
 #'   checkmate
+#' @method plot morrisRes_trafo
+#' @export
 #'
 
 plot.morrisRes_trafo <- function(x, type = "sep", colors_pars = NULL, 

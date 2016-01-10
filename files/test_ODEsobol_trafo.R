@@ -16,20 +16,20 @@ FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
 system.time(
-FHNres <- ODEsobol(mod = FHNmod,
-                   pars = c("a", "b", "s"),
-                   yini = FHNyini,
-                   times = FHNtimes,
-                   ode_method = "adams",
-                   seed = 2015,
-                   n = 10,
-                   rfuncs = c("runif", "runif", "rnorm"),
-                   rargs = c(rep("min = 0.18, max = 0.22", 2),
-                             "mean = 3, sd = 0.2 / 3"),
-                   method = "martinez",
-                   nboot = 0,
-                   trafo = function(Y) Y[, 1],    # voltage only
-                   ncores = 2)
+FHNres_trafo <- ODEsobol_trafo(mod = FHNmod,
+                               pars = c("a", "b", "s"),
+                               yini = FHNyini,
+                               times = FHNtimes,
+                               ode_method = "adams",
+                               seed = 2015,
+                               n = 10,
+                               rfuncs = c("runif", "runif", "rnorm"),
+                               rargs = c(rep("min = 0.18, max = 0.22", 2),
+                                         "mean = 3, sd = 0.2 / 3"),
+                               method = "martinez",
+                               nboot = 0,
+                               trafo = function(Y) Y[, 1],    # voltage only
+                               ncores = 2)
 )
 # User      System verstrichen 
 # 0.18        0.09       28.64
@@ -46,8 +46,8 @@ FHNres <- ODEsobol(mod = FHNmod,
 # User      System verstrichen 
 # 0.17        0.09       31.50
 
-# save(FHNres, file = "SA-ODEsobol.RData")
+# save(FHNres_trafo, file = "test_ODEsobol_trafo.RData")
 
-# pdf("SA-ODEsobol.pdf", width = 10, height = 7)
-plot(FHNres, type = "l", legendPos = "topright")
+# pdf("test_ODEsobol_trafo.pdf", width = 10, height = 7)
+plot(FHNres_trafo, type = "l", legendPos = "topright")
 # dev.off()

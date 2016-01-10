@@ -1,9 +1,9 @@
-#' @title Sobol SA for ODEs at All Timepoints Simultaneously
+#' @title Sobol' SA for ODEs at All Timepoints Simultaneously
 #'
 #' @description
 #' \code{ODEsobol_ats} performs a variance-based sensitivity analysis for
-#' ordinary differential equations according to either the Sobol-Jansen- or the
-#' Sobol-Martinez-method. The analysis is done for one output variable at all 
+#' ordinary differential equations according to either the Sobol'-Jansen- or the
+#' Sobol'-Martinez-method. The analysis is done for one output variable at all 
 #' timepoints simultaneously using \code{\link[sensitivity]{soboljansen_matrix}}
 #' resp. \code{\link[sensitivity]{sobolmartinez_matrix}} from the package 
 #' \code{sensitivity}.
@@ -18,12 +18,12 @@
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
 #'   first point of time must be positive.
+#' @param y_analyzed [\code{character(1)}]\cr
+#'   name of the \code{yini}-variable to be analyzed. Defaults to the name of 
+#'   the first \code{yini}-variable.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
-#' @param y_idx [\code{integer(1)}]\cr
-#'   index of the output variable to be analyzed. Defaults to 1, so the first
-#'   output variable is used.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param n [\code{integer(1)}]\cr
@@ -45,14 +45,14 @@
 #'   distribution of all parameters on [0, 1].
 #' @param method [\code{character(1)}]\cr
 #'   either \code{"jansen"} or \code{"martinez"}, specifying which modification
-#'   of the variance-based Sobol method shall be used. Defaults to 
+#'   of the variance-based Sobol' method shall be used. Defaults to 
 #'   \code{"martinez"}, which is slightly faster than \code{"jansen"}.
 #' @param nboot [\code{integer(1)}]\cr
 #'   parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
 #'   \code{\link{sobolmartinez_matrix}}, i.e. the number of bootstrap 
 #'   replicates. Defaults to 0, so no bootstrapping is done.
 #'
-#' @return List of Sobol SA results (i.e. 1st order sensitivity indices
+#' @return List of Sobol' SA results (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
 #'   time of the \code{times} vector, of class \code{sobolRes_ats}.
 #'
@@ -64,7 +64,7 @@
 #' all timepoints (one per column). Thus, \code{\link[deSolve]{ode}} only needs
 #' to be executed once.
 #'
-#' @note \code{ODEsobol_ats} is only purposed for analysing one output 
+#' @note \code{ODEsobol_ats} is only purposed for analyzing one output 
 #' variable.
 #' 
 #'   Sometimes, it is also helpful to try another ODE-solver (argument 
@@ -75,56 +75,32 @@
 #'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 #'
 #' @author Frank Weber
+#' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
+#'   \emph{Parameter estimation for differential equations: a generalized 
+#'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
+#'   69, Part 5, 741--796.
+#' @seealso \code{\link[sensitivity]{soboljansen_matrix},
+#' \link[sensitivity]{sobolmartinez_matrix},
+#' \link{plot.sobolRes_ats}}
+#' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
-#' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
 #'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
-#' }
-#'
-#' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 50, by = 5)
-#'
-#' FHNres <- ODEsobol_ats(mod = FHNmod,
-#'                        pars = c("a", "b", "s"),
-#'                        yini = FHNyini,
-#'                        times = FHNtimes,
-#'                        ode_method = "adams",
-#'                        y_idx = 1,            # only voltage
-#'                        seed = 2015,
-#'                        n = 10,               # use n >> 10!
-#'                        rfuncs = c("runif", "runif", "rnorm"),
-#'                        rargs = c(rep("min = 0.18, max = 0.22", 2),
-#'                                  "mean = 3, sd = 0.2 / 3"),
-#'                        method = "martinez",
-#'                        nboot = 0)
-#'
-#' @seealso \code{\link[sensitivity]{sobol},
-#' \link[sensitivity]{soboljansen_matrix},
-#' \link[sensitivity]{sobolmartinez_matrix},
-#' \link{plot.sobolRes_ats}}
-#'
-#' @export
-#' @import
-#'   checkmate
+#' @import checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity soboljansen_matrix
 #' @importFrom sensitivity sobolmartinez_matrix
+#' @export
 #'
 
 ODEsobol_ats <- function(mod,
                          pars,
                          yini,
                          times,
+                         y_analyzed = names(yini)[1],
                          ode_method = "lsoda",
-                         y_idx = 1,
                          seed = 2015,
                          n = 1000,
                          rfuncs = rep("runif", length(pars)),
@@ -139,11 +115,12 @@ ODEsobol_ats <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
+  assertCharacter(y_analyzed, len = 1)
+  stopifnot(y_analyzed %in% names(yini))
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
                               "daspk", "euler", "rk4", "ode23", "ode45", 
                               "radau", "bdf", "bdf_d", "adams", "impAdams", 
                               "impAdams_d" ,"iteration"))
-  assertIntegerish(y_idx)
   assertNumeric(seed)
   assertIntegerish(n)
   assertCharacter(rfuncs, len = length(pars))
@@ -162,6 +139,8 @@ ODEsobol_ats <- function(mod,
   z <- length(yini)
   # Anzahl Zeitpunkte von Interesse:
   timesNum <- length(times)
+  # Index der zu analysierenden y-Variable:
+  y_idx <- which(y_analyzed == names(yini))
   # Forme DGL-Modell um, sodass fuer soboljansen_matrix()- bzw.
   # sobolmartinez_matrix()-Argument "model" passend:
   model_fit <- function(X){
@@ -213,7 +192,7 @@ ODEsobol_ats <- function(mod,
   rownames(S) <- rownames(T) <- c("time", pars)
   
   # Rueckgabe:
-  res <- list(S = S, T = T, method = method, y_idx = y_idx)
+  res <- list(S = S, T = T, method = method, y_analyzed = y_analyzed)
   class(res) <- "sobolRes_ats"
   return(res)
 }

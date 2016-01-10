@@ -1,87 +1,59 @@
 #' @title
-#' Plotting the results of Sobol SA
+#' Plotting the results of Sobol' SA for objects of class \code{sobolRes_trafo}
 #'
 #' @description
-#' \code{plot.sobolRes} plots the results of Sobol SA for objects of class 
-#' \code{sobolRes}.
-#'
-#' @details
-#' 1st order and total Sobol SA indices are plotted for each input
-#' parameter against time.
+#' \code{plot.sobolRes_trafo} plots the results of Sobol' SA for objects of 
+#' class \code{sobolRes_trafo}.
 #'
 #' @param x [\code{sobolRes}]\cr
-#'   resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.
+#'   resulting output of \code{\link{ODEsobol_trafo}}, of class 
+#'   \code{sobolRes_trafo}.
 #' @param type [\code{character(1)}]\cr
 #'   plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
 #'   Defaults to \code{"b"}.
-#' @param legendPos [\code{character(1)}]\cr
-#'   legend position, default is \code{"topleft"}.
-#' @param overall_main [\code{character(1)}]\cr
+#' @param main_title [\code{character(1)}]\cr
 #'   the common title for the two graphics. Default is \code{NULL}, which means
 #'   an automatic title is generated.
+#' @param legendPos [\code{character(1)}]\cr
+#'   legend position, default is \code{"topleft"}.
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
 #' @return TRUE (invisible; for testing purposes).
 #'
-#' @method plot sobolRes
+#' @details
+#' 1st order and total Sobol' SA indices are plotted for each input
+#' parameter against time.
 #'
 #' @note Unfortunately, the passing of arguments (e.g. "main") does not work
 #'   correctly.
+#' 
+#' @author Stefan Theers
+#' @seealso \code{\link{ODEsobol_trafo}},
+#'   \code{\link[sensitivity]{soboljansen}},
+#'   \code{\link[sensitivity]{sobolmartinez}}
 #'
 #' @examples
-#'
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 #' # definition of the model itself, parameters, initial values
 #' # and the times vector:
-#' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
-#'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
-#' }
-#'
-#' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 50, by = 5)
-#'
-#' FHNres <- ODEsobol(mod = FHNmod,
-#'                    pars = c("a", "b", "s"),
-#'                    yini = FHNyini,
-#'                    times = FHNtimes,
-#'                    seed = 2015,
-#'                    n = 10,                        # use n >> 10!
-#'                    rfuncs = c("runif", "runif", "rnorm"),
-#'                    rargs = c(rep("min = 0.18, max = 0.22", 2),
-#'                              "mean = 3, sd = 0.2 / 3"),
-#'                    method = "martinez",
-#'                    nboot = 0,
-#'                    trafo = function(Y) Y[, 1],    # voltage only
-#'                    ncores = 2)
-#'
-#' # Plot:
-#' plot(FHNres, type = "l", legendPos = "topright")
-#'
-#' @author Stefan Theers
-#' @seealso \code{\link{ODEsobol}},
-#'   \code{\link[sensitivity]{sobol}},
-#'   \code{\link[sensitivity]{sobol2007}}
 #'
 #' @export
 #' @import checkmate
+#' @method plot sobolRes_trafo
 #'
 
-plot.sobolRes <- function(x, type = "b", legendPos = "topleft", 
-                          overall_main = NULL, ...) {
+plot.sobolRes_trafo <- function(x, type = "b", main_title = NULL,
+                                legendPos = "topleft", ...) {
 
   ##### Plausibilitaet #################################################
-  assertClass(x, "sobolRes")
+  assertClass(x, "sobolRes_trafo")
   assertCharacter(type, len = 1)
   notOk <- !type %in% c("p", "l", "b", "c", "n", "o", "s", "h")
   if(notOk)
     stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
                "\"o\", \"s\" or \"h\"!"))
+  stopifnot(is.character(main_title) && length(main_title) == 1 ||
+              is.null(main_title))
   assertCharacter(legendPos, len = 1)
   notOk <- !any(rep(legendPos, 9) == c("bottomright", "bottom",
     "bottomleft", "left", "topleft", "top", "topright", "right",
@@ -90,8 +62,6 @@ plot.sobolRes <- function(x, type = "b", legendPos = "topleft",
     stop("legendPos must be one of \"bottomright\", \"bottom\",
       \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
       \"right\", \"center\"!")
-  stopifnot(is.character(overall_main) && length(overall_main) == 1 ||
-              is.null(overall_main))
 
   ##### Vorbereitungen #################################################
   k <- nrow(x$S) - 1
@@ -101,8 +71,8 @@ plot.sobolRes <- function(x, type = "b", legendPos = "topleft",
   minMaxS <- c(0.95 * min(x$S[-1, ]), 1.05 * max(x$S[-1, ]))
   minMaxT <- c(0.95 * min(x$T[-1, ]), 1.05 * max(x$T[-1, ]))
   # Gemeinsamer Titel fuer beide Grafiken:
-  if(is.null(overall_main)){
-    overall_main <- paste0("Sobol sensitivity indices with method = \"", 
+  if(is.null(main_title)){
+    main_title <- paste0("Sobol' sensitivity indices with method = \"", 
                            x$method, "\"")
   }
 
@@ -112,7 +82,7 @@ plot.sobolRes <- function(x, type = "b", legendPos = "topleft",
   ##### 1st order SA indices ###########################################
   # Plot fuer ersten Parameter:
   plot(x = x$S[1, ], y = x$S[2, ],
-       xlab = "Time", ylab = "1st order Sobol SA indices",
+       xlab = "Time", ylab = "1st order Sobol' SA indices",
        type = type, col = parsCols[1], ylim = minMaxS, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
@@ -131,7 +101,7 @@ plot.sobolRes <- function(x, type = "b", legendPos = "topleft",
   ##### total SA indices ###############################################
   # Plot fuer ersten Parameter:
   plot(x = x$T[1, ], y = x$T[2, ],
-       xlab = "Time", ylab = "Total Sobol SA indices",
+       xlab = "Time", ylab = "Total Sobol' SA indices",
        type = type, col = parsCols[1], ylim = minMaxT, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
@@ -148,7 +118,7 @@ plot.sobolRes <- function(x, type = "b", legendPos = "topleft",
   }
   
   # Gemeinsamer Titel:
-  mtext(overall_main, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
+  mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
   
   par(oldpar)
   return(invisible(TRUE))

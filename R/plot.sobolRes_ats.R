@@ -1,13 +1,9 @@
 #' @title
-#' Plotting the results of Sobol SA
+#' Plotting the results of Sobol' SA for objects of class \code{sobolRes_ats}
 #'
 #' @description
-#' \code{plot.sobolRes_ats} plots the results of Sobol SA for objects of class 
+#' \code{plot.sobolRes_ats} plots the results of Sobol' SA for objects of class 
 #' \code{sobolRes_ats}.
-#'
-#' @details
-#' 1st order and total Sobol SA indices are plotted for each input
-#' parameter against time.
 #'
 #' @param x [\code{sobolRes_ats}]\cr
 #'   resulting output of \code{\link{ODEsobol_ats}}, of class 
@@ -15,65 +11,39 @@
 #' @param type [\code{character(1)}]\cr
 #'   plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
 #'   Defaults to \code{"b"}.
-#' @param legendPos [\code{character(1)}]\cr
-#'   legend position, default is \code{"topleft"}.
-#' @param overall_main [\code{character(1)}]\cr
+#' @param main_title [\code{character(1)}]\cr
 #'   the common title for the two graphics. Default is \code{NULL}, which means
 #'   an automatic title is generated.
+#' @param legendPos [\code{character(1)}]\cr
+#'   legend position, default is \code{"topleft"}.
 #' @param ... additional arguments passed to \code{\link{plot}}.
 #'
 #' @return TRUE (invisible; for testing purposes).
 #'
-#' @method plot sobolRes_ats
+#' @details
+#' 1st order and total Sobol' SA indices are plotted for each input
+#' parameter against time.
 #'
 #' @note Unfortunately, the passing of arguments (e.g. "main") does not work
 #'   correctly.
 #'
-#' @examples
-#'
-#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-#' # definition of the model itself, parameters, initial values
-#' # and the times vector:
-#' FHNmod <- function(Time, State, Pars) {
-#'   with(as.list(c(State, Pars)), {
-#'
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
-#'
-#'     return(list(c(dVoltage, dCurrent)))
-#'   })
-#' }
-#'
-#' FHNyini  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 50, by = 5)
-#'
-#' FHNres_ats <- ODEsobol_ats(mod = FHNmod,
-#'                            pars = c("a", "b", "s"),
-#'                            yini = FHNyini,
-#'                            times = FHNtimes,
-#'                            y_idx = 1,            # only Voltage
-#'                            seed = 2015,
-#'                            n = 10,               # use n >> 10!
-#'                            rfuncs = c("runif", "runif", "rnorm"),
-#'                            rargs = c(rep("min = 0.18, max = 0.22", 2),
-#'                                  "mean = 3, sd = 0.2 / 3"),
-#'                            method = "martinez",
-#'                            nboot = 0)
-#'
-#' # Plot:
-#' plot(FHNres_ats, type = "l", legendPos = "topright")
-#'
 #' @author Frank Weber
-#' @seealso \code{\link{ODEsobol_ats}, \link[sensitivity]{sobol}, 
+#' @seealso \code{\link{ODEsobol_ats}, 
 #' \link[sensitivity]{soboljansen_matrix}, 
 #' \link[sensitivity]{sobolmartinez_matrix}}
 #'
-#' @export
+#' @examples
+#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
+#' # definition of the model itself, parameters, initial values
+#' # and the times vector:
+#'
 #' @import checkmate
+#' @method plot sobolRes_ats
+#' @export
 #'
 
-plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
-                              overall_main = NULL, ...) {
+plot.sobolRes_ats <- function(x, type = "b", main_title = NULL,
+                              legendPos = "topleft", ...) {
 
   ##### Plausibilitaet #################################################
   assertClass(x, "sobolRes_ats")
@@ -82,6 +52,8 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
   if(notOk)
     stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
                "\"o\", \"s\" or \"h\"!"))
+  stopifnot(is.character(main_title) && length(main_title) == 1 ||
+              is.null(main_title))
   assertCharacter(legendPos, len = 1)
   notOk <- !any(rep(legendPos, 9) == c("bottomright", "bottom", "bottomleft", 
               "left", "topleft", "top", "topright", "right", "center"))
@@ -89,8 +61,6 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
     stop("legendPos must be one of \"bottomright\", \"bottom\",
          \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
          \"right\", \"center\"!")
-  stopifnot(is.character(overall_main) && length(overall_main) == 1 ||
-              is.null(overall_main))
 
   ##### Vorbereitungen #################################################
   k <- nrow(x$S) - 1
@@ -100,9 +70,9 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
   minMaxS <- c(0.95 * min(x$S[-1, ]), 1.05 * max(x$S[-1, ]))
   minMaxT <- c(0.95 * min(x$T[-1, ]), 1.05 * max(x$T[-1, ]))
   # Gemeinsamer Titel fuer beide Grafiken:
-  if(is.null(overall_main)){
-    overall_main <- paste0("Sobol sensitivity indices for y_idx = ", x$y_idx,
-                           " and method = \"", x$method, "\"")
+  if(is.null(main_title)){
+    main_title <- paste0("Sobol' sensitivity indices for State Variable \"", 
+                         x$y_analyzed, "\" and method = \"", x$method, "\"")
   }
   
   oldpar <- par(mfrow = c(1, 2), mar = c(4, 4, 1, 2) + 0.2,
@@ -111,7 +81,7 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
   ##### 1st order SA indices ###########################################
   # Plot fuer ersten Parameter:
   plot(x = x$S[1, ], y = x$S[2, ],
-       xlab = "Time", ylab = "1st order Sobol SA indices",
+       xlab = "Time", ylab = "1st order Sobol' SA indices",
        type = type, col = parsCols[1], ylim = minMaxS, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
@@ -130,7 +100,7 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
   ##### total SA indices ###############################################
   # Plot fuer ersten Parameter:
   plot(x = x$T[1, ], y = x$T[2, ],
-       xlab = "Time", ylab = "Total Sobol SA indices",
+       xlab = "Time", ylab = "Total Sobol' SA indices",
        type = type, col = parsCols[1], ylim = minMaxT, ...)
   # Plots fuer alle weiteren Parameter:
   for(i in 2:k) {
@@ -147,7 +117,7 @@ plot.sobolRes_ats <- function(x, type = "b", legendPos = "topleft",
   }
   
   # Gemeinsamer Titel:
-  mtext(overall_main, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
+  mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
   
   par(oldpar)
   return(invisible(TRUE))

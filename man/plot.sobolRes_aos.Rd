@@ -2,29 +2,30 @@
 % Please edit documentation in R/plot.sobolRes_aos.R
 \name{plot.sobolRes_aos}
 \alias{plot.sobolRes_aos}
-\title{Plotting the results of Sobol SA}
+\title{Plotting the results of Sobol' SA for objects of class \code{sobolRes_aos}}
 \usage{
-\method{plot}{sobolRes_aos}(x, y_idx = 1, type = "b",
-  legendPos = "topleft", overall_main = NULL, ...)
+\method{plot}{sobolRes_aos}(x, y_plot = names(x$ST_by_y)[1], type = "b",
+  main_title = NULL, legendPos = "topleft", ...)
 }
 \arguments{
 \item{x}{[\code{sobolRes_aos}-object]\cr
 resulting output of \code{\link{ODEsobol_aos}}, of class 
 \code{sobolRes_aos}.}
 
-\item{y_idx}{[\code{integer(1)}]\cr
-index of the output variable to be plotted. Defaults to 1.}
+\item{y_plot}{[\code{character(1)}]\cr
+name of the \code{yini}-variable to be plotted. Defaults to the name of 
+the first \code{yini}-variable.}
 
 \item{type}{[\code{character(1)}]\cr
 plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
 Defaults to \code{"b"}.}
 
-\item{legendPos}{[\code{character(1)}]\cr
-legend position, default is \code{"topleft"}.}
-
-\item{overall_main}{[\code{character(1)}]\cr
+\item{main_title}{[\code{character(1)}]\cr
 the common title for the two graphics. Default is \code{NULL}, which means
 an automatic title is generated.}
+
+\item{legendPos}{[\code{character(1)}]\cr
+legend position, default is \code{"topleft"}.}
 
 \item{...}{additional arguments passed to \code{\link{plot}}.}
 }
@@ -32,56 +33,28 @@ an automatic title is generated.}
 TRUE (invisible; for testing purposes).
 }
 \description{
-\code{plot.sobolRes_aos} plots the results of Sobol SA for objects of class 
+\code{plot.sobolRes_aos} plots the results of Sobol' SA for objects of class 
 \code{sobolRes_aos}.
 }
 \details{
-1st order and total Sobol SA indices are plotted for one Y-variable (chosen
-by argument \code{y_idx}) and for each input parameter against time.
+1st order and total Sobol' SA indices are plotted for one 
+\code{yini}-variable (chosen by argument \code{y_plot}) and for each input 
+parameter against time.
 }
 \note{
 Unfortunately, the passing of arguments (e.g. "main") does not work
   correctly.
 }
 \examples{
-
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
 # definition of the model itself, parameters, initial values
 # and the times vector:
-FHNmod <- function(Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
-
-    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-    dCurrent <- - 1 / s *(Voltage - a + b * Current)
-
-    return(list(c(dVoltage, dCurrent)))
-  })
-}
-
-FHNyini  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
-
-FHNres_aos <- ODEsobol_aos(mod = FHNmod,
-                           pars = c("a", "b", "s"),
-                           yini = FHNyini,
-                           times = FHNtimes,
-                           seed = 2015,
-                           n = 10,                      # use n >> 10!
-                           rfuncs = c("runif", "runif", "rnorm"),
-                           rargs = c(rep("min = 0.18, max = 0.22", 2),
-                                 "mean = 3, sd = 0.2 / 3"),
-                           method = "martinez",
-                           nboot = 0)
-
-# Plot:
-plot(FHNres_aos, y_idx = 1, type = "l", legendPos = "topright")
 
 }
 \author{
 Frank Weber
 }
 \seealso{
-\code{\link{ODEsobol_aos}, \link[sensitivity]{sobol}, 
-\link[sensitivity]{sobolmartinez_list}}
+\code{\link{ODEsobol_aos}, \link[sensitivity]{sobolmartinez_list}}
 }
 
