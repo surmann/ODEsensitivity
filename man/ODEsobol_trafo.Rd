@@ -127,6 +127,6 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 \seealso{
 \code{\link[sensitivity]{soboljansen},
 \link[sensitivity]{sobolmartinez}, \link{ODEsobol_ats}, \link{ODEsobol_aos},
-\link{plot.sobolRes}}
+\link{plot.sobolRes_trafo}}
 }
 

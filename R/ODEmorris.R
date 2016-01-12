@@ -1,16 +1,15 @@
-#' @title Morris SA for objects of class \code{ODEnetwork}
+#' @title Morris SA for Objects of Class \code{ODEnetwork}
 #'
 #' @description
 #' \code{ODEmorris} performs a sensitivity analysis for objects of class
 #' \code{ODEnetwork} using Morris's elementary effects screening method. Package
-#' \code{ODEnetwork} is required for this function to work. 
+#' \code{ODEnetwork} is required for this function to work.
 #'
 #' @param odenet [\code{ODEnetwork}]\cr
 #'   list of class \code{ODEnetwork}.
 #' @param times [\code{numeric}]\cr
-#'   points of time at which the SA should be executed
-#'   (vector of arbitrary length). Also the
-#'   first point of time must be positive.
+#'   points of time at which the SA should be executed (vector of arbitrary 
+#'   length). The first point of time must be greater than zero.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
@@ -38,11 +37,11 @@
 #' @return List of class \code{morrisRes} of length 
 #'   \code{2 * nrow(odenet$state)} containing in each element a matrix for 
 #'   one state variable (all components of the 2 state variables are analyzed
-#'   independently). The matrices itself contain in their rows the Morris SA
+#'   independently). The matrices themselves contain in their rows the Morris SA
 #'   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
 #'   all timepoints (columns).
 #'
-#' @details The sensitivity analysis is done for all output variables, since 
+#' @details The sensitivity analysis is done for all state variables, since 
 #' \code{ODEmorris} is an adapted version of \code{\link{ODEmorris_aos}}.
 #' 
 #' @note \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
@@ -87,8 +86,7 @@
 #' ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
 #'                     binf = ODEbinf, bsup = ODEbsup, r = 20)
 #'
-#' @import
-#'   checkmate
+#' @import checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity morris_list
 #' @export
@@ -118,10 +116,10 @@ ODEmorris.ODEnetwork <- function(odenet,
                                  binf = 0,
                                  bsup = 1,
                                  r = 25,
-                                 design =
-                                   list(type = "oat", levels = 100, 
-                                 grid.jump = 1),
+                                 design = list(type = "oat", levels = 100, 
+                                               grid.jump = 1),
                                  scale = TRUE){
+  
   ##### Package checks #################################################
   
   if (!requireNamespace("ODEnetwork", quietly = TRUE)) {
@@ -130,20 +128,43 @@ ODEmorris.ODEnetwork <- function(odenet,
          call. = FALSE)
   }
   
-  ##### Input checks #################################################
+  ##### Input checks ###################################################
+  
+  assertClass(odenet, "ODEnetwork")
+  assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
+  times <- sort(times)
+  stopifnot(!any(times == 0))
+  stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
+                              "daspk", "euler", "rk4", "ode23", "ode45", 
+                              "radau", "bdf", "bdf_d", "adams", "impAdams", 
+                              "impAdams_d" ,"iteration"))
+  assertNumeric(seed)
+  assertNumeric(binf)
+  notOk <- length(binf) != length(pars) & length(binf) != 1
+  if(notOk)
+    stop("binf must be of length 1 or of the same length as pars!")
+  assertNumeric(bsup)
+  notOk <- length(bsup) != length(pars) & length(bsup) != 1
+  if(notOk)
+    stop("bsup must be of length 1 or of the same length as pars!")
+  assertIntegerish(r, len = 1)
+  if(r < 1)
+    stop("r must be greater or equal to 1.")
+  assertList(design)
+  assertLogical(scale, len = 1)
+  
+  ##### Preparation ####################################################
   
   set.seed(seed)
   odenet_pars <- ODEnetwork::createParamVec(odenet)
   pars <- names(odenet_pars)
   yini <- ODEnetwork::createState(odenet)
-  # Anzahl Parameter:
+  # Number of parameters:
   k <- length(pars)
-  # Anzahl Outputgroessen:
+  # Number of output variables (state variables):
   z <- length(yini)
-  # Anzahl Zeitpunkte von Interesse:
+  # Number of timepoints:
   timesNum <- length(times)
-  
-  ##### Sensitivity analysis #########################################
   
   # Forme DGL-Modell um, sodass fuer morris_list()-Argument "model_list" 
   # passend:
@@ -157,8 +178,7 @@ ODEmorris.ODEnetwork <- function(odenet,
       odenet_parmod <- ODEnetwork::updateOscillators(odenet, 
                                                      ParamVec = pars_upd)
       ODEnetwork::simuNetwork(odenet_parmod, c(0, times), 
-                  method = ode_method)$simulation$results[2:(timesNum + 1), 
-                                                          2:(z + 1)]
+        method = ode_method)$simulation$results[2:(timesNum + 1), 2:(z + 1)]
     })
     if(timesNum == 1){
       # Korrektur noetig, falls timesNum == 1:
@@ -178,6 +198,8 @@ ODEmorris.ODEnetwork <- function(odenet,
     names(res_per_y) <- names(yini)
     return(res_per_y)
   }
+  
+  ##### Sensitivity analysis #########################################
   
   x <- morris_list(model = model_fit, factors = pars, r = r, 
                    design = design, binf = binf, bsup = bsup, scale = scale)

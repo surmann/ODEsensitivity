@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEmorris.R
 \name{ODEmorris}
 \alias{ODEmorris}
-\title{Morris SA for objects of class \code{ODEnetwork}}
+\title{Morris SA for Objects of Class \code{ODEnetwork}}
 \usage{
 ODEmorris(odenet, times, ode_method = "lsoda", seed = 2015, binf = 0,
   bsup = 1, r = 25, design = list(type = "oat", levels = 100, grid.jump =
@@ -13,9 +13,8 @@ ODEmorris(odenet, times, ode_method = "lsoda", seed = 2015, binf = 0,
 list of class \code{ODEnetwork}.}
 
 \item{times}{[\code{numeric}]\cr
-points of time at which the SA should be executed
-(vector of arbitrary length). Also the
-first point of time must be positive.}
+points of time at which the SA should be executed (vector of arbitrary 
+length). The first point of time must be greater than zero.}
 
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
@@ -51,7 +50,7 @@ highly recommended if the factors have different orders of magnitude, see
 List of class \code{morrisRes} of length 
   \code{2 * nrow(odenet$state)} containing in each element a matrix for 
   one state variable (all components of the 2 state variables are analyzed
-  independently). The matrices itself contain in their rows the Morris SA
+  independently). The matrices themselves contain in their rows the Morris SA
   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
   all timepoints (columns).
 }
@@ -61,7 +60,7 @@ List of class \code{morrisRes} of length
 \code{ODEnetwork} is required for this function to work.
 }
 \details{
-The sensitivity analysis is done for all output variables, since 
+The sensitivity analysis is done for all state variables, since 
 \code{ODEmorris} is an adapted version of \code{\link{ODEmorris_aos}}.
 }
 \note{

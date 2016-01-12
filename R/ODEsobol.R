@@ -1,24 +1,16 @@
-#' @title Sobol' SA for ODEs for All Output Variables and All Timepoints
-#' Simultaneously
+#' @title Sobol' SA for Objects of Class \code{ODEnetwork}
 #'
 #' @description
-#' \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
-#' ordinary differential equations according to either the Sobol'-Jansen- or the
-#' Sobol'-Martinez-method. The analysis is done for all output variables at all 
-#' timepoints simultaneously using \code{\link[sensitivity]{soboljansen_list}} 
-#' or \code{\link[sensitivity]{sobolmartinez_list}} from the package 
-#' \code{sensitivity}.
+#' \code{ODEsobol} performs a variance-based sensitivity analysis for objects of
+#' class \code{ODEnetwork} according to either the Sobol'-Jansen- or the 
+#' Sobol'-Martinez-method. Package \code{ODEnetwork} is required for this 
+#' function to work.
 #'
-#' @param mod [\code{function(Time, State, Pars)}]\cr
-#'   model to examine, cf. example below.
-#' @param pars [\code{character(k)}]\cr
-#'   vector of \code{k} input variable names.
-#' @param yini [\code{numeric(z)}]\cr
-#'   vector of \code{z} initial values.
+#' @param odenet [\code{ODEnetwork}]\cr
+#'   list of class \code{ODEnetwork}.
 #' @param times [\code{numeric}]\cr
-#'   points of time at which the SA should be executed
-#'   (vector of arbitrary length). Also the
-#'   first point of time must be positive.
+#'   points of time at which the SA should be executed (vector of arbitrary 
+#'   length). The first point of time must be greater than zero.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
@@ -50,20 +42,14 @@
 #'   \code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
 #'   replicates. Defaults to 0, so no bootstrapping is done.
 #'
-#' @return List of length \code{length(yini)} and of class \code{sobolRes_aos} 
-#'   containing in each element a list of the Sobol' SA results for the 
-#'   corresponding \code{yini}-variable (i.e. 1st order sensitivity indices
-#'   \code{S} and total sensitivity indices \code{T}) for every point of
-#'   time of the \code{times} vector.
+#' @return List of length \code{2 * nrow(odenet$state)} and of class 
+#' \code{sobolRes} containing in each element a list of the Sobol' SA results 
+#' for the corresponding state-variable (i.e. first order sensitivity indices
+#' \code{S} and total sensitivity indices \code{T}) for every point of time of 
+#' the \code{times} vector.
 #'
-#' @details \code{ODEsobol_aos} uses 
-#' \code{\link[sensitivity]{soboljansen_list}} resp.
-#' \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
-#' as output for their model functions. Thus, each element of the list can be 
-#' used to contain the results for one output variable. This saves time since 
-#' \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
-#' calculations for all output variables anyway, so \code{\link[deSolve]{ode}} 
-#' only needs to be executed once.
+#' @details The sensitivity analysis is done for all state-variables, since 
+#' \code{ODEsobol} is an adapted version of \code{\link{ODEsobol_aos}}.
 #'
 #' @note 
 #'   Sometimes, it is also helpful to try another ODE-solver (argument 
@@ -94,22 +80,42 @@
 #' @export
 #'
 
-ODEsobol_aos <- function(mod,
-                         pars,
-                         yini,
-                         times,
-                         ode_method = "lsoda",
-                         seed = 2015,
-                         n = 1000,
-                         rfuncs = rep("runif", length(pars)),
-                         rargs = rep("min = 0, max = 1", length(pars)),
-                         method = "martinez",
-                         nboot = 0) {
+ODEsobol <- function(odenet,
+                     times,
+                     ode_method = "lsoda",
+                     seed = 2015,
+                     n = 1000,
+                     rfuncs = rep("runif", length(pars)),
+                     rargs = rep("min = 0, max = 1", length(pars)),
+                     method = "martinez",
+                     nboot = 0) {
+  UseMethod("ODEsobol", odenet)
+}
 
-  ##### Input-Checks #################################################
-  assertFunction(mod)
-  assertCharacter(pars)
-  assertNumeric(yini)
+#' @method ODEsobol ODEnetwork
+#' @export
+
+ODEsobol.ODEnetwork <- function(odenet,
+                                times,
+                                ode_method = "lsoda",
+                                seed = 2015,
+                                n = 1000,
+                                rfuncs = NULL,
+                                rargs = NULL,
+                                method = "martinez",
+                                nboot = 0) {
+  
+  ##### Package checks #################################################
+  
+  if (!requireNamespace("ODEnetwork", quietly = TRUE)) {
+    stop(paste("Package \"ODEnetwork\" needed for this function to work.",
+               "Please install it."),
+         call. = FALSE)
+  }
+  
+  ##### Input checks ###################################################
+  
+  assertClass(odenet, "ODEnetwork")
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
@@ -119,22 +125,33 @@ ODEsobol_aos <- function(mod,
                               "impAdams_d" ,"iteration"))
   assertNumeric(seed)
   assertIntegerish(n)
-  assertCharacter(rfuncs, len = length(pars))
-  assertCharacter(rargs, len = length(pars))
+#   assertCharacter(rfuncs, len = length(pars))
+#   assertCharacter(rargs, len = length(pars))
   rfuncs_exist <- sapply(rfuncs, exists)
   if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
                                     "in \"rfuncs\" was not found"))
   stopifnot(method %in% c("jansen", "martinez"))
   assertIntegerish(nboot)
 
-  ##### Vorarbeiten ####################################################
+  ##### Preparation ####################################################
+  
   set.seed(seed)
-  # Anzahl Parameter:
+  odenet_pars <- ODEnetwork::createParamVec(odenet)
+  pars <- names(odenet_pars)
+  yini <- ODEnetwork::createState(odenet)
+  if(is.null(rfuncs)){
+    rfuncs <- rep("runif", length(pars))
+  }
+  if(is.null(rargs)){
+    rargs <- rep("min = 0, max = 1", length(pars))
+  }
+  # Number of parameters:
   k <- length(pars)
-  # Anzahl Outputgroessen:
+  # Number of output variables (state variables):
   z <- length(yini)
-  # Anzahl Zeitpunkte von Interesse:
+  # Number of timepoints:
   timesNum <- length(times)
+  
   # Forme DGL-Modell um, sodass fuer soboljansen_list()- bzw.
   # sobolmartinez_list()-Argument "model" passend:
   model_fit <- function(X){
@@ -142,8 +159,12 @@ ODEsobol_aos <- function(mod,
     #       als Zeilen
     colnames(X) <- pars
     res_per_par <- lapply(1:nrow(X), function(i){
-      ode(yini, times = c(0, times), mod, parms = X[i, ], 
-          method = ode_method)[2:(timesNum + 1), 2:(z + 1)]
+      pars_upd <- X[i, ]
+      names(pars_upd) <- pars
+      odenet_parmod <- ODEnetwork::updateOscillators(odenet, 
+                                                     ParamVec = pars_upd)
+      ODEnetwork::simuNetwork(odenet_parmod, c(0, times), 
+        method = ode_method)$simulation$results[2:(timesNum + 1), 2:(z + 1)]
     })
     if(timesNum == 1){
       # Korrektur noetig, falls timesNum == 1:
@@ -164,15 +185,12 @@ ODEsobol_aos <- function(mod,
     return(res_per_y)
   }
   
-  ##### Sensitivitaet ##################################################
   rfunc_calls <- paste0(rfuncs, "(n, ", rargs, ")", collapse = ", ")
   X1 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   X2 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   colnames(X1) <- colnames(X2) <- pars
   
-  # Listen der Sensitivitaetsindizes (Haupteffekt, total) zu den
-  # interessierenden Zeitpunkten:
-  # S <- T <- matrix(nrow = 1 + k, ncol = timesNum)
+  ##### Sensitivity analysis #########################################
   
   # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
   # "sensitivity":
@@ -199,6 +217,6 @@ ODEsobol_aos <- function(mod,
   
   # Rueckgabe:
   res <- list(ST_by_y = ST_by_y, method = method)
-  class(res) <- "sobolRes_aos"
+  class(res) <- "sobolRes"
   return(res)
 }

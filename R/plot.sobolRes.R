@@ -1,13 +1,13 @@
 #' @title
-#' Plotting the results of Sobol' SA for objects of class \code{sobolRes_aos}
+#' Plotting the results of Sobol' SA for objects of class \code{sobolRes}
 #'
 #' @description
-#' \code{plot.sobolRes_aos} plots the results of Sobol' SA for objects of class 
-#' \code{sobolRes_aos}.
+#' \code{plot.sobolRes} plots the results of Sobol' SA for objects of class 
+#' \code{sobolRes}.
 #'
-#' @param x [\code{sobolRes_aos}-object]\cr
-#'   resulting output of \code{\link{ODEsobol_aos}}, of class 
-#'   \code{sobolRes_aos}.
+#' @param x [\code{sobolRes}-object]\cr
+#'   resulting output of \code{\link{ODEsobol}}, of class 
+#'   \code{sobolRes}.
 #' @param y_plot [\code{character(1)}]\cr
 #'   name of the \code{yini}-variable to be plotted. Defaults to the name of 
 #'   the first \code{yini}-variable.
@@ -32,25 +32,22 @@
 #'   correctly.
 #'
 #' @author Frank Weber
-#' @seealso \code{\link{ODEsobol_aos}, \link[sensitivity]{soboljansen_list}, 
-#' \link[sensitivity]{sobolmartinez_list}}
+#' @seealso \code{\link{ODEsobol}, \link[sensitivity]{sobolmartinez_list}}
 #'
 #' @examples
-#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-#' # definition of the model itself, parameters, initial values
-#' # and the times vector:
+#' # Missing.
 #' 
 #' @import checkmate
-#' @method plot sobolRes_aos
+#' @method plot sobolRes
 #' @export
 #'
 
-plot.sobolRes_aos <- function(x, y_plot = names(x$ST_by_y)[1], type = "b",
-                              main_title = NULL, 
-                              legendPos = "topleft", ...) {
+plot.sobolRes <- function(x, y_plot = names(x$ST_by_y)[1], type = "b",
+                          main_title = NULL,
+                          legendPos = "topleft", ...) {
 
   ##### Plausibilitaet #################################################
-  assertClass(x, "sobolRes_aos")
+  assertClass(x, "sobolRes")
   assertCharacter(y_plot, len = 1)
   stopifnot(y_plot %in% names(x$ST_by_y))
   assertCharacter(type, len = 1)

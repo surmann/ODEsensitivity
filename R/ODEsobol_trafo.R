@@ -92,7 +92,7 @@
 #'   69, Part 5, 741--796.
 #' @seealso \code{\link[sensitivity]{soboljansen},
 #' \link[sensitivity]{sobolmartinez}, \link{ODEsobol_ats}, \link{ODEsobol_aos},
-#' \link{plot.sobolRes}}
+#' \link{plot.sobolRes_trafo}}
 #' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
