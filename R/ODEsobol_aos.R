@@ -5,7 +5,8 @@
 #' \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
 #' ordinary differential equations according to the Sobol'-Martinez-method. 
 #' The analysis is done for all output variables at all timepoints 
-#' simultaneously using \code{\link[sensitivity]{sobolmartinez_list}} from the 
+#' simultaneously using \code{\link[sensitivity]{soboljansen_list}} or 
+#' \code{\link[sensitivity]{sobolmartinez_list}} from the 
 #' package \code{sensitivity}.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
@@ -45,8 +46,8 @@
 #'   of the variance-based Sobol' method shall be used. Defaults to 
 #'   \code{"martinez"}, which is slightly faster than \code{"jansen"}.
 #' @param nboot [\code{integer(1)}]\cr
-#'   parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
-#'   \code{\link{sobolmartinez_matrix}}, i.e. the number of bootstrap 
+#'   parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
+#'   \code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
 #'   replicates. Defaults to 0, so no bootstrapping is done.
 #'
 #' @return List of length \code{length(yini)} and of class \code{sobolRes_aos} 
@@ -55,10 +56,11 @@
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
 #'   time of the \code{times} vector.
 #'
-#' @details \code{ODEmorris_aos} uses 
+#' @details \code{ODEsobol_aos} uses 
+#' \code{\link[sensitivity]{soboljansen_list}} resp.
 #' \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
-#' as output for its model function. Thus, each element of the list can be used
-#' to contain the results for one output variable. This saves time since 
+#' as output for their model functions. Thus, each element of the list can be 
+#' used to contain the results for one output variable. This saves time since 
 #' \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
 #' calculations for all output variables anyway, so \code{\link[deSolve]{ode}} 
 #' only needs to be executed once.
@@ -76,7 +78,8 @@
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
-#' @seealso \code{\link[sensitivity]{sobolmartinez_list},
+#' @seealso \code{\link[sensitivity]{soboljansen_list},
+#' \link[sensitivity]{sobolmartinez_list},
 #' \link{plot.sobolRes_aos}}
 #' 
 #' @examples
@@ -86,6 +89,7 @@
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
+#' @importFrom sensitivity soboljansen_list
 #' @importFrom sensitivity sobolmartinez_list
 #' @export
 #'
@@ -173,8 +177,7 @@ ODEsobol_aos <- function(mod,
   # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
   # "sensitivity":
   if(method == "jansen"){
-    stop("Sobol'-Jansen-method not implemented yet")
-    # x <- soboljansen_list(model = model_fit, X1, X2, nboot = nboot)
+    x <- soboljansen_list(model = model_fit, X1, X2, nboot = nboot)
   } else if(method == "martinez"){
     x <- sobolmartinez_list(model = model_fit, X1, X2, nboot = nboot)
   }

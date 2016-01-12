@@ -45,7 +45,8 @@
 #'   of the variance-based Sobol' method shall be used. Defaults to 
 #'   \code{"martinez"}, which is slightly faster than \code{"jansen"}.
 #' @param nboot [\code{integer(1)}]\cr
-#'   parameter \code{nboot} used in \code{\link{soboljansen}},
+#'   parameter \code{nboot} used in \code{\link{soboljansen}} resp.
+#'   \code{\link{sobolmartinez}},
 #'   i.e. the number of bootstrap replicates. Defaults to 0, so no bootstrapping
 #'   is done.
 #' @param trafo [\code{function}]\cr

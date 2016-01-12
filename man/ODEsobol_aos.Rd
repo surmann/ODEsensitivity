@@ -58,8 +58,8 @@ of the variance-based Sobol' method shall be used. Defaults to
 \code{"martinez"}, which is slightly faster than \code{"jansen"}.}
 
 \item{nboot}{[\code{integer(1)}]\cr
-parameter \code{nboot} used in \code{\link{soboljansen_matrix}} resp.
-\code{\link{sobolmartinez_matrix}}, i.e. the number of bootstrap 
+parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
+\code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
 replicates. Defaults to 0, so no bootstrapping is done.}
 }
 \value{
@@ -73,14 +73,16 @@ List of length \code{length(yini)} and of class \code{sobolRes_aos}
 \code{ODEsobol_aos} performs a variance-based sensitivity analysis for
 ordinary differential equations according to the Sobol'-Martinez-method. 
 The analysis is done for all output variables at all timepoints 
-simultaneously using \code{\link[sensitivity]{sobolmartinez_list}} from the 
+simultaneously using \code{\link[sensitivity]{soboljansen_list}} or 
+\code{\link[sensitivity]{sobolmartinez_list}} from the 
 package \code{sensitivity}.
 }
 \details{
-\code{ODEmorris_aos} uses 
+\code{ODEsobol_aos} uses 
+\code{\link[sensitivity]{soboljansen_list}} resp.
 \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
-as output for its model function. Thus, each element of the list can be used
-to contain the results for one output variable. This saves time since 
+as output for their model functions. Thus, each element of the list can be 
+used to contain the results for one output variable. This saves time since 
 \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
 calculations for all output variables anyway, so \code{\link[deSolve]{ode}} 
 only needs to be executed once.
@@ -109,7 +111,8 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   69, Part 5, 741--796.
 }
 \seealso{
-\code{\link[sensitivity]{sobolmartinez_list},
+\code{\link[sensitivity]{soboljansen_list},
+\link[sensitivity]{sobolmartinez_list},
 \link{plot.sobolRes_aos}}
 }
 
