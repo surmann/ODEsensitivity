@@ -8,6 +8,11 @@
 #'
 #' @param odenet [\code{ODEnetwork}]\cr
 #'   list of class \code{ODEnetwork}.
+#' @param pars [\code{character(k)}]\cr
+#'   vector of \code{k} input variable names. All parameters must be 
+#'   contained in \code{names(ODEnetwork::createParamVec(odenet))} and must not
+#'   be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
+#'   derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed (vector of arbitrary 
 #'   length). The first point of time must be greater than zero.
@@ -24,9 +29,9 @@
 #'   of the sensitivity indices.) Defaults to 1000.
 #' @param rfuncs [\code{character(k)}]\cr
 #'   names of the \code{k} functions used to generate the \code{n} random values
-#'   for the \code{k} parameters. This way, different distributions can be 
-#'   used for the \code{k} parameters. Defaults to \code{"runif"} for each of
-#'   the \code{k} parameters.
+#'   for the \code{k} parameters (see details). This way, different 
+#'   distributions can be supplied for the \code{k} parameters. Defaults to 
+#'   \code{"runif"} for each of the \code{k} parameters.
 #' @param rargs [\code{character(k)}]\cr
 #'   arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
 #'   element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
@@ -69,9 +74,30 @@
 #' \link{plot.sobolRes_aos}}
 #' 
 #' @examples
-#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-#' # definition of the model itself, parameters, initial values
-#' # and the times vector:
+#' library(ODEnetwork)
+#' 
+#' masses <- c(1, 1)
+#' dampers <- diag(c(1, 1))
+#' springs <- diag(c(1, 1))
+#' springs[1, 2] <- 1
+#' distances <- diag(c(0, 2))
+#' distances[1, 2] <- 1
+#' odenet <- ODEnetwork(masses, dampers, springs, 
+#'                      cartesian = TRUE, distances = distances)
+#' odenet <- setState(odenet, c(0.5, 1), c(0, 0))
+#' 
+#' ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+#' ODEtimes <- seq(0.01, 20, by = 0.1)
+#' ODEbinf <- rep(0.001, length(ODEpars) - 1)
+#' ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
+#' 
+#' ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+#'                    seed = 2015, n = 10,
+#'                    rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
+#'                    rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
+#'                              "mean = 3, sd = 0.8"),
+#'                    method = "martinez",
+#'                    nboot = 0)
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
@@ -81,6 +107,7 @@
 #'
 
 ODEsobol <- function(odenet,
+                     pars,
                      times,
                      ode_method = "lsoda",
                      seed = 2015,
@@ -96,18 +123,19 @@ ODEsobol <- function(odenet,
 #' @export
 
 ODEsobol.ODEnetwork <- function(odenet,
+                                pars,
                                 times,
                                 ode_method = "lsoda",
                                 seed = 2015,
                                 n = 1000,
-                                rfuncs = NULL,
-                                rargs = NULL,
+                                rfuncs = rep("runif", length(pars)),
+                                rargs = rep("min = 0, max = 1", length(pars)),
                                 method = "martinez",
-                                nboot = 0) {
+                                nboot = 0){
   
   ##### Package checks #################################################
   
-  if (!requireNamespace("ODEnetwork", quietly = TRUE)) {
+  if(!requireNamespace("ODEnetwork", quietly = TRUE)){
     stop(paste("Package \"ODEnetwork\" needed for this function to work.",
                "Please install it."),
          call. = FALSE)
@@ -116,6 +144,43 @@ ODEsobol.ODEnetwork <- function(odenet,
   ##### Input checks ###################################################
   
   assertClass(odenet, "ODEnetwork")
+  assertCharacter(pars)
+  stopifnot(all(pars %in% names(ODEnetwork::createParamVec(odenet))))
+  # Check if there are duplicated parameters:
+  if(any(duplicated(pars))){
+    rfuncs <- rfuncs[!duplicated(pars)]
+    rargs <- rargs[!duplicated(pars)]
+    pars <- unique(pars)
+    warning("Duplicated parameter names in \"pars\". Only taking unique names.")
+  }
+  # Check if there are parameters which can be derived from others (like 
+  # "k.2.1" from "k.1.2"):
+  pars_offdiag <- pars[nchar(pars) == 5]
+  pars_offdiag_exchanged <- pars_offdiag
+  # Exchange third and fifth position:
+  substr(pars_offdiag_exchanged, 3, 3) <- substr(pars_offdiag, 5, 5)
+  substr(pars_offdiag_exchanged, 5, 5) <- substr(pars_offdiag, 3, 3)
+  if(any(pars_offdiag_exchanged %in% pars)){
+    pars_deriv <- pars_offdiag[pars_offdiag %in% pars_offdiag_exchanged]
+    pars_deriv_exchanged <- 
+      pars_offdiag_exchanged[pars_offdiag_exchanged %in% pars_offdiag]
+    pars_keep <- character(length(pars_deriv))
+    for(i in seq_along(pars_deriv)){
+      if(!pars_deriv_exchanged[i] %in% pars_keep){
+        pars_keep[i] <- pars_deriv[i]
+      } else{
+        pars_keep[i] <- "drop"
+      }
+    }
+    pars_keep <- c(pars[nchar(pars) != 5], 
+                   pars_offdiag[!pars_offdiag %in% pars_deriv], 
+                   pars_keep[pars_keep != "drop"])
+    rfuncs <- rfuncs[pars %in% pars_keep]
+    rargs <- rargs[pars %in% pars_keep]
+    pars <- pars[pars %in% pars_keep]
+    warning(paste("Derivable parameters in \"pars\". Keeping only one", 
+                  "parameter of each derivable pair."))
+  }
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
@@ -125,26 +190,18 @@ ODEsobol.ODEnetwork <- function(odenet,
                               "impAdams_d" ,"iteration"))
   assertNumeric(seed)
   assertIntegerish(n)
-#   assertCharacter(rfuncs, len = length(pars))
-#   assertCharacter(rargs, len = length(pars))
+  assertCharacter(rfuncs, len = length(pars))
+  assertCharacter(rargs, len = length(pars))
   rfuncs_exist <- sapply(rfuncs, exists)
   if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
                                     "in \"rfuncs\" was not found"))
   stopifnot(method %in% c("jansen", "martinez"))
   assertIntegerish(nboot)
-
+  
   ##### Preparation ####################################################
   
   set.seed(seed)
-  odenet_pars <- ODEnetwork::createParamVec(odenet)
-  pars <- names(odenet_pars)
   yini <- ODEnetwork::createState(odenet)
-  if(is.null(rfuncs)){
-    rfuncs <- rep("runif", length(pars))
-  }
-  if(is.null(rargs)){
-    rargs <- rep("min = 0, max = 1", length(pars))
-  }
   # Number of parameters:
   k <- length(pars)
   # Number of output variables (state variables):
@@ -152,11 +209,10 @@ ODEsobol.ODEnetwork <- function(odenet,
   # Number of timepoints:
   timesNum <- length(times)
   
-  # Forme DGL-Modell um, sodass fuer soboljansen_list()- bzw.
-  # sobolmartinez_list()-Argument "model" passend:
+  # Adapt the ODE-model for argument "model" of soboljansen_list() resp.
+  # sobolmartinez_list():
   model_fit <- function(X){
-    # X   - (nxk)-Matrix mit den n einzugebenden Parameter-Konstellationen
-    #       als Zeilen
+    # Input: matrix X with k columns
     colnames(X) <- pars
     res_per_par <- lapply(1:nrow(X), function(i){
       pars_upd <- X[i, ]
@@ -167,15 +223,14 @@ ODEsobol.ODEnetwork <- function(odenet,
         method = ode_method)$simulation$results[2:(timesNum + 1), 2:(z + 1)]
     })
     if(timesNum == 1){
-      # Korrektur noetig, falls timesNum == 1:
+      # Correction needed, if timesNum == 1:
       res_vec <- unlist(res_per_par)
       res_matrix <- matrix(res_vec, ncol = 1)
     } else{
-      # Transponiere die Ergebnis-Matrix, sodass jede Spalte fuer einen
-      # Zeitpunkt steht:
+      # Transpose the matrix of the results, so that each column represents
+      # one timepoint:
       res_matrix <- t(do.call(cbind, res_per_par))
     }
-    # Entferne verwirrende Zeilennamen:
     rownames(res_matrix) <- NULL
     nrow_res_matrix <- nrow(res_matrix)
     res_per_y <- lapply(1:z, function(i){
@@ -192,22 +247,21 @@ ODEsobol.ODEnetwork <- function(odenet,
   
   ##### Sensitivity analysis #########################################
   
-  # Durchfuehrung der Sensitivitaetsanalyse mit den Funktionen aus dem Paket
-  # "sensitivity":
+  # Sensitivity analysis with the functions from package "sensitivity":
   if(method == "jansen"){
     x <- soboljansen_list(model = model_fit, X1, X2, nboot = nboot)
   } else if(method == "martinez"){
     x <- sobolmartinez_list(model = model_fit, X1, X2, nboot = nboot)
   }
   
-  # Verarbeitung der Ergebnisse:
+  # Process the results:
   ST_original_by_y <- lapply(x$ST_by_y, function(L){
     ST_original <- sapply(L, function(ST_col){
       c(ST_col$S[, 1], ST_col$T[, 1])
     })
     return(ST_original)
   })
-  # ST_original wieder in 2 Matrizen S und T aufspalten:
+  # Split ST_original again in 2 matrices S and T:
   ST_by_y <- lapply(ST_original_by_y, function(ST_original){
     S <- rbind(times, ST_original[1:k, ])
     T <- rbind(times, ST_original[(k+1):(2*k), ])
@@ -215,7 +269,7 @@ ODEsobol.ODEnetwork <- function(odenet,
     return(list(S = S, T = T))
   })
   
-  # Rueckgabe:
+  # Return:
   res <- list(ST_by_y = ST_by_y, method = method)
   class(res) <- "sobolRes"
   return(res)

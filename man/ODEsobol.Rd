@@ -4,13 +4,19 @@
 \alias{ODEsobol}
 \title{Sobol' SA for Objects of Class \code{ODEnetwork}}
 \usage{
-ODEsobol(odenet, times, ode_method = "lsoda", seed = 2015, n = 1000,
+ODEsobol(odenet, pars, times, ode_method = "lsoda", seed = 2015, n = 1000,
   rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
   length(pars)), method = "martinez", nboot = 0)
 }
 \arguments{
 \item{odenet}{[\code{ODEnetwork}]\cr
 list of class \code{ODEnetwork}.}
+
+\item{pars}{[\code{character(k)}]\cr
+vector of \code{k} input variable names. All parameters must be 
+contained in \code{names(ODEnetwork::createParamVec(odenet))} and must not
+be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
+derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
@@ -32,9 +38,9 @@ of the sensitivity indices.) Defaults to 1000.}
 
 \item{rfuncs}{[\code{character(k)}]\cr
 names of the \code{k} functions used to generate the \code{n} random values
-for the \code{k} parameters. This way, different distributions can be 
-used for the \code{k} parameters. Defaults to \code{"runif"} for each of
-the \code{k} parameters.}
+for the \code{k} parameters (see details). This way, different 
+distributions can be supplied for the \code{k} parameters. Defaults to 
+\code{"runif"} for each of the \code{k} parameters.}
 
 \item{rargs}{[\code{character(k)}]\cr
 arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
@@ -79,9 +85,30 @@ Sometimes, it is also helpful to try another ODE-solver (argument
   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 }
 \examples{
-##### FitzHugh-Nagumo equations (Ramsay et al., 2007)
-# definition of the model itself, parameters, initial values
-# and the times vector:
+library(ODEnetwork)
+
+masses <- c(1, 1)
+dampers <- diag(c(1, 1))
+springs <- diag(c(1, 1))
+springs[1, 2] <- 1
+distances <- diag(c(0, 2))
+distances[1, 2] <- 1
+odenet <- ODEnetwork(masses, dampers, springs, 
+                     cartesian = TRUE, distances = distances)
+odenet <- setState(odenet, c(0.5, 1), c(0, 0))
+
+ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+ODEtimes <- seq(0.01, 20, by = 0.1)
+ODEbinf <- rep(0.001, length(ODEpars) - 1)
+ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
+
+ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+                   seed = 2015, n = 10,
+                   rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
+                   rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
+                             "mean = 3, sd = 0.8"),
+                   method = "martinez",
+                   nboot = 0)
 
 }
 \author{

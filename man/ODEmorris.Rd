@@ -4,13 +4,19 @@
 \alias{ODEmorris}
 \title{Morris SA for Objects of Class \code{ODEnetwork}}
 \usage{
-ODEmorris(odenet, times, ode_method = "lsoda", seed = 2015, binf = 0,
-  bsup = 1, r = 25, design = list(type = "oat", levels = 100, grid.jump =
-  1), scale = TRUE)
+ODEmorris(odenet, pars, times, ode_method = "lsoda", seed = 2015,
+  binf = 0, bsup = 1, r = 25, design = list(type = "oat", levels = 100,
+  grid.jump = 1), scale = TRUE)
 }
 \arguments{
 \item{odenet}{[\code{ODEnetwork}]\cr
 list of class \code{ODEnetwork}.}
+
+\item{pars}{[\code{character(k)}]\cr
+vector of \code{k} input variable names. All parameters must be 
+contained in \code{names(ODEnetwork::createParamVec(odenet))} and must not
+be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
+derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
@@ -84,6 +90,7 @@ The sensitivity analysis is done for all state variables, since
 }
 \examples{
 library(ODEnetwork)
+
 masses <- c(1, 1)
 dampers <- diag(c(1, 1))
 springs <- diag(c(1, 1))
@@ -94,12 +101,13 @@ odenet <- ODEnetwork(masses, dampers, springs,
                      cartesian = TRUE, distances = distances)
 odenet <- setState(odenet, c(0.5, 1), c(0, 0))
 
+ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
 ODEtimes <- seq(0.01, 20, by = 0.1)
-ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
-ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
+ODEbinf <- rep(0.001, length(ODEpars))
+ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 
-ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
-                    binf = ODEbinf, bsup = ODEbsup, r = 20)
+ODEres <- ODEmorris(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+                    seed = 2015, binf = ODEbinf, bsup = ODEbsup, r = 20)
 
 }
 \author{

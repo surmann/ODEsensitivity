@@ -19,11 +19,9 @@ first state variable.}
 plot type, choose between \code{"sep"} and \code{"trajec"}.}
 
 \item{colors_pars}{[\code{character(>= k)}]\cr
-vector of the colors to be used for the \code{k} different parameters 
-(where \code{k} is the length of the vector returned by 
-\code{\link[ODEnetwork]{createParamVec}} applied to the \code{ODEnetwork}-
-object for which the sensitivity analysis was done). Must be at least of
-length \code{k}. If \code{NULL} (the default), \code{rainbow(k)} is used.}
+vector of the colors to be used for the \code{k} different parameters. Must
+be at least of length \code{k}. If \code{NULL} (the default), 
+\code{rainbow(k)} is used.}
 
 \item{main_title}{[\code{character(1)}]\cr
 title for the plot. If \code{type = "sep"}, this is the overall title for
@@ -53,11 +51,12 @@ the model).}
   sigma for every point of time.
 }
 \note{
-Unfortunately, the passing of arguments (e.g. "main") does not work
-  correctly.
+Not all plotting arguments can be passed by \code{...}, for example
+\code{xlab} and \code{ylab} are fixed.
 }
 \examples{
 library(ODEnetwork)
+
 masses <- c(1, 1)
 dampers <- diag(c(1, 1))
 springs <- diag(c(1, 1))
@@ -68,27 +67,25 @@ odenet <- ODEnetwork(masses, dampers, springs,
                      cartesian = TRUE, distances = distances)
 odenet <- setState(odenet, c(0.5, 1), c(0, 0))
 
+ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
 ODEtimes <- seq(0.01, 20, by = 0.1)
-ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
-ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
+ODEbinf <- rep(0.001, length(ODEpars))
+ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 
-ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
-                    binf = ODEbinf, bsup = ODEbsup, r = 20)
+ODEres <- ODEmorris(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+                    seed = 2015, binf = ODEbinf, bsup = ODEbsup, r = 20)
 
-# Standard (separate plots):
-plot(ODEres, state_plot = "x.2", type = "sep", legendPos = "topleft")
-plot(ODEres, state_plot = "x.2", type = "sep", legendPos = "outside")
+# Plots for state variable "x.2":
 # Palette "Dark2" from the package "RColorBrewer" with some 
 # additional colors:
 my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
              "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
              "darkblue", "darkgreen")
+# Standard (separate plots):
 plot(ODEres, state_plot = "x.2", type = "sep", colors_pars = my_cols, 
      legendPos = "outside")
 
 # Trajectories:
-plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "topleft")
-plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "outside")
 plot(ODEres, state_plot = "x.2", type = "trajec", colors_pars = my_cols, 
      legendPos = "outside")
 
@@ -97,7 +94,6 @@ plot(ODEres, state_plot = "x.2", type = "trajec", colors_pars = my_cols,
 Frank Weber
 }
 \seealso{
-\code{\link{ODEmorris}},
-  \code{\link[sensitivity]{morris_list}}
+\code{\link{ODEmorris}, \link[sensitivity]{morris_list}}
 }
 

@@ -62,12 +62,12 @@ plotSep <- function(res, pars, y_name = NULL, colors_pars = NULL,
   
   # Legend outside of the plotting region:
   if(legendPos == "outside"){
-    oldpar2 <- par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
-                   fig = c(0, 1, 0, 1), new = TRUE)
+    oldpar2 <- par(mfrow = c(1, 1), oma = rep(0, 4), mar = rep(0, 4), 
+                   new = TRUE)
     plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
     if(k > 6){
       # Mehrzeilige Legende:
-      legend_ncol <- 6
+      legend_ncol <- ceiling(k / 2)
     } else{
       legend_ncol <- k
     }
@@ -117,12 +117,11 @@ plotTrajectories <- function(res, pars, y_name = NULL, colors_pars = NULL,
   if(legendPos != "outside"){
     legend(legendPos, legend = pars, lty = 1, col = my.cols)
   } else{
-    oldpar2 <- par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
-                   fig = c(0, 1, 0, 1), new = TRUE)
+    oldpar2 <- par(oma = rep(0, 4), mar = rep(0, 4), new = TRUE)
     plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
     if(k > 6){
       # Mehrzeilige Legende:
-      legend_ncol <- 6
+      legend_ncol <- ceiling(k / 2)
     } else{
       legend_ncol <- k
     }

@@ -7,6 +7,11 @@
 #'
 #' @param odenet [\code{ODEnetwork}]\cr
 #'   list of class \code{ODEnetwork}.
+#' @param pars [\code{character(k)}]\cr
+#'   vector of \code{k} input variable names. All parameters must be 
+#'   contained in \code{names(ODEnetwork::createParamVec(odenet))} and must not
+#'   be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
+#'   derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed (vector of arbitrary 
 #'   length). The first point of time must be greater than zero.
@@ -67,8 +72,9 @@
 #'   \code{\link[sensitivity]{morris_list}},
 #'   \code{\link{plot.morrisRes}}
 #' 
-#' @examples
+#' @examples 
 #' library(ODEnetwork)
+#' 
 #' masses <- c(1, 1)
 #' dampers <- diag(c(1, 1))
 #' springs <- diag(c(1, 1))
@@ -79,12 +85,13 @@
 #'                      cartesian = TRUE, distances = distances)
 #' odenet <- setState(odenet, c(0.5, 1), c(0, 0))
 #' 
+#' ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
 #' ODEtimes <- seq(0.01, 20, by = 0.1)
-#' ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
-#' ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
+#' ODEbinf <- rep(0.001, length(ODEpars))
+#' ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 #' 
-#' ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
-#'                     binf = ODEbinf, bsup = ODEbsup, r = 20)
+#' ODEres <- ODEmorris(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+#'                     seed = 2015, binf = ODEbinf, bsup = ODEbsup, r = 20)
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
@@ -92,7 +99,8 @@
 #' @export
 #'
 
-ODEmorris <- function(odenet, 
+ODEmorris <- function(odenet,
+                      pars,
                       times, 
                       ode_method = "lsoda",
                       seed = 2015,
@@ -109,7 +117,8 @@ ODEmorris <- function(odenet,
 #' @method ODEmorris ODEnetwork
 #' @export
 
-ODEmorris.ODEnetwork <- function(odenet, 
+ODEmorris.ODEnetwork <- function(odenet,
+                                 pars,
                                  times, 
                                  ode_method = "lsoda",
                                  seed = 2015,
@@ -131,6 +140,41 @@ ODEmorris.ODEnetwork <- function(odenet,
   ##### Input checks ###################################################
   
   assertClass(odenet, "ODEnetwork")
+  assertCharacter(pars)
+  stopifnot(all(pars %in% names(ODEnetwork::createParamVec(odenet))))
+  # Check if there are duplicated parameters:
+  if(any(duplicated(pars))){
+    pars <- unique(pars)
+    warning("Duplicated parameter names in \"pars\". Only taking unique names.")
+  }
+  # Check if there are parameters which can be derived from others (like 
+  # "k.2.1" from "k.1.2"):
+  pars_offdiag <- pars[nchar(pars) == 5]
+  pars_offdiag_exchanged <- pars_offdiag
+  # Exchange third and fifth position:
+  substr(pars_offdiag_exchanged, 3, 3) <- substr(pars_offdiag, 5, 5)
+  substr(pars_offdiag_exchanged, 5, 5) <- substr(pars_offdiag, 3, 3)
+  if(any(pars_offdiag_exchanged %in% pars)){
+    pars_deriv <- pars_offdiag[pars_offdiag %in% pars_offdiag_exchanged]
+    pars_deriv_exchanged <- 
+      pars_offdiag_exchanged[pars_offdiag_exchanged %in% pars_offdiag]
+    pars_keep <- character(length(pars_deriv))
+    for(i in seq_along(pars_deriv)){
+      if(!pars_deriv_exchanged[i] %in% pars_keep){
+        pars_keep[i] <- pars_deriv[i]
+      } else{
+        pars_keep[i] <- "drop"
+      }
+    }
+    pars_keep <- c(pars[nchar(pars) != 5], 
+                   pars_offdiag[!pars_offdiag %in% pars_deriv], 
+                   pars_keep[pars_keep != "drop"])
+    rfuncs <- rfuncs[pars %in% pars_keep]
+    rargs <- rargs[pars %in% pars_keep]
+    pars <- pars[pars %in% pars_keep]
+    warning(paste("Derivable parameters in \"pars\". Keeping only one", 
+                  "parameter of each derivable pair."))
+  }
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
@@ -140,12 +184,10 @@ ODEmorris.ODEnetwork <- function(odenet,
                               "impAdams_d" ,"iteration"))
   assertNumeric(seed)
   assertNumeric(binf)
-  notOk <- length(binf) != length(pars) & length(binf) != 1
-  if(notOk)
+  if(length(binf) != length(pars) && length(binf) != 1)
     stop("binf must be of length 1 or of the same length as pars!")
   assertNumeric(bsup)
-  notOk <- length(bsup) != length(pars) & length(bsup) != 1
-  if(notOk)
+  if(length(bsup) != length(pars) & length(bsup) != 1)
     stop("bsup must be of length 1 or of the same length as pars!")
   assertIntegerish(r, len = 1)
   if(r < 1)
@@ -156,8 +198,6 @@ ODEmorris.ODEnetwork <- function(odenet,
   ##### Preparation ####################################################
   
   set.seed(seed)
-  odenet_pars <- ODEnetwork::createParamVec(odenet)
-  pars <- names(odenet_pars)
   yini <- ODEnetwork::createState(odenet)
   # Number of parameters:
   k <- length(pars)
@@ -166,11 +206,10 @@ ODEmorris.ODEnetwork <- function(odenet,
   # Number of timepoints:
   timesNum <- length(times)
   
-  # Forme DGL-Modell um, sodass fuer morris_list()-Argument "model_list" 
-  # passend:
+  # Adapt the ODE-model for argument "model" of soboljansen_list() resp.
+  # sobolmartinez_list():
   model_fit <- function(X){
-    # X   - (nxk)-Matrix mit den n einzugebenden Parameter-Konstellationen
-    #       als Zeilen
+    # Input: matrix X with k columns
     colnames(X) <- pars
     res_per_par <- lapply(1:nrow(X), function(i){
       pars_upd <- X[i, ]
@@ -181,15 +220,14 @@ ODEmorris.ODEnetwork <- function(odenet,
         method = ode_method)$simulation$results[2:(timesNum + 1), 2:(z + 1)]
     })
     if(timesNum == 1){
-      # Korrektur noetig, falls timesNum == 1:
+      # Correction needed, if timesNum == 1:
       res_vec <- unlist(res_per_par)
       res_matrix <- matrix(res_vec, ncol = 1)
     } else{
-      # Transponiere die Ergebnis-Matrix, sodass jede Spalte fuer einen
-      # Zeitpunkt steht:
+      # Transpose the matrix of the results, so that each column represents
+      # one timepoint:
       res_matrix <- t(do.call(cbind, res_per_par))
     }
-    # Entferne verwirrende Zeilennamen:
     rownames(res_matrix) <- NULL
     nrow_res_matrix <- nrow(res_matrix)
     res_per_y <- lapply(1:z, function(i){
@@ -201,6 +239,7 @@ ODEmorris.ODEnetwork <- function(odenet,
   
   ##### Sensitivity analysis #########################################
   
+  # Sensitivity analysis with function morris_list() from package "sensitivity":
   x <- morris_list(model = model_fit, factors = pars, r = r, 
                    design = design, binf = binf, bsup = bsup, scale = scale)
   
@@ -221,8 +260,8 @@ ODEmorris.ODEnetwork <- function(odenet,
   
   out_all_y <- lapply(x$ee_by_y, one_y)
   
-  # Warnungen, falls NAs auftreten (unrealistische Parameter => nicht
-  # loesbare ODEs):
+  # Throw a warning if NAs occur (probably not suitable parameters, so ODE
+  # system can't be solved):
   NA_check_mu <- function(M){
     any(is.na(M[1:(1 + k*2), ]))
   }
@@ -246,6 +285,7 @@ ODEmorris.ODEnetwork <- function(odenet,
     }
   }
   
+  # Return:
   class(out_all_y) <- "morrisRes"
   return(out_all_y)
 }

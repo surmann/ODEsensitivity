@@ -4,28 +4,35 @@
 \alias{plot.sobolRes}
 \title{Plotting the results of Sobol' SA for objects of class \code{sobolRes}}
 \usage{
-\method{plot}{sobolRes}(x, y_plot = names(x$ST_by_y)[1], type = "b",
-  main_title = NULL, legendPos = "topleft", ...)
+\method{plot}{sobolRes}(x, state_plot = names(x$ST_by_y)[1], type = "l",
+  colors_pars = NULL, main_title = NULL, legendPos = "outside", ...)
 }
 \arguments{
-\item{x}{[\code{sobolRes}-object]\cr
-resulting output of \code{\link{ODEsobol}}, of class 
-\code{sobolRes}.}
+\item{x}{[\code{sobolRes}]\cr
+resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.}
 
-\item{y_plot}{[\code{character(1)}]\cr
-name of the \code{yini}-variable to be plotted. Defaults to the name of 
-the first \code{yini}-variable.}
+\item{state_plot}{[\code{character(1)}]\cr
+name of the state variable to be plotted. Defaults to the name of the
+first state variable.}
 
 \item{type}{[\code{character(1)}]\cr
 plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
-Defaults to \code{"b"}.}
+Defaults to \code{"l"}.}
+
+\item{colors_pars}{[\code{character(>= k)}]\cr
+vector of the colors to be used for the \code{k} different parameters. Must
+be at least of length \code{k}. If \code{NULL} (the default), 
+\code{rainbow(k)} is used.}
 
 \item{main_title}{[\code{character(1)}]\cr
-the common title for the two graphics. Default is \code{NULL}, which means
+common title for the two graphics. Default is \code{NULL}, which means
 an automatic title is generated.}
 
 \item{legendPos}{[\code{character(1)}]\cr
-legend position, default is \code{"topleft"}.}
+keyword for the legend position, either one of those specified in
+\code{\link{legend}} or \code{"outside"} (the default), which means the 
+legend is placed under the plot (useful, if there are many parameters in 
+the model).}
 
 \item{...}{additional arguments passed to \code{\link{plot}}.}
 }
@@ -37,22 +44,54 @@ TRUE (invisible; for testing purposes).
 \code{sobolRes}.
 }
 \details{
-1st order and total Sobol' SA indices are plotted for one 
-\code{yini}-variable (chosen by argument \code{y_plot}) and for each input 
-parameter against time.
+First order and total Sobol' SA indices are plotted for one state variable 
+(chosen by argument \code{state_plot}) and for each input parameter against 
+time.
 }
 \note{
-Unfortunately, the passing of arguments (e.g. "main") does not work
-  correctly.
+Not all plotting arguments can be passed by \code{...}, for example
+\code{xlab} and \code{ylab} are fixed.
 }
 \examples{
-# Missing.
+library(ODEnetwork)
+
+masses <- c(1, 1)
+dampers <- diag(c(1, 1))
+springs <- diag(c(1, 1))
+springs[1, 2] <- 1
+distances <- diag(c(0, 2))
+distances[1, 2] <- 1
+odenet <- ODEnetwork(masses, dampers, springs, 
+                     cartesian = TRUE, distances = distances)
+odenet <- setState(odenet, c(0.5, 1), c(0, 0))
+
+ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+ODEtimes <- seq(0.01, 20, by = 0.1)
+ODEbinf <- rep(0.001, length(ODEpars) - 1)
+ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
+
+ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+                   seed = 2015, n = 10,
+                   rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
+                   rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
+                             "mean = 3, sd = 0.8"),
+                   method = "martinez",
+                   nboot = 0)
+
+# Palette "Dark2" from the package "RColorBrewer" with some 
+# additional colors:
+my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+             "darkblue", "darkgreen")
+plot(ODEres, state_plot = "x.2", type = "l", colors_pars = my_cols, 
+     legendPos = "outside")
 
 }
 \author{
 Frank Weber
 }
 \seealso{
-\code{\link{ODEsobol}, \link[sensitivity]{sobolmartinez_list}}
+\code{\link{ODEsobol}, \link[sensitivity]{soboljansen_list},
+\link[sensitivity]{sobolmartinez_list}}
 }
 

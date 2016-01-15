@@ -12,18 +12,19 @@ odenet <- ODEnetwork(masses, dampers, springs,
                      cartesian = TRUE, distances = distances)
 odenet <- setState(odenet, c(0.5, 1), c(0, 0))
 
+ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
 ODEtimes <- seq(0.01, 20, by = 0.1)
-ODEbinf <- c(rep(0.001, 9), -4, 0.001, -10)
-ODEbsup <- c(2, 1.5, 6, 4, 6, 10, 2, 1.5, 6, -0.001, 6, -0.001)
+ODEbinf <- rep(0.001, length(ODEpars))
+ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 
 devtools::load_all(".")
 
 system.time(
-  ODEres <- ODEmorris(odenet, ODEtimes, ode_method = "adams", seed = 2015, 
-                      binf = ODEbinf, bsup = ODEbsup, r = 20)
+  ODEres <- ODEmorris(odenet, ODEpars, ODEtimes, ode_method = "adams", 
+                      seed = 2015, binf = ODEbinf, bsup = ODEbsup, r = 20)
 )
 # User      System verstrichen 
-# 6.90        0.03        7.17
+# 4.33        0.00        5.13
 
 # save(ODEres, file = "test_ODEmorris.Rdata")
 
@@ -46,4 +47,8 @@ plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "topleft")
 plot(ODEres, state_plot = "x.2", type = "trajec", legendPos = "outside")
 plot(ODEres, state_plot = "x.2", type = "trajec", colors_pars = my_cols, 
      legendPos = "outside")
+# Testing the passing of arguments:
+plot(ODEres, state_plot = "x.2", type = "sep", colors_pars = my_cols, 
+     main_title = "Big Title", legendPos = "outside", cex.axis = 2, 
+     main = "Small Title", cex.main = 0.5)
 # dev.off()
