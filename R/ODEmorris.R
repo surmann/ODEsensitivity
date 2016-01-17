@@ -131,7 +131,7 @@ ODEmorris.ODEnetwork <- function(odenet,
   
   ##### Package checks #################################################
   
-  if (!requireNamespace("ODEnetwork", quietly = TRUE)) {
+  if(!requireNamespace("ODEnetwork", quietly = TRUE)){
     stop(paste("Package \"ODEnetwork\" needed for this function to work.",
                "Please install it."),
          call. = FALSE)

@@ -16,16 +16,13 @@
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed (vector of arbitrary 
 #'   length). The first point of time must be greater than zero.
-#' @param ode_method [\code{character(1)}]\cr
-#'   method to be used for solving the differential equations, see 
-#'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
 #' @param n [\code{integer(1)}]\cr
 #'   number of random parameter values (\code{n} per input factor) used to 
-#'   estimate the variance-based sensitivity indices by Monte-Carlo-method.
+#'   estimate the variance-based sensitivity indices by Monte Carlo method.
 #'   (Variance-based methods for sensitivity analysis rely on 
-#'   Monte-Carlo-simulation to estimate the integrals needed for the calculation
+#'   Monte Carlo simulation to estimate the integrals needed for the calculation
 #'   of the sensitivity indices.) Defaults to 1000.
 #' @param rfuncs [\code{character(k)}]\cr
 #'   names of the \code{k} functions used to generate the \code{n} random values
@@ -46,23 +43,43 @@
 #'   parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
 #'   \code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
 #'   replicates. Defaults to 0, so no bootstrapping is done.
+#' @param ode_method [\code{character(1)}]\cr
+#'   method to be used for solving the differential equations, see 
+#'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
+#' @param ode_parallel [\code{logical(1)}]\cr
+#'   logical indicating if a parallelization shall be done for computing the
+#'   \code{\link[deSolve]{ode}}-results for the different parameter combinations
+#'   generated for Monte Carlo estimation of the sensitivity indices.
+#' @param ode_parallel_ncores [\code{integer(1)}]\cr
+#'   number of processor cores to be used for parallelization. Only applies if
+#'   \code{ode_parallel = TRUE}. Default is 1.
 #'
-#' @return List of length \code{2 * nrow(odenet$state)} and of class 
-#' \code{sobolRes} containing in each element a list of the Sobol' SA results 
-#' for the corresponding state-variable (i.e. first order sensitivity indices
-#' \code{S} and total sensitivity indices \code{T}) for every point of time of 
-#' the \code{times} vector.
+#' @return 
+#'   List of length \code{2 * nrow(odenet$state)} and of class 
+#'   \code{sobolRes} containing in each element a list of the Sobol' SA results 
+#'   for the corresponding state-variable (i.e. first order sensitivity indices
+#'   \code{S} and total sensitivity indices \code{T}) for every point of time of 
+#'   the \code{times} vector.
 #'
-#' @details The sensitivity analysis is done for all state-variables, since 
-#' \code{ODEsobol} is an adapted version of \code{\link{ODEsobol_aos}}.
+#' @details 
+#'   The sensitivity analysis is done for all state-variables, since 
+#'   \code{ODEsobol} is an adapted version of \code{\link{ODEsobol_aos}}.
 #'
 #' @note 
-#'   Sometimes, it is also helpful to try another ODE-solver (argument 
-#'   \code{ode_method}). Problems are known for the
-#'   \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
+#'   It might be helpful to try different types of ODE-solvers (argument 
+#'   \code{ode_method}). Problems are known for the \code{ode_method}s 
+#'   \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
 #'   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
 #'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
 #'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
+#'   
+#'   If \code{n} is too low, the Monte Carlo estimation of the sensitivity 
+#'   indices might be very bad and even produce negative sensitivity indices (up
+#'   to now, this problem only occured for first order indices). Sensitivity 
+#'   indices in the interval [-0.05, 0) are considered as minor deviations and 
+#'   set to 0 without a warning. Sensitivity indices lower than -0.05 are 
+#'   considered as major deviations. They remain unchanged and a warning is 
+#'   thrown.
 #'
 #' @author Frank Weber
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
@@ -70,8 +87,8 @@
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
 #' @seealso \code{\link[sensitivity]{soboljansen_list},
-#' \link[sensitivity]{sobolmartinez_list},
-#' \link{plot.sobolRes_aos}}
+#'   \link[sensitivity]{sobolmartinez_list},
+#'   \link{plot.sobolRes_aos}}
 #' 
 #' @examples
 #' library(ODEnetwork)
@@ -91,13 +108,19 @@
 #' ODEbinf <- rep(0.001, length(ODEpars) - 1)
 #' ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
 #' 
-#' ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
-#'                    seed = 2015, n = 10,
+#' ODEres <- ODEsobol(odenet, 
+#'                    ODEpars, 
+#'                    ODEtimes, 
+#'                    seed = 2015, 
+#'                    n = 1000,
 #'                    rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
 #'                    rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
 #'                              "mean = 3, sd = 0.8"),
 #'                    method = "martinez",
-#'                    nboot = 0)
+#'                    nboot = 0,
+#'                    ode_method = "adams",
+#'                    ode_parallel = TRUE,
+#'                    ode_parallel_ncores = 2)
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
@@ -109,13 +132,15 @@
 ODEsobol <- function(odenet,
                      pars,
                      times,
-                     ode_method = "lsoda",
                      seed = 2015,
                      n = 1000,
                      rfuncs = rep("runif", length(pars)),
                      rargs = rep("min = 0, max = 1", length(pars)),
                      method = "martinez",
-                     nboot = 0) {
+                     nboot = 0,
+                     ode_method = "lsoda",
+                     ode_parallel = FALSE,
+                     ode_parallel_ncores = 1) {
   UseMethod("ODEsobol", odenet)
 }
 
@@ -125,13 +150,15 @@ ODEsobol <- function(odenet,
 ODEsobol.ODEnetwork <- function(odenet,
                                 pars,
                                 times,
-                                ode_method = "lsoda",
                                 seed = 2015,
                                 n = 1000,
                                 rfuncs = rep("runif", length(pars)),
                                 rargs = rep("min = 0, max = 1", length(pars)),
                                 method = "martinez",
-                                nboot = 0){
+                                nboot = 0,
+                                ode_method = "lsoda",
+                                ode_parallel = FALSE,
+                                ode_parallel_ncores = 1){
   
   ##### Package checks #################################################
   
@@ -184,10 +211,6 @@ ODEsobol.ODEnetwork <- function(odenet,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
-  stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
-                              "daspk", "euler", "rk4", "ode23", "ode45", 
-                              "radau", "bdf", "bdf_d", "adams", "impAdams", 
-                              "impAdams_d" ,"iteration"))
   assertNumeric(seed)
   assertIntegerish(n)
   assertCharacter(rfuncs, len = length(pars))
@@ -196,7 +219,13 @@ ODEsobol.ODEnetwork <- function(odenet,
   if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
                                     "in \"rfuncs\" was not found"))
   stopifnot(method %in% c("jansen", "martinez"))
-  assertIntegerish(nboot)
+  assertIntegerish(nboot, len = 1, lower = 0)
+  stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
+                              "daspk", "euler", "rk4", "ode23", "ode45", 
+                              "radau", "bdf", "bdf_d", "adams", "impAdams", 
+                              "impAdams_d" ,"iteration"))
+  assertLogical(ode_parallel, len = 1)
+  assertIntegerish(ode_parallel_ncores, len = 1, lower = 1)
   
   ##### Preparation ####################################################
   
@@ -214,16 +243,32 @@ ODEsobol.ODEnetwork <- function(odenet,
   model_fit <- function(X){
     # Input: matrix X with k columns
     colnames(X) <- pars
-    res_per_par <- lapply(1:nrow(X), function(i){
+    one_par <- function(i){
       pars_upd <- X[i, ]
       names(pars_upd) <- pars
       odenet_parmod <- ODEnetwork::updateOscillators(odenet, 
                                                      ParamVec = pars_upd)
-      ODEnetwork::simuNetwork(odenet_parmod, c(0, times), 
-        method = ode_method)$simulation$results[2:(timesNum + 1), 2:(z + 1)]
-    })
+      simnet_res <- ODEnetwork::simuNetwork(odenet_parmod, 
+                                            c(0, times), 
+                                            method = ode_method)
+      return(simnet_res$simulation$results[2:(timesNum + 1), 2:(z + 1)])
+    }
+    if(ode_parallel){
+      ode_cl <- parallel::makeCluster(rep("localhost", ode_parallel_ncores), 
+                                      type = "SOCK")
+      parallel::clusterExport(ode_cl, 
+                              varlist = c("X", "pars", "odenet", "z",
+                                          # "ODEnetwork::updateOscillators", 
+                                          # "ODEnetwork::simuNetwork", 
+                                          "times", "ode_method", "timesNum"),
+                              envir = environment())
+      res_per_par <- parallel::parLapply(ode_cl, 1:nrow(X), one_par)
+      parallel::stopCluster(ode_cl)
+    } else{
+      res_per_par <- lapply(1:nrow(X), one_par)
+    }
     if(timesNum == 1){
-      # Correction needed, if timesNum == 1:
+      # Correction needed if timesNum == 1:
       res_vec <- unlist(res_per_par)
       res_matrix <- matrix(res_vec, ncol = 1)
     } else{
@@ -263,11 +308,30 @@ ODEsobol.ODEnetwork <- function(odenet,
   })
   # Split ST_original again in 2 matrices S and T:
   ST_by_y <- lapply(ST_original_by_y, function(ST_original){
-    S <- rbind(times, ST_original[1:k, ])
-    T <- rbind(times, ST_original[(k+1):(2*k), ])
+    S <- rbind(times, ST_original[1:k, , drop = FALSE])
+    T <- rbind(times, ST_original[(k+1):(2*k), , drop = FALSE])
     rownames(S) <- rownames(T) <- c("time", pars)
     return(list(S = S, T = T))
   })
+  
+  # Handling of negative first order SA indices ("minor": >= -0.05 and < 0, 
+  # "major": < -0.05):
+  check_negative <- sapply(ST_by_y, function(ST){
+    c(minor = any(-0.05 <= ST$S & ST$S < 0), major = any(ST$S < -0.05))
+  })
+  if(any(check_negative["minor", ])){
+    # "Repair" minor negative SA indices by setting them to zero:
+    for(i in seq_along(ST_by_y)[check_negative[1, ]]){
+      check_minor <- -0.05 <= ST_by_y[[i]]$S & ST_by_y[[i]]$S < 0
+      ST_by_y[[i]]$S[check_minor] <- 0
+    }
+  }
+  if(any(check_negative["major", ])){
+    warning("Negative sensitivity indices (< -0.05) detected. Argument \"n\" ",
+            "might be too low. If using a higher value for \"n\" does not ",
+            "help, please check the parameter distributions (\"rfuncs\") and ",
+            "their arguments (\"rargs\").")
+  }
   
   # Return:
   res <- list(ST_by_y = ST_by_y, method = method)

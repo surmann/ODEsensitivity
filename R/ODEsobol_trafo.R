@@ -13,7 +13,7 @@
 #' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param yini [\code{numeric(z)}]\cr
-#'   vector of \code{z} initial values.
+#'   vector of \code{z} initial values. Must be named (with unique names).
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
@@ -54,8 +54,8 @@
 #'   IR [only needed, if \code{z > 1}]. Must be able to deal with a
 #'   matrix.
 #' @param ncores [\code{integer(1)}]\cr
-#'   number of processor cores to be used for calculating the sensitivity
-#'   indices. Must be between 1 and 4.
+#'   number of processor cores to be used for parallelization. Must be between 
+#'   1 and 4.
 #'
 #' @return List of Sobol' SA results (i.e. 1st order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of
@@ -72,10 +72,9 @@
 #'   \code{\link[sensitivity]{soboljansen}} or
 #'   \code{\link[sensitivity]{sobolmartinez}}. Therefore, a parallelization has
 #'   to be made which results (in general) in \code{ODEsobol_trafo} being very 
-#'   slow. Because of the parallelization, package \code{parallel} is needed 
-#'   for this function to work. However, the use of \code{\link{ODEsobol_ats}} 
-#'   (for one output variable) or \code{\link{ODEsobol_aos}} (for multiple 
-#'   output variables) is recommended if no transformation has to be made to the 
+#'   slow. The use of \code{\link{ODEsobol_ats}} (for one output variable) or 
+#'   \code{\link{ODEsobol_aos}} (for multiple output variables) is recommended 
+#'   if no transformation has to be made to the 
 #'   \code{\link[deSolve]{ode}}-results.
 #'   
 #'   Sometimes, it is also helpful to try another ODE-solver (argument 
@@ -125,6 +124,7 @@ ODEsobol_trafo <- function(mod,
   assertFunction(mod)
   assertCharacter(pars)
   assertNumeric(yini)
+  assertNamed(yini, type = "unique")
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
@@ -146,11 +146,6 @@ ODEsobol_trafo <- function(mod,
   if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
   assertIntegerish(ncores, lower = 1L, upper = 4L)
-  if (!requireNamespace("parallel", quietly = TRUE)) {
-    stop(paste("Package \"parallel\" needed for this function to work.",
-               "Please install it."),
-         call. = FALSE)
-  }
 
   ##### Vorarbeiten ####################################################
   set.seed(seed)

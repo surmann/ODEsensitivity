@@ -13,7 +13,7 @@
 #' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param yini [\code{numeric(z)}]\cr
-#'   vector of \code{z} initial values.
+#'   vector of \code{z} initial values. Must be named (with unique names).
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
@@ -112,6 +112,7 @@ ODEsobol_ats <- function(mod,
   assertFunction(mod)
   assertCharacter(pars)
   assertNumeric(yini)
+  assertNamed(yini, type = "unique")
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))

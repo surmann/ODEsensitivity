@@ -1,8 +1,8 @@
 Package: ODEsensitivity
 Type: Package
 Title: Sensitivity Analysis of ODE Models
-Version: 0.8.5
-Date: 2016-01-15
+Version: 0.8.6
+Date: 2016-01-17
 Authors@R: c(person("Frank", "Weber", email =
            "frank.weber@tu-dortmund.de", role = c("aut", "cre")),
     person("Stefan", "Theers", email =
@@ -13,7 +13,6 @@ Description: A package to perform sensitivity analysis in ordinary differential
     equation models.
 Suggests:
     testthat,
-    parallel,
     ODEnetwork
 Imports:
     sensitivity (>= 1.14),

@@ -20,16 +20,22 @@ ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
 devtools::load_all(".")
 
 system.time(
-  ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
-                     seed = 2015, n = 10,
+  ODEres <- ODEsobol(odenet, 
+                     ODEpars, 
+                     ODEtimes, 
+                     seed = 2015, 
+                     n = 1000,
                      rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
                      rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
                                "mean = 3, sd = 0.8"),
                      method = "martinez",
-                     nboot = 0)
+                     nboot = 0,
+                     ode_method = "adams",
+                     ode_parallel = TRUE,
+                     ode_parallel_ncores = 2)
 )
 #  User      System verstrichen 
-# 21.18        0.01       30.36
+# 30.11        1.67      143.91 
 
 # save(ODEres, file = "test_ODEsobol.Rdata")
 
@@ -46,6 +52,7 @@ my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E",
              "darkblue", "darkgreen")
 plot(ODEres, state_plot = "x.2", type = "l", colors_pars = my_cols, 
      legendPos = "outside")
+# Checking the passing of arguments:
 plot(ODEres, state_plot = "x.2", type = "p", colors_pars = my_cols, 
      main_title = "Big Title", legendPos = "outside", cex.axis = 2, cex = 4, 
      main = "Small Title", cex.main = 0.5)

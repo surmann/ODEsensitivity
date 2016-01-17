@@ -4,9 +4,10 @@
 \alias{ODEsobol}
 \title{Sobol' SA for Objects of Class \code{ODEnetwork}}
 \usage{
-ODEsobol(odenet, pars, times, ode_method = "lsoda", seed = 2015, n = 1000,
-  rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
-  length(pars)), method = "martinez", nboot = 0)
+ODEsobol(odenet, pars, times, seed = 2015, n = 1000, rfuncs = rep("runif",
+  length(pars)), rargs = rep("min = 0, max = 1", length(pars)),
+  method = "martinez", nboot = 0, ode_method = "lsoda",
+  ode_parallel = FALSE, ode_parallel_ncores = 1)
 }
 \arguments{
 \item{odenet}{[\code{ODEnetwork}]\cr
@@ -22,18 +23,14 @@ derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 points of time at which the SA should be executed (vector of arbitrary 
 length). The first point of time must be greater than zero.}
 
-\item{ode_method}{[\code{character(1)}]\cr
-method to be used for solving the differential equations, see 
-\code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
-
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
 
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values (\code{n} per input factor) used to 
-estimate the variance-based sensitivity indices by Monte-Carlo-method.
+estimate the variance-based sensitivity indices by Monte Carlo method.
 (Variance-based methods for sensitivity analysis rely on 
-Monte-Carlo-simulation to estimate the integrals needed for the calculation
+Monte Carlo simulation to estimate the integrals needed for the calculation
 of the sensitivity indices.) Defaults to 1000.}
 
 \item{rfuncs}{[\code{character(k)}]\cr
@@ -58,13 +55,26 @@ of the variance-based Sobol' method shall be used. Defaults to
 parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
 \code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
 replicates. Defaults to 0, so no bootstrapping is done.}
+
+\item{ode_method}{[\code{character(1)}]\cr
+method to be used for solving the differential equations, see 
+\code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
+
+\item{ode_parallel}{[\code{logical(1)}]\cr
+logical indicating if a parallelization shall be done for computing the
+\code{\link[deSolve]{ode}}-results for the different parameter combinations
+generated for Monte Carlo estimation of the SA indices.}
+
+\item{ode_parallel_ncores}{[\code{integer(1)}]\cr
+number of processor cores to be used for parallelization. Only applies if
+\code{ode_parallel = TRUE}. Default is 1.}
 }
 \value{
 List of length \code{2 * nrow(odenet$state)} and of class 
-\code{sobolRes} containing in each element a list of the Sobol' SA results 
-for the corresponding state-variable (i.e. first order sensitivity indices
-\code{S} and total sensitivity indices \code{T}) for every point of time of 
-the \code{times} vector.
+  \code{sobolRes} containing in each element a list of the Sobol' SA results 
+  for the corresponding state-variable (i.e. first order sensitivity indices
+  \code{S} and total sensitivity indices \code{T}) for every point of time of 
+  the \code{times} vector.
 }
 \description{
 \code{ODEsobol} performs a variance-based sensitivity analysis for objects of
@@ -74,15 +84,22 @@ function to work.
 }
 \details{
 The sensitivity analysis is done for all state-variables, since 
-\code{ODEsobol} is an adapted version of \code{\link{ODEsobol_aos}}.
+  \code{ODEsobol} is an adapted version of \code{\link{ODEsobol_aos}}.
 }
 \note{
-Sometimes, it is also helpful to try another ODE-solver (argument 
-  \code{ode_method}). Problems are known for the
-  \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
+It might be helpful to try different types of ODE-solvers (argument 
+  \code{ode_method}). Problems are known for the \code{ode_method}s 
+  \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
+  
+  If \code{n} is too low, the Monte Carlo estimation of the SA indices might
+  be very bad and even produce negative SA indices (up to now, this problem 
+  only occured for first order indices). SA indices in the interval
+  [-0.05, 0) are considered as minor deviations and set to 0. SA indices 
+  lower than -0.05 are considered as major deviations. For major deviations, 
+  SA indices are not changed and a warning is thrown.
 }
 \examples{
 library(ODEnetwork)
@@ -102,13 +119,19 @@ ODEtimes <- seq(0.01, 20, by = 0.1)
 ODEbinf <- rep(0.001, length(ODEpars) - 1)
 ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
 
-ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
-                   seed = 2015, n = 10,
+ODEres <- ODEsobol(odenet, 
+                   ODEpars, 
+                   ODEtimes, 
+                   seed = 2015, 
+                   n = 1000,
                    rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
                    rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
                              "mean = 3, sd = 0.8"),
                    method = "martinez",
-                   nboot = 0)
+                   nboot = 0,
+                   ode_method = "adams",
+                   ode_parallel = TRUE,
+                   ode_parallel_ncores = 2)
 
 }
 \author{
@@ -122,7 +145,7 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 }
 \seealso{
 \code{\link[sensitivity]{soboljansen_list},
-\link[sensitivity]{sobolmartinez_list},
-\link{plot.sobolRes_aos}}
+  \link[sensitivity]{sobolmartinez_list},
+  \link{plot.sobolRes_aos}}
 }
 

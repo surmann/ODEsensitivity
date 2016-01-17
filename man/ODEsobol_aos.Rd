@@ -5,10 +5,10 @@
 \title{Sobol' SA for ODEs for All Output Variables and All Timepoints
 Simultaneously}
 \usage{
-ODEsobol_aos(mod, pars, yini, times, ode_method = "lsoda", seed = 2015,
-  n = 1000, rfuncs = rep("runif", length(pars)),
-  rargs = rep("min = 0, max = 1", length(pars)), method = "martinez",
-  nboot = 0)
+ODEsobol_aos(mod, pars, yini, times, ode_method = "lsoda",
+  ode_parallel = FALSE, ode_parallel_ncores = 1, seed = 2015, n = 1000,
+  rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
+  length(pars)), method = "martinez", nboot = 0)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -18,7 +18,7 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values.}
+vector of \code{z} initial values. Must be named (with unique names).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
@@ -29,12 +29,21 @@ first point of time must be positive.}
 method to be used for solving the differential equations, see 
 \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
 
+\item{ode_parallel}{[\code{logical(1)}]\cr
+logical indicating if a parallelization shall be done for computing the
+\code{\link[deSolve]{ode}}-results for the different parameter combinations
+generated for Monte Carlo estimation of the SA indices.}
+
+\item{ode_parallel_ncores}{[\code{integer(1)}]\cr
+number of processor cores to be used for parallelization. Only applies if
+\code{ode_parallel = TRUE}. Default is 1.}
+
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
 
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values (\code{n} per input factor) used to 
-estimate the variance-based sensitivity indices by Monte-Carlo-method.
+estimate the variance-based sensitivity indices by Monte Carlo method.
 (Variance-based methods for sensitivity analysis rely on 
 Monte-Carlo-simulation to estimate the integrals needed for the calculation
 of the sensitivity indices.) Defaults to 1000.}
@@ -94,6 +103,13 @@ Sometimes, it is also helpful to try another ODE-solver (argument
   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
+  
+  If \code{n} is too low, the Monte Carlo estimation of the SA indices might
+  be very bad and even produce negative SA indices (up to now, this problem 
+  only occured for first order indices). SA indices in the interval
+  [-0.05, 0) are considered as minor deviations and set to 0. SA indices 
+  lower than -0.05 are considered as major deviations. For major deviations, 
+  SA indices are not changed and a warning is thrown.
 }
 \examples{
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007)

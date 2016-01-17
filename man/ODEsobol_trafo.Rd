@@ -17,7 +17,7 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values.}
+vector of \code{z} initial values. Must be named (with unique names).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
@@ -68,8 +68,8 @@ IR [only needed, if \code{z > 1}]. Must be able to deal with a
 matrix.}
 
 \item{ncores}{[\code{integer(1)}]\cr
-number of processor cores to be used for calculating the sensitivity
-indices. Must be between 1 and 4.}
+number of processor cores to be used for parallelization. Must be between 
+1 and 4.}
 }
 \value{
 List of Sobol' SA results (i.e. 1st order sensitivity indices
@@ -96,10 +96,9 @@ other implementations, it supports transformations of the adapted
   \code{\link[sensitivity]{soboljansen}} or
   \code{\link[sensitivity]{sobolmartinez}}. Therefore, a parallelization has
   to be made which results (in general) in \code{ODEsobol_trafo} being very 
-  slow. Because of the parallelization, package \code{parallel} is needed 
-  for this function to work. However, the use of \code{\link{ODEsobol_ats}} 
-  (for one output variable) or \code{\link{ODEsobol_aos}} (for multiple 
-  output variables) is recommended if no transformation has to be made to the 
+  slow. The use of \code{\link{ODEsobol_ats}} (for one output variable) or 
+  \code{\link{ODEsobol_aos}} (for multiple output variables) is recommended 
+  if no transformation has to be made to the 
   \code{\link[deSolve]{ode}}-results.
   
   Sometimes, it is also helpful to try another ODE-solver (argument 

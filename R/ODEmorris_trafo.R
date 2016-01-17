@@ -12,8 +12,7 @@
 #' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param yini [\code{numeric(z)}]\cr
-#'   vector of \code{z} initial values. Must be named and must not contain
-#'   duplicated names.
+#'   vector of \code{z} initial values. Must be named (with unique names).
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed
 #'   (vector of arbitrary length). Also the
@@ -48,8 +47,8 @@
 #'   number of model runs executed by \code{\link[sensitivity]{morris}}. 
 #'   Important: \code{trafo} must be able to deal with a matrix.
 #' @param ncores [\code{integer(1)}]\cr
-#'   number of processor cores to be used for calculating the sensitivity
-#'   indices. Must be between 1 and 4.
+#'   number of processor cores to be used for parallelization. Must be between 
+#'   1 and 4.
 #'
 #' @return Matrix of class \code{morrisRes_trafo} containing the Morris SA
 #'   results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
@@ -64,10 +63,9 @@
 #'   only one timepoint can be analyzed per execution of
 #'   \code{\link[sensitivity]{morris}}. Therefore, a parallelization has to be
 #'   made which results (in general) in \code{ODEmorris_trafo} being very slow.
-#'   Because of the parallelization, package \code{parallel} is needed for this
-#'   function. However, the use of \code{\link{ODEmorris_ats}} (for one 
-#'   output variable) or \code{\link{ODEmorris_aos}} (for multiple output 
-#'   variables) is recommended if no transformation has to be made to the 
+#'   The use of \code{\link{ODEmorris_ats}} (for one output variable) or 
+#'   \code{\link{ODEmorris_aos}} (for multiple output variables) is recommended 
+#'   if no transformation has to be made to the 
 #'   \code{\link[deSolve]{ode}}-results.
 #' 
 #' \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
@@ -129,8 +127,7 @@
 #'                                 trafo = function(Y) Y[, 1],    # voltage only
 #'                                 ncores = 2)
 #' 
-#' @import
-#'   checkmate
+#' @import checkmate
 #' @importFrom deSolve ode
 #' @importFrom sensitivity morris
 #' @export
@@ -156,7 +153,7 @@ ODEmorris_trafo <- function(mod,
   assertFunction(mod)
   assertCharacter(pars)
   assertNumeric(yini)
-  checkNamed(yini, type = "unique")
+  assertNamed(yini, type = "unique")
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
@@ -180,11 +177,6 @@ ODEmorris_trafo <- function(mod,
   if(notOk)
     stop("Make sure that trafo() transforms matrices to suitable vectors!")
   assertIntegerish(ncores, lower = 1L, upper = 4L)
-  if (!requireNamespace("parallel", quietly = TRUE)) {
-    stop(paste("Package \"parallel\" needed for this function to work.",
-               "Please install it."),
-         call. = FALSE)
-  }
 
   ##### Vorarbeiten ####################################################
   # set.seed(seed)

@@ -17,8 +17,7 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values. Must be named and must not contain
-duplicated names.}
+vector of \code{z} initial values. Must be named (with unique names).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
@@ -63,8 +62,8 @@ number of model runs executed by \code{\link[sensitivity]{morris}}.
 Important: \code{trafo} must be able to deal with a matrix.}
 
 \item{ncores}{[\code{integer(1)}]\cr
-number of processor cores to be used for calculating the sensitivity
-indices. Must be between 1 and 4.}
+number of processor cores to be used for parallelization. Must be between 
+1 and 4.}
 }
 \value{
 Matrix of class \code{morrisRes_trafo} containing the Morris SA
@@ -87,10 +86,9 @@ method and supports transformations of the adapted
   only one timepoint can be analyzed per execution of
   \code{\link[sensitivity]{morris}}. Therefore, a parallelization has to be
   made which results (in general) in \code{ODEmorris_trafo} being very slow.
-  Because of the parallelization, package \code{parallel} is needed for this
-  function. However, the use of \code{\link{ODEmorris_ats}} (for one 
-  output variable) or \code{\link{ODEmorris_aos}} (for multiple output 
-  variables) is recommended if no transformation has to be made to the 
+  The use of \code{\link{ODEmorris_ats}} (for one output variable) or 
+  \code{\link{ODEmorris_aos}} (for multiple output variables) is recommended 
+  if no transformation has to be made to the 
   \code{\link[deSolve]{ode}}-results.
 
 \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 

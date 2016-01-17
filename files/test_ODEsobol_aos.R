@@ -15,12 +15,15 @@ FHNmod <- function(Time, State, Pars) {
 FHNyini  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
+# Martinez ohne Parallelisierung:
+
 system.time(
   FHNres_aos <- ODEsobol_aos(mod = FHNmod,
                              pars = c("a", "b", "s"),
                              yini = FHNyini,
                              times = FHNtimes,
                              ode_method = "adams",
+                             ode_parallel = FALSE,
                              seed = 2015,
                              n = 10,
                              rfuncs = c("runif", "runif", "rnorm"),
@@ -35,6 +38,8 @@ system.time(
 # Mit "FHNtimes <- seq(0.1, 50, by = 5)":
 # User      System verstrichen 
 # 7.38        0.00        7.40
+
+# Jansen ohne Parallelisierung:
 
 system.time(
   FHNres_aos_jansen <- ODEsobol_aos(mod = FHNmod,
@@ -59,3 +64,26 @@ system.time(
 plot(FHNres_aos, y_plot = "Voltage", type = "l", legendPos = "topright")
 plot(FHNres_aos_jansen, y_plot = "Voltage", type = "l", legendPos = "topright")
 # dev.off()
+
+# Martinez mit Parallelisierung und n = 1000:
+
+system.time(
+  FHNres_aos_par <- ODEsobol_aos(mod = FHNmod,
+                                 pars = c("a", "b", "s"),
+                                 yini = FHNyini,
+                                 times = FHNtimes,
+                                 ode_method = "adams",
+                                 ode_parallel = TRUE,
+                                 ode_parallel_ncores = 4,
+                                 seed = 2015,
+                                 n = 1000,
+                                 rfuncs = c("runif", "runif", "rnorm"),
+                                 rargs = c(rep("min = 0.18, max = 0.22", 2),
+                                           "mean = 3, sd = 0.2 / 3"),
+                                 method = "martinez",
+                                 nboot = 0)
+)
+# User      System verstrichen 
+# 8.38        1.51      425.36
+
+plot(FHNres_aos_par, y_plot = "Voltage", type = "l", legendPos = "topright")

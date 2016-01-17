@@ -16,8 +16,7 @@ model to examine, cf. example below.}
 vector of \code{k} input variable names.}
 
 \item{yini}{[\code{numeric(z)}]\cr
-vector of \code{z} initial values. Must be named and must not contain
-duplicated names.}
+vector of \code{z} initial values. Must be named (with unique names).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed
