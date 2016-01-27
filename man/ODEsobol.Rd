@@ -2,150 +2,32 @@
 % Please edit documentation in R/ODEsobol.R
 \name{ODEsobol}
 \alias{ODEsobol}
-\title{Sobol' SA for Objects of Class \code{ODEnetwork}}
+\title{Sobol' SA for ODE Models}
 \usage{
-ODEsobol(odenet, pars, times, seed = 2015, n = 1000, rfuncs = rep("runif",
-  length(pars)), rargs = rep("min = 0, max = 1", length(pars)),
-  method = "martinez", nboot = 0, ode_method = "lsoda",
-  ode_parallel = FALSE, ode_parallel_ncores = 1)
+ODEsobol(mod, ...)
 }
 \arguments{
-\item{odenet}{[\code{ODEnetwork}]\cr
-list of class \code{ODEnetwork}.}
+\item{mod}{either a function with arguments \code{Time, State, Pars} (for 
+\code{\link{ODEsobol.default}} or an object of class \code{ODEnetwork} (for
+\code{\link{ODEsobol.ODEnetwork}}.}
 
-\item{pars}{[\code{character(k)}]\cr
-vector of \code{k} input variable names. All parameters must be 
-contained in \code{names(ODEnetwork::createParamVec(odenet))} and must not
-be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
-derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
-
-\item{times}{[\code{numeric}]\cr
-points of time at which the SA should be executed (vector of arbitrary 
-length). The first point of time must be greater than zero.}
-
-\item{seed}{[\code{numeric(1)}]\cr
-seed.}
-
-\item{n}{[\code{integer(1)}]\cr
-number of random parameter values (\code{n} per input factor) used to 
-estimate the variance-based sensitivity indices by Monte Carlo method.
-(Variance-based methods for sensitivity analysis rely on 
-Monte Carlo simulation to estimate the integrals needed for the calculation
-of the sensitivity indices.) Defaults to 1000.}
-
-\item{rfuncs}{[\code{character(k)}]\cr
-names of the \code{k} functions used to generate the \code{n} random values
-for the \code{k} parameters (see details). This way, different 
-distributions can be supplied for the \code{k} parameters. Defaults to 
-\code{"runif"} for each of the \code{k} parameters.}
-
-\item{rargs}{[\code{character(k)}]\cr
-arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
-element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
-tag2 = value2, ..."}. By default, \code{min = 0} and \code{max = 1} are 
-used for each of the \code{k} \code{runif}'s, meaning a uniform 
-distribution of all parameters on [0, 1].}
-
-\item{method}{[\code{character(1)}]\cr
-either \code{"jansen"} or \code{"martinez"}, specifying which modification
-of the variance-based Sobol' method shall be used. Defaults to 
-\code{"martinez"}, which is slightly faster than \code{"jansen"}.}
-
-\item{nboot}{[\code{integer(1)}]\cr
-parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
-\code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
-replicates. Defaults to 0, so no bootstrapping is done.}
-
-\item{ode_method}{[\code{character(1)}]\cr
-method to be used for solving the differential equations, see 
-\code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
-
-\item{ode_parallel}{[\code{logical(1)}]\cr
-logical indicating if a parallelization shall be done for computing the
-\code{\link[deSolve]{ode}}-results for the different parameter combinations
-generated for Monte Carlo estimation of the SA indices.}
-
-\item{ode_parallel_ncores}{[\code{integer(1)}]\cr
-number of processor cores to be used for parallelization. Only applies if
-\code{ode_parallel = TRUE}. Default is 1.}
-}
-\value{
-List of length \code{2 * nrow(odenet$state)} and of class 
-  \code{sobolRes} containing in each element a list of the Sobol' SA results 
-  for the corresponding state-variable (i.e. first order sensitivity indices
-  \code{S} and total sensitivity indices \code{T}) for every point of time of 
-  the \code{times} vector.
+\item{...}{further arguments passed to methods, see \code{\link{ODEsobol.default}} and
+\code{\link{ODEsobol.ODEnetwork}}.}
 }
 \description{
-\code{ODEsobol} performs a variance-based sensitivity analysis for objects of
-class \code{ODEnetwork} according to either the Sobol'-Jansen- or the 
-Sobol'-Martinez-method. Package \code{ODEnetwork} is required for this 
-function to work.
+\code{ODEsobol} is the generic function for Sobol' sensitivity analysis in
+ODE models.
 }
 \details{
-The sensitivity analysis is done for all state-variables, since 
-  \code{ODEsobol} is an adapted version of \code{\link{ODEsobol_aos}}.
-}
-\note{
-It might be helpful to try different types of ODE-solvers (argument 
-  \code{ode_method}). Problems are known for the \code{ode_method}s 
-  \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
-  In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
-  \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
-  might be even faster than the standard \code{ode_method} \code{"lsoda"}.
-  
-  If \code{n} is too low, the Monte Carlo estimation of the SA indices might
-  be very bad and even produce negative SA indices (up to now, this problem 
-  only occured for first order indices). SA indices in the interval
-  [-0.05, 0) are considered as minor deviations and set to 0. SA indices 
-  lower than -0.05 are considered as major deviations. For major deviations, 
-  SA indices are not changed and a warning is thrown.
-}
-\examples{
-library(ODEnetwork)
-
-masses <- c(1, 1)
-dampers <- diag(c(1, 1))
-springs <- diag(c(1, 1))
-springs[1, 2] <- 1
-distances <- diag(c(0, 2))
-distances[1, 2] <- 1
-odenet <- ODEnetwork(masses, dampers, springs, 
-                     cartesian = TRUE, distances = distances)
-odenet <- setState(odenet, c(0.5, 1), c(0, 0))
-
-ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
-ODEtimes <- seq(0.01, 20, by = 0.1)
-ODEbinf <- rep(0.001, length(ODEpars) - 1)
-ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
-
-ODEres <- ODEsobol(odenet, 
-                   ODEpars, 
-                   ODEtimes, 
-                   seed = 2015, 
-                   n = 1000,
-                   rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
-                   rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
-                             "mean = 3, sd = 0.8"),
-                   method = "martinez",
-                   nboot = 0,
-                   ode_method = "adams",
-                   ode_parallel = TRUE,
-                   ode_parallel_ncores = 2)
-
+There are two methods for this generic function: 
+  \code{\link{ODEsobol.default}} (for general ODE models) and
+  \code{\link{ODEsobol.ODEnetwork}} (for objects of class \code{ODEnetwork},
+  see the package \code{ODEnetwork}).
 }
 \author{
 Frank Weber
 }
-\references{
-J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
-  \emph{Parameter estimation for differential equations: a generalized 
-  smoothing approach}, Journal of the Royal Statistical Society, Series B, 
-  69, Part 5, 741--796.
-}
 \seealso{
-\code{\link[sensitivity]{soboljansen_list},
-  \link[sensitivity]{sobolmartinez_list},
-  \link{plot.sobolRes_aos}}
+\code{\link{ODEsobol.default}, \link{ODEsobol.ODEnetwork}}
 }
 

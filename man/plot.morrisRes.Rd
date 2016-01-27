@@ -4,8 +4,9 @@
 \alias{plot.morrisRes}
 \title{Plot of the results of Morris SA for objects of class \code{morrisRes}}
 \usage{
-\method{plot}{morrisRes}(x, state_plot = names(x)[1], type = "sep",
-  colors_pars = NULL, main_title = NULL, legendPos = "outside", ...)
+\method{plot}{morrisRes}(x, state_plot = names(x)[1], kind = "sep",
+  colors_pars = NULL, main_title = NULL, legendPos = "outside",
+  type = "l", ...)
 }
 \arguments{
 \item{x}{[\code{morrisRes}]\cr
@@ -15,8 +16,8 @@ resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.}
 name of the state variable to be plotted. Defaults to the name of the
 first state variable.}
 
-\item{type}{[\code{character(1)}]\cr
-plot type, choose between \code{"sep"} and \code{"trajec"}.}
+\item{kind}{[\code{character(1)}]\cr
+kind of the plot, choose between \code{"sep"} and \code{"trajec"}.}
 
 \item{colors_pars}{[\code{character(>= k)}]\cr
 vector of the colors to be used for the \code{k} different parameters. Must
@@ -24,7 +25,7 @@ be at least of length \code{k}. If \code{NULL} (the default),
 \code{rainbow(k)} is used.}
 
 \item{main_title}{[\code{character(1)}]\cr
-title for the plot. If \code{type = "sep"}, this is the overall title for
+title for the plot. If \code{kind = "sep"}, this is the overall title for
 the two separate plots. Defaults to \code{NULL}, so a standard title is 
 generated.}
 
@@ -34,60 +35,93 @@ keyword for the legend position, either one of those specified in
 legend is placed under the plot (useful, if there are many parameters in 
 the model).}
 
-\item{...}{additional arguments passed to \code{\link{plot}}.}
+\item{type}{[\code{character(1)}]\cr
+plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
+Defaults to \code{"l"}.}
+
+\item{...}{additional arguments passed to \code{\link{plot.default}}.}
 }
 \value{
 \code{TRUE} (invisible; for testing purposes).
 }
 \description{
 \code{plot.morrisRes} plots the results of Morris SA for objects of class 
-\code{morrisRes}.
+  \code{morrisRes}.
 }
 \details{
-\code{plot} with \code{type = "sep"} plots mu.star and
+\code{plot.morrisRes} with \code{kind = "sep"} plots mu.star and
   sigma separately versus time.
 
-\code{plot} with \code{type = "trajec"} plots mu.star versus
+  \code{plot.morrisRes} with \code{kind = "trajec"} plots mu.star versus
   sigma for every point of time.
 }
 \note{
 Not all plotting arguments can be passed by \code{...}, for example
-\code{xlab} and \code{ylab} are fixed.
+  \code{xlab} and \code{ylab} are fixed.
 }
 \examples{
-library(ODEnetwork)
+##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
+# Definition of the model itself, parameters, initial state values
+# and the times vector:
+FHNmod <- function(Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    
+    dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
+    dCurrent <- - 1 / s *(Voltage - a + b * Current)
+    
+    return(list(c(dVoltage, dCurrent)))
+  })
+}
+FHNstate  <- c(Voltage = -1, Current = 1)
+FHNtimes <- seq(0.1, 50, by = 5)
 
+FHNres <- ODEmorris(mod = FHNmod,
+                    pars = c("a", "b", "s"),
+                    state_init = FHNstate,
+                    times = FHNtimes,
+                    seed = 2015,
+                    binf = c(0.18, 0.18, 2.8),
+                    bsup = c(0.22, 0.22, 3.2),
+                    r = 50,
+                    design = list(type = "oat", levels = 100, grid.jump = 1),
+                    scale = TRUE,
+                    ode_method = "adams",
+                    ode_parallel = TRUE,
+                    ode_parallel_ncores = 2)
+
+# Palette "Dark2" from the package "RColorBrewer" with some 
+# additional colors:
+my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
+             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
+             "darkblue", "darkgreen")
+plot(FHNres, state_plot = "Current", kind = "sep", colors_pars = my_cols)
+plot(FHNres, state_plot = "Current", kind = "trajec", colors_pars = my_cols)
+
+##### A network of ordinary differential equations #####
+# Definition of the network using the package "ODEnetwork":
+library(ODEnetwork)
 masses <- c(1, 1)
 dampers <- diag(c(1, 1))
 springs <- diag(c(1, 1))
 springs[1, 2] <- 1
 distances <- diag(c(0, 2))
 distances[1, 2] <- 1
-odenet <- ODEnetwork(masses, dampers, springs, 
+lfonet <- ODEnetwork(masses, dampers, springs, 
                      cartesian = TRUE, distances = distances)
-odenet <- setState(odenet, c(0.5, 1), c(0, 0))
+lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
+LFOpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+LFOtimes <- seq(0.01, 20, by = 0.1)
+LFObinf <- rep(0.001, length(LFOpars))
+LFObsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 
-ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
-ODEtimes <- seq(0.01, 20, by = 0.1)
-ODEbinf <- rep(0.001, length(ODEpars))
-ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
+LFOres <- ODEmorris(lfonet, LFOpars, LFOtimes, 
+                    seed = 2015, binf = LFObinf, bsup = LFObsup, r = 50, 
+                    design = list(type = "oat", levels = 100, grid.jump = 1),
+                    scale = TRUE, ode_method = "adams", 
+                    ode_parallel = TRUE, ode_parallel_ncores = 2)
 
-ODEres <- ODEmorris(odenet, ODEpars, ODEtimes, ode_method = "adams", 
-                    seed = 2015, binf = ODEbinf, bsup = ODEbsup, r = 20)
-
-# Plots for state variable "x.2":
-# Palette "Dark2" from the package "RColorBrewer" with some 
-# additional colors:
-my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
-             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
-             "darkblue", "darkgreen")
-# Standard (separate plots):
-plot(ODEres, state_plot = "x.2", type = "sep", colors_pars = my_cols, 
-     legendPos = "outside")
-
-# Trajectories:
-plot(ODEres, state_plot = "x.2", type = "trajec", colors_pars = my_cols, 
-     legendPos = "outside")
+plot(LFOres, state_plot = "x.2", kind = "sep", colors_pars = my_cols)
+plot(LFOres, state_plot = "x.2", kind = "trajec", colors_pars = my_cols)
 
 }
 \author{

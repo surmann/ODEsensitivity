@@ -4,118 +4,30 @@
 \alias{ODEmorris}
 \title{Morris SA for Objects of Class \code{ODEnetwork}}
 \usage{
-ODEmorris(odenet, pars, times, ode_method = "lsoda", seed = 2015,
-  binf = 0, bsup = 1, r = 25, design = list(type = "oat", levels = 100,
-  grid.jump = 1), scale = TRUE)
+ODEmorris(mod, ...)
 }
 \arguments{
-\item{odenet}{[\code{ODEnetwork}]\cr
-list of class \code{ODEnetwork}.}
+\item{mod}{either a function with arguments \code{Time, State, Pars} (for 
+\code{\link{ODEmorris.default}} or an object of class \code{ODEnetwork} 
+(for \code{\link{ODEmorris.ODEnetwork}}.}
 
-\item{pars}{[\code{character(k)}]\cr
-vector of \code{k} input variable names. All parameters must be 
-contained in \code{names(ODEnetwork::createParamVec(odenet))} and must not
-be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
-derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
-
-\item{times}{[\code{numeric}]\cr
-points of time at which the SA should be executed (vector of arbitrary 
-length). The first point of time must be greater than zero.}
-
-\item{ode_method}{[\code{character(1)}]\cr
-method to be used for solving the differential equations, see 
-\code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
-
-\item{seed}{[\code{numeric(1)}]\cr
-seed.}
-
-\item{binf}{[\code{numeric(k)}]\cr
-vector of lower borders of possible values for the \code{k} input 
-parameters. If they are all equal, a single value can be set.}
-
-\item{bsup}{[\code{numeric(k)}]\cr
-vector of upper borders of possible values for the \code{k} input 
-parameters. If they are all equal, a single value can be set.}
-
-\item{r}{[\code{integer(1)}]\cr
-number of repetitions of the \code{design},
-cf. \code{\link[sensitivity]{morris}}.}
-
-\item{design}{[\code{list}]\cr
-a list specifying the design type and its parameters,
-cf. \code{\link[sensitivity]{morris}}.}
-
-\item{scale}{[\code{logical(1)}]\cr
-if \code{TRUE}, scaling is done for the input design of experiments after 
-building the design and before calculating the elementary effects,
-cf. \code{\link[sensitivity]{morris}}. Defaults to \code{TRUE}, which is
-highly recommended if the factors have different orders of magnitude, see
-\code{\link[sensitivity]{morris}}.}
-}
-\value{
-List of class \code{morrisRes} of length 
-  \code{2 * nrow(odenet$state)} containing in each element a matrix for 
-  one state variable (all components of the 2 state variables are analyzed
-  independently). The matrices themselves contain in their rows the Morris SA
-  results (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) for
-  all timepoints (columns).
+\item{...}{further arguments passed to methods, see \code{\link{ODEmorris.default}} 
+and \code{\link{ODEmorris.ODEnetwork}}.}
 }
 \description{
-\code{ODEmorris} performs a sensitivity analysis for objects of class
-\code{ODEnetwork} using Morris's elementary effects screening method. Package
-\code{ODEnetwork} is required for this function to work.
+\code{ODEmorris} is the generic function for sensitivity analysis in ODE 
+  models using Morris's elementary effects screening method.
 }
 \details{
-The sensitivity analysis is done for all state variables, since 
-\code{ODEmorris} is an adapted version of \code{\link{ODEmorris_aos}}.
-}
-\note{
-\code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
-  unrealistic parameter combinations are sampled by 
-  \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
-  Morris sensitivity results, such that \code{\link{ODEmorris}} fails for 
-  one or many points of time! For this reason, if \code{NA}s occur, please 
-  make use of \code{\link{ODEsobol}} instead or
-  restrict the input parameter value intervals usefully using
-  \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
-  another ODE-solver (argument \code{ode_method}). Problems are known for the
-  \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
-  In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
-  \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
-  might be even faster than the standard \code{ode_method} \code{"lsoda"}.
-  
-  If \code{\link[sensitivity]{morris_list}} throws a warning message saying
-  "In ... keeping ... repetitions out of ...", try using a bigger number of 
-  \code{levels} in the \code{design} argument.
-}
-\examples{
-library(ODEnetwork)
-
-masses <- c(1, 1)
-dampers <- diag(c(1, 1))
-springs <- diag(c(1, 1))
-springs[1, 2] <- 1
-distances <- diag(c(0, 2))
-distances[1, 2] <- 1
-odenet <- ODEnetwork(masses, dampers, springs, 
-                     cartesian = TRUE, distances = distances)
-odenet <- setState(odenet, c(0.5, 1), c(0, 0))
-
-ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
-ODEtimes <- seq(0.01, 20, by = 0.1)
-ODEbinf <- rep(0.001, length(ODEpars))
-ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
-
-ODEres <- ODEmorris(odenet, ODEpars, ODEtimes, ode_method = "adams", 
-                    seed = 2015, binf = ODEbinf, bsup = ODEbsup, r = 20)
-
+There are two methods for this generic function: 
+  \code{\link{ODEmorris.default}} (for general ODE models) and
+  \code{\link{ODEmorris.ODEnetwork}} (for objects of class \code{ODEnetwork},
+  see the package \code{ODEnetwork}).
 }
 \author{
 Frank Weber
 }
 \seealso{
-\code{\link[sensitivity]{morris}},
-  \code{\link[sensitivity]{morris_list}},
-  \code{\link{plot.morrisRes}}
+\code{\link{ODEmorris.default}, \link{ODEmorris.ODEnetwork}}
 }
 

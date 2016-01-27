@@ -2,17 +2,14 @@
 #' Plotting the results of Sobol' SA for objects of class \code{sobolRes}
 #'
 #' @description
-#' \code{plot.sobolRes} plots the results of Sobol' SA for objects of class 
-#' \code{sobolRes}.
+#'   \code{plot.sobolRes} plots the results of Sobol' SA for objects of class 
+#'   \code{sobolRes}.
 #'
 #' @param x [\code{sobolRes}]\cr
 #'   resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.
 #' @param state_plot [\code{character(1)}]\cr
 #'   name of the state variable to be plotted. Defaults to the name of the
 #'   first state variable.
-#' @param type [\code{character(1)}]\cr
-#'   plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
-#'   Defaults to \code{"l"}.
 #' @param colors_pars [\code{character(>= k)}]\cr
 #'   vector of the colors to be used for the \code{k} different parameters. Must
 #'   be at least of length \code{k}. If \code{NULL} (the default), 
@@ -25,70 +22,112 @@
 #'   \code{\link{legend}} or \code{"outside"} (the default), which means the 
 #'   legend is placed under the plot (useful, if there are many parameters in 
 #'   the model).
-#' @param ... additional arguments passed to \code{\link{plot}}.
+#' @param type [\code{character(1)}]\cr
+#'   plot type, i.e. \code{"p", "l", "b", "c", "o", "s", "h"} or \code{"n"}. 
+#'   Defaults to \code{"l"}.
+#' @param ... additional arguments passed to \code{\link{plot.default}}.
 #'
 #' @return TRUE (invisible; for testing purposes).
 #'
 #' @details
-#' First order and total Sobol' SA indices are plotted for one state variable 
-#' (chosen by argument \code{state_plot}) and for each input parameter against 
-#' time.
+#'   First order and total Sobol' SA indices are plotted for one state variable 
+#'   (chosen by argument \code{state_plot}) and all of the parameters against 
+#'   time.
 #'
-#' @note Not all plotting arguments can be passed by \code{...}, for example
-#' \code{xlab} and \code{ylab} are fixed.
+#' @note 
+#'   Not all arguments of \code{\link{plot.default}} can be passed by 
+#'   \code{...}, for example \code{xlab} and \code{ylab} are fixed.
 #'
 #' @author Frank Weber
 #' @seealso \code{\link{ODEsobol}, \link[sensitivity]{soboljansen_list},
 #' \link[sensitivity]{sobolmartinez_list}}
 #'
 #' @examples
-#' library(ODEnetwork)
+#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
+#' # Definition of the model itself, parameters, initial state values
+#' # and the times vector:
+#' FHNmod <- function(Time, State, Pars) {
+#'   with(as.list(c(State, Pars)), {
+#'     
+#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
+#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
+#'     
+#'     return(list(c(dVoltage, dCurrent)))
+#'   })
+#' }
+#' FHNstate  <- c(Voltage = -1, Current = 1)
+#' FHNtimes <- seq(0.1, 50, by = 5)
 #' 
-#' masses <- c(1, 1)
-#' dampers <- diag(c(1, 1))
-#' springs <- diag(c(1, 1))
-#' springs[1, 2] <- 1
-#' distances <- diag(c(0, 2))
-#' distances[1, 2] <- 1
-#' odenet <- ODEnetwork(masses, dampers, springs, 
-#'                      cartesian = TRUE, distances = distances)
-#' odenet <- setState(odenet, c(0.5, 1), c(0, 0))
-#' 
-#' ODEpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
-#' ODEtimes <- seq(0.01, 20, by = 0.1)
-#' ODEbinf <- rep(0.001, length(ODEpars) - 1)
-#' ODEbsup <- c(2, 1.5, 6, 6, 2, 1.5)
-#' 
-#' ODEres <- ODEsobol(odenet, ODEpars, ODEtimes, ode_method = "adams", 
-#'                    seed = 2015, n = 10,
-#'                    rfuncs = c(rep("runif", length(ODEbinf)), "rnorm"),
-#'                    rargs = c(paste0("min = ", ODEbinf, ", max = ", ODEbsup),
-#'                              "mean = 3, sd = 0.8"),
-#'                    method = "martinez",
-#'                    nboot = 0)
+#' ### The following code might take a long time!
+#' FHNres <- ODEsobol(mod = FHNmod,
+#'                    pars = c("a", "b", "s"),
+#'                    state_init = FHNstate,
+#'                    times = FHNtimes,
+#'                    seed = 2015,
+#'                    n = 1000,
+#'                    rfuncs = c("runif", "runif", "rnorm"),
+#'                    rargs = c(rep("min = 0.18, max = 0.22", 2),
+#'                              "mean = 3, sd = 0.2 / 3"),
+#'                    sobol_method = "martinez",
+#'                    nboot = 0,
+#'                    ode_method = "adams",
+#'                    ode_parallel = TRUE,
+#'                    ode_parallel_ncores = 2)
 #' 
 #' # Palette "Dark2" from the package "RColorBrewer" with some 
 #' # additional colors:
 #' my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
 #'              "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
 #'              "darkblue", "darkgreen")
-#' plot(ODEres, state_plot = "x.2", type = "l", colors_pars = my_cols, 
-#'      legendPos = "outside")
+#' plot(FHNres, state_plot = "Current", colors_pars = my_cols)
+#' 
+#' ##### A network of ordinary differential equations #####
+#' # Definition of the network using the package "ODEnetwork":
+#' library(ODEnetwork)
+#' masses <- c(1, 1)
+#' dampers <- diag(c(1, 1))
+#' springs <- diag(c(1, 1))
+#' springs[1, 2] <- 1
+#' distances <- diag(c(0, 2))
+#' distances[1, 2] <- 1
+#' lfonet <- ODEnetwork(masses, dampers, springs, 
+#'                      cartesian = TRUE, distances = distances)
+#' lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
+#' LFOpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+#' LFOtimes <- seq(0.01, 20, by = 0.1)
+#' LFObinf <- rep(0.001, length(LFOpars))
+#' LFObsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
+#' 
+#' LFOres <- ODEsobol(lfonet, 
+#'                    LFOpars, 
+#'                    LFOtimes, 
+#'                    seed = 2015, 
+#'                    n = 1000,
+#'                    rfuncs = c(rep("runif", length(LFObinf)), "rnorm"),
+#'                    rargs = c(paste0("min = ", LFObinf, ", max = ", LFObsup),
+#'                              "mean = 3, sd = 0.8"),
+#'                    sobol_method = "martinez",
+#'                    nboot = 0,
+#'                    ode_method = "adams",
+#'                    ode_parallel = TRUE,
+#'                    ode_parallel_ncores = 2)
+#' 
+#' plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
 #' 
 #' @import checkmate
 #' @method plot sobolRes
 #' @export
 #'
 
-plot.sobolRes <- function(x, state_plot = names(x$ST_by_y)[1], type = "l",
+plot.sobolRes <- function(x, state_plot = names(x$ST_by_state)[1],
                           colors_pars = NULL, main_title = NULL,
-                          legendPos = "outside", ...) {
+                          legendPos = "outside", type = "l", ...) {
   
   ##### Input checks ###################################################
   
   assertClass(x, "sobolRes")
   assertCharacter(state_plot, len = 1)
-  stopifnot(state_plot %in% names(x$ST_by_y))
+  stopifnot(state_plot %in% names(x$ST_by_state))
   assertCharacter(type, len = 1)
   if(!type %in% c("p", "l", "b", "c", "n", "o", "s", "h")){
     stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
@@ -96,7 +135,7 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_y)[1], type = "l",
   }
   stopifnot(is.null(colors_pars) || (is.character(colors_pars) && 
     length(colors_pars) >= 
-      nrow((x$ST_by_y[[which(names(x$ST_by_y) == state_plot)]])$S) - 1))
+      nrow((x$ST_by_state[[which(names(x$ST_by_state) == state_plot)]])$S) - 1))
   stopifnot(is.null(main_title) || (is.character(main_title) && 
     length(main_title) == 1))
   assertCharacter(legendPos, len = 1)
@@ -110,18 +149,22 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_y)[1], type = "l",
 
   ##### Preparation ####################################################
   
-  # Index of the state-Variable which shall be plotted:
-  y_idx <- which(names(x$ST_by_y) == state_plot)
+  # Index of the state variable to be plotted:
+  state_idx <- which(names(x$ST_by_state) == state_plot)
+  
+  # Extract the matrices S and T:
+  S <- (x$ST_by_state[[state_idx]])$S
+  T <- (x$ST_by_state[[state_idx]])$T
   
   # Extract the parameter names:
-  k <- nrow((x$ST_by_y[[y_idx]])$S) - 1
-  pars <- rownames((x$ST_by_y[[y_idx]])$S)[-1]
+  k <- nrow(S) - 1
+  pars <- rownames(S)[-1]
   
   # Extreme values of the SA indices:
-  minMaxS <- c(0.95 * min((x$ST_by_y[[y_idx]])$S[-1, ]), 1.05 * 
-                 max((x$ST_by_y[[y_idx]])$S[-1, ]))
-  minMaxT <- c(0.95 * min((x$ST_by_y[[y_idx]])$T[-1, ]), 1.05 * 
-                 max((x$ST_by_y[[y_idx]])$T[-1, ]))
+  minMaxS <- c(0.95 * min(S[-1, ]), 1.05 * 
+                 max(S[-1, ]))
+  minMaxT <- c(0.95 * min(T[-1, ]), 1.05 * 
+                 max(T[-1, ]))
   
   # Set colors if not set by the user:
   if(is.null(colors_pars)){
@@ -129,30 +172,44 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_y)[1], type = "l",
   }
   
   # Set main title if not set by the user:
+  if(x$sobol_method == "jansen"){
+    method_title <- "Jansen"
+  } else if(x$sobol_method == "martinez"){
+    method_title <- "Martinez"
+  }
   if(is.null(main_title)){
-    main_title <- paste0("Sobol' sensitivity indices for State Variable \"", 
-                         state_plot, "\" and method = \"", x$method, "\"")
+    main_title <- paste0("Sobol' sensitivity indices for \"", state_plot, 
+                         "\" (Sobol'-", method_title, " method)")
   }
   
   ##### Plot ###########################################################
   
   if(legendPos == "outside"){
-    oldpar <- par(mfrow = c(1, 2),
-                  oma = c(2, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+    if(k > 6){
+      # Multirow legend:
+      legend_ncol <- ceiling(k / 2)
+      oldpar <- par(mfrow = c(1, 2),
+                    oma = c(2.5, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+    } else{
+      # One-row legend:
+      legend_ncol <- k
+      oldpar <- par(mfrow = c(1, 2),
+                    oma = c(1.7, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+    }
   } else{
     oldpar <- par(mfrow = c(1, 2),
                   oma = c(0, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
   }
   
-  ##### First order SA indices #########################################
-  
+  # First order SA indices:
   # First parameter:
-  plot(x = (x$ST_by_y[[y_idx]])$S[1, ], y = (x$ST_by_y[[y_idx]])$S[2, ],
+  plot(x = S[1, ], y = S[2, ],
        xlab = "Time", ylab = "First order Sobol' SA indices",
        type = type, col = colors_pars[1], ylim = minMaxS, ...)
   # All remaining parameters:
   for(i in 2:k) {
-    lines(x = (x$ST_by_y[[y_idx]])$S[1, ], y = (x$ST_by_y[[y_idx]])$S[i + 1, ],
+    lines(x = S[1, ], 
+          y = S[i + 1, ],
           type = type, col = colors_pars[i], ...)
   }
   # Legend:
@@ -167,15 +224,15 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_y)[1], type = "l",
     }
   }
   
-  ##### Total SA indices ###############################################
-  
+  # Total SA indices:
   # First parameter:
-  plot(x = (x$ST_by_y[[y_idx]])$T[1, ], y = (x$ST_by_y[[y_idx]])$T[2, ],
+  plot(x = T[1, ], y = T[2, ],
        xlab = "Time", ylab = "Total Sobol' SA indices",
        type = type, col = colors_pars[1], ylim = minMaxT, ...)
   # All remaining parameters:
   for(i in 2:k) {
-    lines(x = (x$ST_by_y[[y_idx]])$T[1, ], y = (x$ST_by_y[[y_idx]])$T[i + 1, ],
+    lines(x = T[1, ], 
+          y = T[i + 1, ],
           type = type, col = colors_pars[i], ...)
   }
   # Legend:
@@ -195,24 +252,19 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_y)[1], type = "l",
   
   # Legend outside of the plotting region:
   if(legendPos == "outside"){
+    # Dummy plot:
     oldpar2 <- par(mfrow = c(1, 1), oma = rep(0, 4), mar = rep(0, 4), 
                    new = TRUE)
     plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-    if(k > 6){
-      # Mehrzeilige Legende:
-      legend_ncol <- ceiling(k / 2)
-    } else{
-      legend_ncol <- k
-    }
+    # Draw the legend depending on the plot type:
     if(type %in% c("b", "o")){
-      legend("bottom", legend = pars, col = colors_pars, cex = 0.75, 
-             lty = 1, pch = 1, bty = "n", xpd = TRUE, ncol = legend_ncol, 
-             inset = c(0, 0))
+      legend("bottom", legend = pars, col = colors_pars, lty = 1, pch = 1, 
+             bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     } else if(type %in% c("l", "c", "s", "h")){
-      legend("bottom", legend = pars, col = colors_pars, cex = 0.75, lty = 1, 
+      legend("bottom", legend = pars, col = colors_pars, lty = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     } else if(type == "p"){
-      legend("bottom", legend = pars, col = colors_pars, cex = 0.75, pch = 1, 
+      legend("bottom", legend = pars, col = colors_pars, pch = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     }
     par(oldpar2)
