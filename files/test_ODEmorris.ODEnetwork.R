@@ -53,3 +53,19 @@ plot(LFOres, state_plot = "x.2", kind = "sep", colors_pars = my_cols,
      main_title = "Big Title", legendPos = "outside", cex.axis = 2, 
      main = "Small Title", cex.main = 0.5)
 # dev.off()
+
+
+# r = 50, ode_parallel = TRUE, simplex design:
+system.time(
+  LFOres_simplex <- ODEmorris(lfonet, LFOpars, LFOtimes, 
+                              seed = 2015, binf = LFObinf, bsup = LFObsup, 
+                              r = 50, design = list(type = "simplex", 
+                                                    scale.factor = 1),
+                              scale = TRUE, ode_method = "adams", 
+                              ode_parallel = TRUE, ode_parallel_ncores = 2)
+)
+# User      System verstrichen 
+# 1.81        0.15       13.60
+
+plot(LFOres_simplex)
+

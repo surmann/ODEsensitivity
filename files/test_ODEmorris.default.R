@@ -34,6 +34,26 @@ system.time(
 # User      System verstrichen 
 # 6.05        0.01        6.18
 
+# r = 10, ode_parallel = FALSE, simplex design:
+system.time(
+  FHNres10_simplex <- ODEmorris(mod = FHNmod,
+                                pars = c("a", "b", "s"),
+                                state_init = FHNstate,
+                                times = FHNtimes,
+                                seed = 2015,
+                                binf = c(0.18, 0.18, 2.8),
+                                bsup = c(0.22, 0.22, 3.2),
+                                r = 10,
+                                design = 
+                                  list(type = "simplex", scale.factor = 0.01),
+                                scale = TRUE,
+                                ode_method = "adams",
+                                ode_parallel = FALSE,
+                                ode_parallel_ncores = NA)
+)
+# User      System verstrichen 
+# 5.74        0.01        5.81
+
 # r = 50, ode_parallel = FALSE:
 system.time(
   FHNres50_nopar <- ODEmorris(mod = FHNmod,
@@ -54,6 +74,26 @@ system.time(
 #  User      System verstrichen 
 # 29.40        0.03       30.88
 
+# r = 50, ode_parallel = FALSE, simplex design:
+system.time(
+  FHNres50_nopar_simplex <- ODEmorris(mod = FHNmod,
+                                      pars = c("a", "b", "s"),
+                                      state_init = FHNstate,
+                                      times = FHNtimes,
+                                      seed = 2015,
+                                      binf = c(0.18, 0.18, 2.8),
+                                      bsup = c(0.22, 0.22, 3.2),
+                                      r = 50,
+                                      design = list(type = "simplex", 
+                                                    scale.factor = 0.01),
+                                      scale = TRUE,
+                                      ode_method = "adams",
+                                      ode_parallel = FALSE,
+                                      ode_parallel_ncores = NA)
+)
+#  User      System verstrichen 
+# 32.60        0.12       39.05
+
 # r = 50, ode_parallel = TRUE:
 system.time(
   FHNres <- ODEmorris(mod = FHNmod,
@@ -73,6 +113,26 @@ system.time(
 )
 # User      System verstrichen 
 # 0.15        0.05       18.47
+
+# r = 50, ode_parallel = TRUE, simplex design:
+system.time(
+  FHNres_simplex <- ODEmorris(mod = FHNmod,
+                              pars = c("a", "b", "s"),
+                              state_init = FHNstate,
+                              times = FHNtimes,
+                              seed = 2015,
+                              binf = c(0.18, 0.18, 2.8),
+                              bsup = c(0.22, 0.22, 3.2),
+                              r = 50,
+                              design = 
+                                list(type = "simplex", scale.factor = 0.01),
+                              scale = TRUE,
+                              ode_method = "adams",
+                              ode_parallel = TRUE,
+                              ode_parallel_ncores = 2)
+)
+# User      System verstrichen 
+# 0.15        0.08       22.56
 
 # save(FHNres, file = "test_ODEmorris.default.RData")
 
@@ -100,3 +160,11 @@ plot(FHNres, state_plot = "Current", kind = "trajec", type = "b")
 plot(FHNres, state_plot = "Current", kind = "trajec", legendPos = "topleft")
 plot(FHNres, state_plot = "Current", kind = "trajec", colors_pars = my_cols)
 # dev.off()
+
+# Checking simplex design:
+plot(FHNres10)
+plot(FHNres10_simplex)
+plot(FHNres50_nopar)
+plot(FHNres50_nopar_simplex)
+plot(FHNres)
+plot(FHNres_simplex)

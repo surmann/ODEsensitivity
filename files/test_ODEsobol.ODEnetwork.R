@@ -79,6 +79,8 @@ system.time(
 #  User      System verstrichen 
 # 31.25        1.53      149.10
 
+# save(LFOres, file = "test_ODEsobol.ODEnetwork.Rdata")
+
 # pdf("test_ODEsobol.ODEnetwork.pdf", width = 12, height = 10)
 # Checking defaults:
 plot(LFOres_martinez)

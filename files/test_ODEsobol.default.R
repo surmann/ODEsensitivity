@@ -74,6 +74,8 @@ system.time(
 # User      System verstrichen 
 # 6.02        1.25      431.23
 
+# save(FHNres, file = "test_ODEsobol.default.RData")
+
 # pdf("test_ODEsobol.default.pdf", width = 10, height = 7)
 # Checking defaults:
 plot(FHNres_martinez)
