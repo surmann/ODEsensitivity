@@ -204,55 +204,51 @@ ODEmorris.default <- function(mod,
                               varlist = c("ode", "mod", "state_init", "z", "X",
                                           "times", "timesNum", "ode_method"),
                               envir = environment())
-      res_per_par <- parallel::parLapply(ode_cl, 1:nrow(X), one_par)
+      res_per_par <- parallel::parSapply(ode_cl, 1:nrow(X), one_par, 
+                                         simplify = "array")
       parallel::stopCluster(ode_cl)
     } else{
-      # Just use lapply():
-      res_per_par <- lapply(1:nrow(X), one_par)
+      # Just use sapply() with "simplify = "array"":
+      res_per_par <- sapply(1:nrow(X), one_par, simplify = "array")
     }
-    if(timesNum == 1){
-      # Correction needed if timesNum == 1:
-      res_vec <- unlist(res_per_par)
-      res_matrix <- matrix(res_vec, ncol = 1)
-    } else{
-      # Transpose the matrix of the results, so that each column represents
-      # one timepoint:
-      res_matrix <- t(do.call(cbind, res_per_par))
-    }
-    rownames(res_matrix) <- NULL
-    # Convert the results matrix to a list (one element for each state
-    # variable):
-    nrow_res_matrix <- nrow(res_matrix)
-    res_per_state <- lapply(1:z, function(i){
-      res_matrix[seq(i, nrow_res_matrix, z), , drop = FALSE]
-    })
-    names(res_per_state) <- names(state_init)
+    res_per_state <- aperm(res_per_par, perm = c(3, 1, 2))
+    dimnames(res_per_state) <- list(NULL, paste0("time", 1:timesNum), 
+                                    names(state_init))
     return(res_per_state)
   }
   
   ##### Sensitivity analysis ###########################################
   
   # Sensitivity analysis with function morris_list() from package "sensitivity":
-  x <- morris_list(model = model_fit, factors = pars, r = r, 
-                   design = design, binf = binf, bsup = bsup, scale = scale)
+  x <- morris(model = model_fit, factors = pars, r = r, design = design, 
+              binf = binf, bsup = bsup, scale = scale)
   
   # Process the results:
-  one_state <- function(L){
-    mu <- lapply(L, colMeans)
-    mu.star <- lapply(L, abs)
-    mu.star <- lapply(mu.star, colMeans)
-    sigma <- lapply(L, function(M){
+  mu <- lapply(1:dim(x$ee)[4], function(i){
+    apply(x$ee[, , , i, drop = FALSE], 3, function(M){
+      apply(M, 2, mean)
+    })
+  })
+  mu.star <- lapply(1:dim(x$ee)[4], function(i){
+    apply(abs(x$ee)[, , , i, drop = FALSE], 3, function(M){
+      apply(M, 2, mean)
+    })
+  })
+  sigma <- lapply(1:dim(x$ee)[4], function(i){
+    apply(x$ee[, , , i, drop = FALSE], 3, function(M){
       apply(M, 2, sd)
     })
-    out_state <- mapply(c, mu, mu.star, sigma, SIMPLIFY = TRUE)
-    out_state <- rbind(times, out_state)
-    rownames(out_state) <- c("time", paste0("mu_", pars), 
-                         paste0("mu.star_", pars),
-                         paste0("sigma_", pars))
-    return(out_state)
-  }
+  })
+  names(mu) <- names(mu.star) <- names(sigma) <- dimnames(x$ee)[[4]]
   
-  out_all_states <- lapply(x$ee_by_y, one_state)
+  out_all_states <- lapply(1:length(mu), function(i){
+    one_state <- rbind(times, mu[[i]], mu.star[[i]], sigma[[i]])
+    rownames(one_state) <- c("time", paste0("mu_", pars), 
+                             paste0("mu.star_", pars),
+                             paste0("sigma_", pars))
+    return(one_state)
+  })
+  names(out_all_states) <- names(mu)
   
   # Throw a warning if NAs occur:
   NA_check_mu <- function(M){
