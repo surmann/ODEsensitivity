@@ -58,18 +58,18 @@
 #'
 #' @details 
 #'   The analysis is done for all output variables and all
-#'   timepoints simultaneously using \code{\link[sensitivity]{morris_list}} from 
-#'   the package \code{sensitivity}. \code{\link[sensitivity]{morris_list}} can
-#'   handle lists as output for its model function. Thus, each element of the 
-#'   list can be used to contain the results for one output variable. This saves
-#'   time since \code{\link[deSolve]{ode}} from the package \code{deSolve} 
-#'   resolves the ODE system for all output variables anyway, so 
+#'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from 
+#'   the package \code{sensitivity}. \code{\link[sensitivity]{morris}} can
+#'   handle three-dimensional arrays as output for its model function. Thus, 
+#'   each element of the list can be used to contain the results for one output 
+#'   variable. This saves time since \code{\link[deSolve]{ode}} from the package
+#'   \code{deSolve} resolves the ODE system for all output variables anyway, so 
 #'   \code{\link[deSolve]{ode}} only needs to be executed once.
 #' 
 #' @note 
 #'   \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
 #'   unrealistic parameter combinations are sampled by 
-#'   \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
+#'   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
 #'   Morris sensitivity results, such that \code{\link{ODEmorris.default}} fails 
 #'   for one or many points of time! For this reason, if \code{NA}s occur, 
 #'   please make use of \code{\link{ODEsobol.default}} instead or
@@ -81,7 +81,7 @@
 #'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
 #'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 #'   
-#'   If \code{\link[sensitivity]{morris_list}} throws a warning message saying
+#'   If \code{\link[sensitivity]{morris}} throws a warning message saying
 #'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
 #'   \code{levels} in the \code{design} argument.
 #'
@@ -90,9 +90,7 @@
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
-#' @seealso \code{\link[sensitivity]{morris}},
-#'   \code{\link[sensitivity]{morris_list}},
-#'   \code{\link{plot.morrisRes}}
+#' @seealso \code{\link[sensitivity]{morris}, \link{plot.morrisRes}}
 #' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
@@ -126,7 +124,7 @@
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
-#' @importFrom sensitivity morris_list
+#' @importFrom sensitivity morris
 #' @export
 #'
 
