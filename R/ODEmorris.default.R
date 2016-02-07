@@ -194,7 +194,7 @@ ODEmorris.default <- function(mod,
     one_par <- function(i){
       # Resolve the ODE system by using ode() from the package "deSolve":
       ode(state_init, times = c(0, times), mod, parms = X[i, ], 
-          method = ode_method)[2:(timesNum + 1), 2:(z + 1)]
+          method = ode_method)[2:(timesNum + 1), 2:(z + 1), drop = FALSE]
     }
     if(ode_parallel){
       # Run one_par() on parallel nodes:
