@@ -198,15 +198,14 @@ ODEmorris.default <- function(mod,
     }
     if(ode_parallel){
       # Run one_par() on parallel nodes:
-      ode_cl <- parallel::makeCluster(rep("localhost", ode_parallel_ncores), 
-                                      type = "SOCK")
-      parallel::clusterExport(ode_cl, 
+      local_cluster <- parallel::makePSOCKcluster(names = ode_parallel_ncores)
+      parallel::clusterExport(local_cluster, 
                               varlist = c("ode", "mod", "state_init", "z", "X",
                                           "times", "timesNum", "ode_method"),
                               envir = environment())
-      res_per_par <- parallel::parSapply(ode_cl, 1:nrow(X), one_par, 
+      res_per_par <- parallel::parSapply(local_cluster, 1:nrow(X), one_par, 
                                          simplify = "array")
-      parallel::stopCluster(ode_cl)
+      parallel::stopCluster(local_cluster)
     } else{
       # Just use sapply() with "simplify = "array"":
       res_per_par <- sapply(1:nrow(X), one_par, simplify = "array")
