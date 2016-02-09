@@ -28,11 +28,22 @@ system.time(
 # User      System verstrichen 
 # 1.46        0.13        9.30
 
+system.time(
+  LFOres_simplex <- ODEmorris(lfonet, LFOpars, LFOtimes, 
+                      seed = 2015, binf = LFObinf, bsup = LFObsup, r = 50, 
+                      design = list(type = "simplex", scale.factor = 1 / 6),
+                      scale = TRUE, ode_method = "adams", 
+                      ode_parallel = TRUE, ode_parallel_ncores = 2)
+)
+# User      System verstrichen 
+# 2.16        0.12        9.47
+
 # save(LFOres, file = "test_ODEmorris.ODEnetwork.Rdata")
 
 # pdf("test_ODEmorris.ODEnetwork.pdf", width = 12, height = 10)
 # Checking defaults:
 plot(LFOres)
+plot(LFOres_simplex)
 # Separate plots:
 plot(LFOres, state_plot = "x.2", kind = "sep", type = "b")
 plot(LFOres, state_plot = "x.2", kind = "sep", legendPos = "topleft")
