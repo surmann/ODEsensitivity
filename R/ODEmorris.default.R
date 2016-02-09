@@ -186,7 +186,7 @@ ODEmorris.default <- function(mod,
   # Number of timepoints:
   timesNum <- length(times)
   
-  # Adapt the ODE model for argument "model" of morris_list():
+  # Adapt the ODE model for argument "model" of morris():
   model_fit <- function(X){
     # Input: Matrix X with k columns, containing the random parameter 
     # combinations.
@@ -219,7 +219,7 @@ ODEmorris.default <- function(mod,
   
   ##### Sensitivity analysis ###########################################
   
-  # Sensitivity analysis with function morris_list() from package "sensitivity":
+  # Sensitivity analysis with function morris() from package "sensitivity":
   x <- morris(model = model_fit, factors = pars, r = r, design = design, 
               binf = binf, bsup = bsup, scale = scale)
   
