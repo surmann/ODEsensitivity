@@ -62,10 +62,10 @@
 #' 
 #' @note \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
 #'   unrealistic parameter combinations are sampled by 
-#'   \code{\link[sensitivity]{morris_list}}. Hence \code{NA}s might occur in the 
+#'   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
 #'   Morris sensitivity results, such that \code{\link{ODEmorris}} fails for 
 #'   one or many points of time! For this reason, if \code{NA}s occur, please 
-#'   make use of \code{\link{ODEsobol}} instead or
+#'   make use of \code{\link{ODEsobol.ODEnetwork}} instead or
 #'   restrict the input parameter value intervals usefully using
 #'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
 #'   another ODE-solver (argument \code{ode_method}). Problems are known for the
@@ -74,14 +74,12 @@
 #'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
 #'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
 #'   
-#'   If \code{\link[sensitivity]{morris_list}} throws a warning message saying
+#'   If \code{\link[sensitivity]{morris}} throws a warning message saying
 #'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
 #'   \code{levels} in the \code{design} argument.
 #'
 #' @author Frank Weber
-#' @seealso \code{\link[sensitivity]{morris}},
-#'   \code{\link[sensitivity]{morris_list}},
-#'   \code{\link{plot.morrisRes}}
+#' @seealso \code{\link[sensitivity]{morris}, \link{plot.morrisRes}}
 #' 
 #' @examples 
 #' ##### A network of ordinary differential equations #####
@@ -109,7 +107,7 @@
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
-#' @importFrom sensitivity morris_list
+#' @importFrom sensitivity morris
 #' @method ODEmorris ODEnetwork
 #' @export
 #' 
