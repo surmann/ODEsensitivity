@@ -249,7 +249,8 @@ ODEmorris.default <- function(mod,
   })
   names(out_all_states) <- names(mu)
   
-  # Throw a warning if NAs occur:
+  # Throw a warning if NAs occur (probably there are parameter combinations
+  # which are not suitable, so the ODE system can't be solved):
   NA_check_mu <- function(M){
     any(is.na(M[1:(1 + k*2), ]))
   }
