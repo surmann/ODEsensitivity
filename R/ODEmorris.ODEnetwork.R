@@ -211,7 +211,7 @@ ODEmorris.ODEnetwork <- function(mod,
   # Number of timepoints:
   timesNum <- length(times)
   
-  # Adapt the ODE-model for argument "model" of morris_list():
+  # Adapt the ODE-model for argument "model" of morris():
   model_fit <- function(X){
     # Input: matrix X with k columns
     colnames(X) <- pars
@@ -265,9 +265,9 @@ ODEmorris.ODEnetwork <- function(mod,
   
   ##### Sensitivity analysis #########################################
   
-  # Sensitivity analysis with function morris_list() from package "sensitivity":
-  x <- morris_list(model = model_fit, factors = pars, r = r, 
-                   design = design, binf = binf, bsup = bsup, scale = scale)
+  # Sensitivity analysis with function morris() from package "sensitivity":
+  x <- morris(model = model_fit, factors = pars, r = r, 
+              design = design, binf = binf, bsup = bsup, scale = scale)
   
   # Process the results:
   one_state <- function(L){
