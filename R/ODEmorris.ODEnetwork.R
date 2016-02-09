@@ -258,25 +258,34 @@ ODEmorris.ODEnetwork <- function(mod,
               design = design, binf = binf, bsup = bsup, scale = scale)
   
   # Process the results:
-  one_state <- function(L){
-    mu <- lapply(L, colMeans)
-    mu.star <- lapply(L, abs)
-    mu.star <- lapply(mu.star, colMeans)
-    sigma <- lapply(L, function(M){
+  mu <- lapply(1:dim(x$ee)[4], function(i){
+    apply(x$ee[, , , i, drop = FALSE], 3, function(M){
+      apply(M, 2, mean)
+    })
+  })
+  mu.star <- lapply(1:dim(x$ee)[4], function(i){
+    apply(abs(x$ee)[, , , i, drop = FALSE], 3, function(M){
+      apply(M, 2, mean)
+    })
+  })
+  sigma <- lapply(1:dim(x$ee)[4], function(i){
+    apply(x$ee[, , , i, drop = FALSE], 3, function(M){
       apply(M, 2, sd)
     })
-    out_state <- mapply(c, mu, mu.star, sigma, SIMPLIFY = TRUE)
-    out_state <- rbind(times, out_state)
-    rownames(out_state) <- c("time", paste0("mu_", pars), 
-                         paste0("mu.star_", pars),
-                         paste0("sigma_", pars))
-    return(out_state)
-  }
+  })
+  names(mu) <- names(mu.star) <- names(sigma) <- dimnames(x$ee)[[4]]
   
-  out_all_states <- lapply(x$ee_by_y, one_state)
+  out_all_states <- lapply(1:length(mu), function(i){
+    one_state <- rbind(times, mu[[i]], mu.star[[i]], sigma[[i]])
+    rownames(one_state) <- c("time", paste0("mu_", pars), 
+                             paste0("mu.star_", pars),
+                             paste0("sigma_", pars))
+    return(one_state)
+  })
+  names(out_all_states) <- names(mu)
   
-  # Throw a warning if NAs occur (probably not suitable parameters, so ODE
-  # system can't be solved):
+  # Throw a warning if NAs occur (probably there are parameter combinations
+  # which are not suitable, so the ODE system can't be solved):
   NA_check_mu <- function(M){
     any(is.na(M[1:(1 + k*2), ]))
   }
@@ -285,10 +294,10 @@ ODEmorris.ODEnetwork <- function(mod,
   }
   if(any(unlist(lapply(out_all_states, NA_check_mu)))){
     warning(paste("The ODE system can't be solved. This might be due to", 
-                  "arising unrealistic parameters by means of Morris Screening. Use",
-                  "ODEsobol() instead or set binf and bsup differently together with",
-                  "scale = TRUE. It might also be helpful to try another ODE-solver by",
-                  "using the \"ode_method\"-argument."))
+      "arising unrealistic parameters by means of Morris Screening. Use",
+      "ODEsobol() instead or set binf and bsup differently together with",
+      "scale = TRUE. It might also be helpful to try another ODE-solver by",
+      "using the \"ode_method\"-argument."))
   } else if(all(unlist(lapply(out_all_states, NA_check_sigma))) && r == 1){
     warning("Calculation of sigma requires r >= 2.")
   } else{
