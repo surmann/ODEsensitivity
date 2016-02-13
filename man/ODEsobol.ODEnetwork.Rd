@@ -6,9 +6,8 @@
 \usage{
 \method{ODEsobol}{ODEnetwork}(mod, pars, times, seed = 2015, n = 1000,
   rfuncs = rep("runif", length(pars)), rargs = rep("min = 0, max = 1",
-  length(pars)), sobol_method = "martinez", nboot = 0,
-  ode_method = "lsoda", ode_parallel = FALSE, ode_parallel_ncores = NA,
-  ...)
+  length(pars)), sobol_method = "martinez", ode_method = "lsoda",
+  ode_parallel = FALSE, ode_parallel_ncores = NA, ...)
 }
 \arguments{
 \item{mod}{[\code{ODEnetwork}]\cr
@@ -51,11 +50,6 @@ distribution of all parameters on [0, 1].}
 either \code{"jansen"} or \code{"martinez"}, specifying which modification
 of the variance-based Sobol' method shall be used. Defaults to 
 \code{"martinez"}.}
-
-\item{nboot}{[\code{integer(1)}]\cr
-parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
-\code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
-replicates. Defaults to 0, so no bootstrapping is done.}
 
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
@@ -135,7 +129,6 @@ LFOres <- ODEsobol(lfonet,
                    rargs = c(paste0("min = ", LFObinf, ", max = ", LFObsup),
                              "mean = 3, sd = 0.8"),
                    sobol_method = "martinez",
-                   nboot = 0,
                    ode_method = "adams",
                    ode_parallel = TRUE,
                    ode_parallel_ncores = 2)

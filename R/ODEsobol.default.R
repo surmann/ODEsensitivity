@@ -41,10 +41,6 @@
 #'   either \code{"jansen"} or \code{"martinez"}, specifying which modification
 #'   of the variance-based Sobol' method shall be used. Defaults to 
 #'   \code{"martinez"}.
-#' @param nboot [\code{integer(1)}]\cr
-#'   parameter \code{nboot} used in \code{\link{soboljansen}} resp.
-#'   \code{\link{sobolmartinez}}, i.e. the number of bootstrap 
-#'   replicates. Defaults to 0, so no bootstrapping is done.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
@@ -128,7 +124,6 @@
 #'                    rargs = c(rep("min = 0.18, max = 0.22", 2),
 #'                              "mean = 3, sd = 0.2 / 3"),
 #'                    sobol_method = "martinez",
-#'                    nboot = 0,
 #'                    ode_method = "adams",
 #'                    ode_parallel = TRUE,
 #'                    ode_parallel_ncores = 2)
@@ -149,7 +144,6 @@ ODEsobol.default <- function(mod,
                              rfuncs = rep("runif", length(pars)),
                              rargs = rep("min = 0, max = 1", length(pars)),
                              sobol_method = "martinez",
-                             nboot = 0,
                              ode_method = "lsoda",
                              ode_parallel = FALSE,
                              ode_parallel_ncores = NA, ...){
@@ -171,7 +165,6 @@ ODEsobol.default <- function(mod,
   if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
                                     "in \"rfuncs\" was not found"))
   stopifnot(sobol_method %in% c("jansen", "martinez"))
-  assertIntegerish(nboot)
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
                               "daspk", "euler", "rk4", "ode23", "ode45", 
                               "radau", "bdf", "bdf_d", "adams", "impAdams", 
@@ -249,9 +242,9 @@ ODEsobol.default <- function(mod,
   # Sensitivity analysis with either soboljansen() or sobolmartinez()
   # from package "sensitivity":
   if(sobol_method == "jansen"){
-    x <- soboljansen(model = model_fit, X1, X2, nboot = nboot)
+    x <- soboljansen(model = model_fit, X1, X2, nboot = 0)
   } else if(sobol_method == "martinez"){
-    x <- sobolmartinez(model = model_fit, X1, X2, nboot = nboot)
+    x <- sobolmartinez(model = model_fit, X1, X2, nboot = 0)
   }
   
   # Process the results:

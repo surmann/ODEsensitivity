@@ -7,8 +7,8 @@
 \method{ODEsobol}{default}(mod, pars, state_init, times, seed = 2015,
   n = 1000, rfuncs = rep("runif", length(pars)),
   rargs = rep("min = 0, max = 1", length(pars)), sobol_method = "martinez",
-  nboot = 0, ode_method = "lsoda", ode_parallel = FALSE,
-  ode_parallel_ncores = NA, ...)
+  ode_method = "lsoda", ode_parallel = FALSE, ode_parallel_ncores = NA,
+  ...)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -53,11 +53,6 @@ either \code{"jansen"} or \code{"martinez"}, specifying which modification
 of the variance-based Sobol' method shall be used. Defaults to 
 \code{"martinez"}.}
 
-\item{nboot}{[\code{integer(1)}]\cr
-parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
-\code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
-replicates. Defaults to 0, so no bootstrapping is done.}
-
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
 \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
@@ -85,13 +80,13 @@ List of length \code{length(state_init)} and of class \code{sobolRes}
 \code{ODEsobol.default} performs a variance-based sensitivity analysis for
 ordinary differential equations according to either the Sobol'-Jansen- or the
 Sobol'-Martinez-method. The analysis is done for all output variables at all 
-timepoints simultaneously using \code{\link[sensitivity]{soboljansen_list}} 
-or \code{\link[sensitivity]{sobolmartinez_list}} from the package 
+timepoints simultaneously using \code{\link[sensitivity]{soboljansen}} 
+or \code{\link[sensitivity]{sobolmartinez}} from the package 
 \code{sensitivity}.
 }
 \details{
-\code{ODEsobol} uses \code{\link[sensitivity]{soboljansen_list}} resp.
-  \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
+\code{ODEsobol} uses \code{\link[sensitivity]{soboljansen}} resp.
+  \code{\link[sensitivity]{sobolmartinez}} which can handle lists 
   as output for their model functions. Thus, each element of the list can be 
   used to contain the results for one output variable. This saves time since 
   \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
@@ -143,7 +138,6 @@ FHNres <- ODEsobol(mod = FHNmod,
                    rargs = c(rep("min = 0.18, max = 0.22", 2),
                              "mean = 3, sd = 0.2 / 3"),
                    sobol_method = "martinez",
-                   nboot = 0,
                    ode_method = "adams",
                    ode_parallel = TRUE,
                    ode_parallel_ncores = 2)
@@ -159,8 +153,8 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   69, Part 5, 741--796.
 }
 \seealso{
-\code{\link[sensitivity]{soboljansen_list},
-\link[sensitivity]{sobolmartinez_list},
-\link{plot.sobolRes}}
+\code{\link[sensitivity]{soboljansen},
+  \link[sensitivity]{sobolmartinez},
+  \link{plot.sobolRes}}
 }
 
