@@ -2,24 +2,17 @@
 # sobolmartinez_list():
 
 sobol_process <- function(x, pars, times){
-  stopifnot(class(x) %in% c("soboljansen_list", "sobolmartinez_list"))
+  stopifnot(class(x) %in% c("soboljansen", "sobolmartinez"))
   
   k <- length(pars)
   
-  ST_original_by_state <- lapply(x$ST_by_y, function(L){
-    ST_original <- sapply(L, function(ST_col){
-      c(ST_col$S[, 1], ST_col$T[, 1])
-    })
-    return(ST_original)
-  })
-  
-  # Split ST_original again in 2 matrices S and T:
-  ST_by_state <- lapply(ST_original_by_state, function(ST_original){
-    S <- rbind(times, ST_original[1:k, , drop = FALSE])
-    T <- rbind(times, ST_original[(k+1):(2*k), , drop = FALSE])
+  ST_by_state <- lapply(1:dim(x$y)[3], function(i){
+    S <- rbind(times, x$S[, , i])
+    T <- rbind(times, x$T[, , i])
     rownames(S) <- rownames(T) <- c("time", pars)
     return(list(S = S, T = T))
   })
+  names(ST_by_state) <- dimnames(x$y)[[3]]
   
   # Handling of invalid SA indices:
   # "minor" problem with first order indices: -0.05 <= first order index < 0,
