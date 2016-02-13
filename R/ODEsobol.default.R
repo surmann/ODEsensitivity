@@ -194,39 +194,25 @@ ODEsobol.default <- function(mod,
     one_par <- function(i){
       # Resolve the ODE system by using ode() from the package "deSolve":
       ode(state_init, times = c(0, times), mod, parms = X[i, ], 
-          method = ode_method)[2:(timesNum + 1), 2:(z + 1)]
+          method = ode_method)[2:(timesNum + 1), 2:(z + 1), drop = FALSE]
     }
     if(ode_parallel){
       # Run one_par() on parallel nodes:
-      ode_cl <- parallel::makeCluster(rep("localhost", ode_parallel_ncores), 
-                                      type = "SOCK")
-      parallel::clusterExport(ode_cl, 
+      local_cluster <- parallel::makePSOCKcluster(names = ode_parallel_ncores)
+      parallel::clusterExport(local_cluster, 
                               varlist = c("ode", "mod", "state_init", "z", "X",
                                           "times", "timesNum", "ode_method"),
                               envir = environment())
-      res_per_par <- parallel::parLapply(ode_cl, 1:nrow(X), one_par)
-      parallel::stopCluster(ode_cl)
+      res_per_par <- parallel::parSapply(local_cluster, 1:nrow(X), one_par, 
+                                         simplify = "array")
+      parallel::stopCluster(local_cluster)
     } else{
-      # Just use lapply():
-      res_per_par <- lapply(1:nrow(X), one_par)
+      # Just use sapply() with "simplify = "array"":
+      res_per_par <- sapply(1:nrow(X), one_par, simplify = "array")
     }
-    if(timesNum == 1){
-      # Correction needed if timesNum == 1:
-      res_vec <- unlist(res_per_par)
-      res_matrix <- matrix(res_vec, ncol = 1)
-    } else{
-      # Transpose the matrix of the results, so that each column represents
-      # one timepoint:
-      res_matrix <- t(do.call(cbind, res_per_par))
-    }
-    rownames(res_matrix) <- NULL
-    # Convert the results matrix to a list (one element for each state
-    # variable):
-    nrow_res_matrix <- nrow(res_matrix)
-    res_per_state <- lapply(1:z, function(i){
-      res_matrix[seq(i, nrow_res_matrix, z), , drop = FALSE]
-    })
-    names(res_per_state) <- names(state_init)
+    res_per_state <- aperm(res_per_par, perm = c(3, 1, 2))
+    dimnames(res_per_state) <- list(NULL, paste0("time", 1:timesNum), 
+                                    names(state_init))
     return(res_per_state)
   }
   
