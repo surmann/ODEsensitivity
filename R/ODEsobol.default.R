@@ -4,8 +4,8 @@
 #' \code{ODEsobol.default} performs a variance-based sensitivity analysis for
 #' ordinary differential equations according to either the Sobol'-Jansen- or the
 #' Sobol'-Martinez-method. The analysis is done for all output variables at all 
-#' timepoints simultaneously using \code{\link[sensitivity]{soboljansen_list}} 
-#' or \code{\link[sensitivity]{sobolmartinez_list}} from the package 
+#' timepoints simultaneously using \code{\link[sensitivity]{soboljansen}} 
+#' or \code{\link[sensitivity]{sobolmartinez}} from the package 
 #' \code{sensitivity}.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
@@ -42,8 +42,8 @@
 #'   of the variance-based Sobol' method shall be used. Defaults to 
 #'   \code{"martinez"}.
 #' @param nboot [\code{integer(1)}]\cr
-#'   parameter \code{nboot} used in \code{\link{soboljansen_list}} resp.
-#'   \code{\link{sobolmartinez_list}}, i.e. the number of bootstrap 
+#'   parameter \code{nboot} used in \code{\link{soboljansen}} resp.
+#'   \code{\link{sobolmartinez}}, i.e. the number of bootstrap 
 #'   replicates. Defaults to 0, so no bootstrapping is done.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
@@ -66,8 +66,8 @@
 #'   time of the \code{times} vector.
 #'
 #' @details 
-#'   \code{ODEsobol} uses \code{\link[sensitivity]{soboljansen_list}} resp.
-#'   \code{\link[sensitivity]{sobolmartinez_list}} which can handle lists 
+#'   \code{ODEsobol} uses \code{\link[sensitivity]{soboljansen}} resp.
+#'   \code{\link[sensitivity]{sobolmartinez}} which can handle lists 
 #'   as output for their model functions. Thus, each element of the list can be 
 #'   used to contain the results for one output variable. This saves time since 
 #'   \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
@@ -97,9 +97,9 @@
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
-#' @seealso \code{\link[sensitivity]{soboljansen_list},
-#' \link[sensitivity]{sobolmartinez_list},
-#' \link{plot.sobolRes}}
+#' @seealso \code{\link[sensitivity]{soboljansen},
+#'   \link[sensitivity]{sobolmartinez},
+#'   \link{plot.sobolRes}}
 #' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
@@ -135,8 +135,8 @@
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
-#' @importFrom sensitivity soboljansen_list
-#' @importFrom sensitivity sobolmartinez_list
+#' @importFrom sensitivity soboljansen
+#' @importFrom sensitivity sobolmartinez
 #' @export
 #'
 
@@ -192,8 +192,8 @@ ODEsobol.default <- function(mod,
   # Number of timepoints:
   timesNum <- length(times)
   
-  # Adapt the ODE model for argument "model" of soboljansen_list() resp.
-  # sobolmartinez_list():
+  # Adapt the ODE model for argument "model" of soboljansen() resp.
+  # sobolmartinez():
   model_fit <- function(X){
     # Input: Matrix X with k columns, containing the random parameter 
     # combinations.
@@ -246,12 +246,12 @@ ODEsobol.default <- function(mod,
   
   ##### Sensitivity analysis ###########################################
   
-  # Sensitivity analysis with either soboljansen_list() or sobolmartinez_list()
+  # Sensitivity analysis with either soboljansen() or sobolmartinez()
   # from package "sensitivity":
   if(sobol_method == "jansen"){
-    x <- soboljansen_list(model = model_fit, X1, X2, nboot = nboot)
+    x <- soboljansen(model = model_fit, X1, X2, nboot = nboot)
   } else if(sobol_method == "martinez"){
-    x <- sobolmartinez_list(model = model_fit, X1, X2, nboot = nboot)
+    x <- sobolmartinez(model = model_fit, X1, X2, nboot = nboot)
   }
   
   # Process the results:
