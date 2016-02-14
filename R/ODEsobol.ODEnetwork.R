@@ -268,12 +268,12 @@ ODEsobol.ODEnetwork <- function(mod,
   
   ##### Sensitivity analysis #########################################
   
-  # Sensitivity analysis with either soboljansen_list() or sobolmartinez_list()
+  # Sensitivity analysis with either soboljansen() or sobolmartinez()
   # from package "sensitivity":
   if(sobol_method == "jansen"){
-    x <- soboljansen_list(model = model_fit, X1, X2, nboot = 0)
+    x <- soboljansen(model = model_fit, X1, X2, nboot = 0)
   } else if(sobol_method == "martinez"){
-    x <- sobolmartinez_list(model = model_fit, X1, X2, nboot = 0)
+    x <- sobolmartinez(model = model_fit, X1, X2, nboot = 0)
   }
   
   # Process the results:

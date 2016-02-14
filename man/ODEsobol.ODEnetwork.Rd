@@ -138,8 +138,8 @@ LFOres <- ODEsobol(lfonet,
 Frank Weber
 }
 \seealso{
-\code{\link[sensitivity]{soboljansen_list},
-  \link[sensitivity]{sobolmartinez_list},
+\code{\link[sensitivity]{soboljansen}, 
+  \link[sensitivity]{sobolmartinez},
   \link{plot.sobolRes}}
 }
 

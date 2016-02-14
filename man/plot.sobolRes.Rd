@@ -128,7 +128,7 @@ plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
 Frank Weber
 }
 \seealso{
-\code{\link{ODEsobol}, \link[sensitivity]{soboljansen_list},
-\link[sensitivity]{sobolmartinez_list}}
+\code{\link{ODEsobol}, \link[sensitivity]{soboljansen},
+\link[sensitivity]{sobolmartinez}}
 }
 
