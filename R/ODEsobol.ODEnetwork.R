@@ -82,8 +82,8 @@
 #'   author.
 #'
 #' @author Frank Weber
-#' @seealso \code{\link[sensitivity]{soboljansen_list},
-#'   \link[sensitivity]{sobolmartinez_list},
+#' @seealso \code{\link[sensitivity]{soboljansen}, 
+#'   \link[sensitivity]{sobolmartinez},
 #'   \link{plot.sobolRes}}
 #' 
 #' @examples
@@ -119,8 +119,8 @@
 #' 
 #' @import checkmate
 #' @importFrom deSolve ode
-#' @importFrom sensitivity soboljansen_list
-#' @importFrom sensitivity sobolmartinez_list
+#' @importFrom sensitivity soboljansen
+#' @importFrom sensitivity sobolmartinez
 #' @method ODEsobol ODEnetwork
 #' @export
 #' 
@@ -218,8 +218,8 @@ ODEsobol.ODEnetwork <- function(mod,
   # Number of timepoints:
   timesNum <- length(times)
   
-  # Adapt the ODE-model for argument "model" of soboljansen_list() resp.
-  # sobolmartinez_list():
+  # Adapt the ODE-model for argument "model" of soboljansen() resp.
+  # sobolmartinez():
   model_fit <- function(X){
     # Input: Matrix X with k columns, containing the random parameter 
     # combinations.

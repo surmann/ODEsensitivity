@@ -39,8 +39,8 @@
 #'   \code{...}, for example \code{xlab} and \code{ylab} are fixed.
 #'
 #' @author Frank Weber
-#' @seealso \code{\link{ODEsobol}, \link[sensitivity]{soboljansen_list},
-#' \link[sensitivity]{sobolmartinez_list}}
+#' @seealso \code{\link{ODEsobol}, \link[sensitivity]{soboljansen},
+#' \link[sensitivity]{sobolmartinez}}
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
