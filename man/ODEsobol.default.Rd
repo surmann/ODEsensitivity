@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEsobol.default.R
 \name{ODEsobol.default}
 \alias{ODEsobol.default}
-\title{Sobol' SA for general ODE models}
+\title{Sobol' SA for General ODE Models}
 \usage{
 \method{ODEsobol}{default}(mod, pars, state_init, times, seed = 2015,
   n = 1000, rfuncs = rep("runif", length(pars)),
@@ -80,18 +80,26 @@ List of length \code{length(state_init)} and of class \code{sobolRes}
 \code{ODEsobol.default} performs a variance-based sensitivity analysis for
 ordinary differential equations according to either the Sobol'-Jansen- or the
 Sobol'-Martinez-method. The analysis is done for all output variables at all 
-timepoints simultaneously using \code{\link[sensitivity]{soboljansen}} 
+timepoints simultaneously using either \code{\link[sensitivity]{soboljansen}} 
 or \code{\link[sensitivity]{sobolmartinez}} from the package 
 \code{sensitivity}.
 }
 \details{
-\code{ODEsobol} uses \code{\link[sensitivity]{soboljansen}} resp.
-  \code{\link[sensitivity]{sobolmartinez}} which can handle lists 
-  as output for their model functions. Thus, each element of the list can be 
-  used to contain the results for one output variable. This saves time since 
-  \code{\link[deSolve]{ode}} from the package \code{deSolve} does its 
-  calculations for all output variables anyway, so \code{\link[deSolve]{ode}} 
-  only needs to be executed once.
+The sensitivity analysis is done for all state variables and all
+  timepoints simultaneously using either
+  \code{\link[sensitivity]{soboljansen}} or
+  \code{\link[sensitivity]{sobolmartinez}} (depending on 
+  \code{sobol_method}). \code{\link[sensitivity]{soboljansen}} and
+  \code{\link[sensitivity]{sobolmartinez}} can handle three-dimensional
+  arrays as output for their model functions. Each element of the third 
+  dimension of the output array is used to contain the results for one 
+  state variable of the ODE system. Each element of the second dimension of
+  the output array is used for one timepoint. The use of an array as output
+  saves time (compared to looping over all state variables and all 
+  timepoints) since \code{\link[deSolve]{ode}} from the package 
+  \code{deSolve} does its calculations for all state variables and all
+  timepoints anyway, so \code{\link[deSolve]{ode}} only needs to be executed 
+  once.
 }
 \note{
 It might be helpful to try different types of ODE-solvers (argument 

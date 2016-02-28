@@ -1,9 +1,8 @@
-#' @title Morris SA for ODEs for All Output Variables and All Timepoints
-#' Simultaneously
+#' @title Morris SA for General ODE Models
 #'
 #' @description
 #' \code{ODEmorris.default} is the default method of \code{\link{ODEmorris}}. It
-#' performs a sensitivity analysis for general ODE models using Morris's 
+#' performs a sensitivity analysis for general ODE models using Morris' 
 #' elementary effects screening method. 
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
@@ -51,35 +50,40 @@
 #'
 #' @return 
 #'   List of class \code{morrisRes} of length \code{length(state_init)} 
-#'   containing in each element a matrix for one \code{state_init}-variable. The
-#'   matrices itself contain in their rows the Morris SA results 
-#'   (i.e. \code{mu, mu.star} and \code{sigma} for every parameter) 
-#'   for all timepoints (columns).
+#'   containing in each element a matrix for one state variable. The
+#'   matrices itself contain the Morris' SA results for all timepoints (rows: 
+#'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
+#'   timepoints).
 #'
 #' @details 
-#'   The analysis is done for all output variables and all
+#'   The sensitivity analysis is done for all state variables and all
 #'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from 
 #'   the package \code{sensitivity}. \code{\link[sensitivity]{morris}} can
-#'   handle three-dimensional arrays as output for its model function. Thus, 
-#'   each element of the list can be used to contain the results for one output 
-#'   variable. This saves time since \code{\link[deSolve]{ode}} from the package
-#'   \code{deSolve} resolves the ODE system for all output variables anyway, so 
-#'   \code{\link[deSolve]{ode}} only needs to be executed once.
+#'   handle three-dimensional arrays as output for its model function. Each 
+#'   element of the third dimension of the output array is used to contain the 
+#'   results for one state variable of the ODE system. Each element of the 
+#'   second dimension of the output array is used for one timepoint. The use of
+#'   an array as output saves time (compared to looping over all state 
+#'   variables and all timepoints) since \code{\link[deSolve]{ode}} from the 
+#'   package \code{deSolve} does its calculations for all state variables and 
+#'   all timepoints anyway, so \code{\link[deSolve]{ode}} only needs to be 
+#'   executed once.
 #' 
 #' @note 
-#'   \code{\link[deSolve]{ode}} sometimes cannot solve an ODE system if 
+#'   \code{\link[deSolve]{ode}} sometimes can't solve an ODE system if 
 #'   unrealistic parameter combinations are sampled by 
-#'   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
+#'   \code{\link[sensitivity]{morris}}. Hence, \code{NA}s might occur in the 
 #'   Morris sensitivity results, such that \code{\link{ODEmorris.default}} fails 
 #'   for one or many points of time! For this reason, if \code{NA}s occur, 
 #'   please make use of \code{\link{ODEsobol.default}} instead or
 #'   restrict the input parameter value intervals usefully using
-#'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It is also helpful to try
-#'   another ODE-solver (argument \code{ode_method}). Problems are known for the
-#'   \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
-#'   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
-#'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
-#'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
+#'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It might also be
+#'   helpful to try another ODE-solver (argument \code{ode_method}). Problems 
+#'   are known for the \code{ode_method}s \code{"euler"}, \code{"rk4"} and 
+#'   \code{"ode45"}. In contrast, the \code{ode_method}s \code{"vode"}, 
+#'   \code{"bdf"}, \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and 
+#'   \code{"impAdams_d"} might be even faster than the default 
+#'   \code{ode_method} \code{"lsoda"}.
 #'   
 #'   If \code{\link[sensitivity]{morris}} throws a warning message saying
 #'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
@@ -163,7 +167,7 @@ ODEmorris.default <- function(mod,
     stop("bsup must be of length 1 or of the same length as pars!")
   assertIntegerish(r, len = 1)
   if(r < 1)
-    stop("r must be greater or equal to 1.")
+    stop("r must be greater than or equal to 1.")
   assertList(design)
   assertLogical(scale, len = 1)
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 

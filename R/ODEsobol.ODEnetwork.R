@@ -60,8 +60,21 @@
 #'   the \code{times} vector.
 #'
 #' @details 
-#'   The sensitivity analysis is done for all state variables since the 
-#'   simulation of the network implies all state variables anyway.
+#'   The sensitivity analysis is done for all state variables and all
+#'   timepoints simultaneously using either
+#'   \code{\link[sensitivity]{soboljansen}} or
+#'   \code{\link[sensitivity]{sobolmartinez}} (depending on 
+#'   \code{sobol_method}). \code{\link[sensitivity]{soboljansen}} and
+#'   \code{\link[sensitivity]{sobolmartinez}} can handle three-dimensional
+#'   arrays as output for their model functions. Each element of the third 
+#'   dimension of the output array is used to contain the results for one 
+#'   state variable of the ODE system. Each element of the second dimension of
+#'   the output array is used for one timepoint. The use of an array as output
+#'   saves time (compared to looping over all state variables and all 
+#'   timepoints) since \code{\link[deSolve]{ode}} from the package 
+#'   \code{deSolve} does its calculations for all state variables and all
+#'   timepoints anyway, so \code{\link[deSolve]{ode}} only needs to be executed 
+#'   once.
 #'
 #' @note 
 #'   It might be helpful to try different types of ODE-solvers (argument 
