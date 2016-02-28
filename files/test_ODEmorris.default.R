@@ -32,7 +32,7 @@ system.time(
                         ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 6.05        0.01        6.18
+# 5.89        0.00        5.90
 
 # r = 10, ode_parallel = FALSE, simplex design:
 system.time(
@@ -52,7 +52,7 @@ system.time(
                                 ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 5.74        0.01        5.81
+# 5.84        0.00        5.91
 
 # r = 50, ode_parallel = FALSE:
 system.time(
@@ -72,7 +72,7 @@ system.time(
                               ode_parallel_ncores = NA)
 )
 #  User      System verstrichen 
-# 29.40        0.03       30.88
+# 29.32        0.01       29.58
 
 # r = 50, ode_parallel = FALSE, simplex design:
 system.time(
@@ -92,7 +92,7 @@ system.time(
                                       ode_parallel_ncores = NA)
 )
 #  User      System verstrichen 
-# 32.60        0.12       39.05
+# 29.30        0.00       29.47
 
 # r = 50, ode_parallel = TRUE:
 system.time(
@@ -112,7 +112,7 @@ system.time(
                       ode_parallel_ncores = 2)
 )
 # User      System verstrichen 
-# 0.15        0.05       18.47
+# 0.20        0.11       18.13
 
 # r = 50, ode_parallel = TRUE, simplex design:
 system.time(
@@ -132,7 +132,7 @@ system.time(
                               ode_parallel_ncores = 2)
 )
 # User      System verstrichen 
-# 0.15        0.08       22.56
+# 0.22        0.07       18.65
 
 # save(FHNres, file = "test_ODEmorris.default.RData")
 
@@ -161,7 +161,7 @@ plot(FHNres, state_plot = "Current", kind = "trajec", legendPos = "topleft")
 plot(FHNres, state_plot = "Current", kind = "trajec", colors_pars = my_cols)
 # dev.off()
 
-# Checking simplex design:
+# Checking other variations:
 plot(FHNres10)
 plot(FHNres10_simplex)
 plot(FHNres50_nopar)

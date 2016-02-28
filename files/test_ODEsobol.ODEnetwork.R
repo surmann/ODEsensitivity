@@ -30,13 +30,12 @@ system.time(
                                                ", max = ", LFObsup),
                                         "mean = 3, sd = 0.8"),
                               sobol_method = "martinez",
-                              nboot = 0,
                               ode_method = "adams",
                               ode_parallel = FALSE,
                               ode_parallel_ncores = NA)
 )
-#  User      System verstrichen 
-# 20.77        0.04       20.92
+# User      System verstrichen 
+# 5.05        0.00        7.73
 
 # Jansen ohne Parallelisierung:
 system.time(
@@ -50,13 +49,12 @@ system.time(
                                              ", max = ", LFObsup),
                                       "mean = 3, sd = 0.8"),
                             sobol_method = "jansen",
-                            nboot = 0,
                             ode_method = "adams",
                             ode_parallel = FALSE,
                             ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 5.20        0.00        5.36
+# 2.04        0.00        3.83
 
 # Martinez mit Parallelisierung und n = 1000:
 system.time(
@@ -71,13 +69,12 @@ system.time(
                                       ", max = ", LFObsup),
                                "mean = 3, sd = 0.8"),
                      sobol_method = "martinez",
-                     nboot = 0,
                      ode_method = "adams",
                      ode_parallel = TRUE,
                      ode_parallel_ncores = 2)
 )
 #  User      System verstrichen 
-# 31.25        1.53      149.10
+# 12.33        1.65      148.95
 
 # save(LFOres, file = "test_ODEsobol.ODEnetwork.Rdata")
 

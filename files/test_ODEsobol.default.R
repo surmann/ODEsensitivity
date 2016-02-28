@@ -26,13 +26,12 @@ system.time(
                               rargs = c(rep("min = 0.18, max = 0.22", 2),
                                         "mean = 3, sd = 0.2 / 3"),
                               sobol_method = "martinez",
-                              nboot = 0,
                               ode_method = "adams",
                               ode_parallel = FALSE,
                               ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 8.04        0.00        8.06
+# 7.72        0.03        7.91 
 
 # Jansen ohne Parallelisierung:
 system.time(
@@ -46,13 +45,12 @@ system.time(
                             rargs = c(rep("min = 0.18, max = 0.22", 2),
                                       "mean = 3, sd = 0.2 / 3"),
                             sobol_method = "jansen",
-                            nboot = 0,
                             ode_method = "adams",
                             ode_parallel = FALSE,
                             ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 8.14        0.01        8.47 
+# 7.53        0.00        7.57 
 
 # Martinez mit Parallelisierung und n = 1000:
 system.time(
@@ -66,13 +64,12 @@ system.time(
                      rargs = c(rep("min = 0.18, max = 0.22", 2),
                                "mean = 3, sd = 0.2 / 3"),
                      sobol_method = "martinez",
-                     nboot = 0,
                      ode_method = "adams",
                      ode_parallel = TRUE,
                      ode_parallel_ncores = 2)
 )
-# User      System verstrichen 
-# 6.02        1.25      431.23
+#  User      System verstrichen 
+# 13.98        2.73      775.28
 
 # save(FHNres, file = "test_ODEsobol.default.RData")
 
