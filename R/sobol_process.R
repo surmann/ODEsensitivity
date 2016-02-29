@@ -30,7 +30,7 @@ sobol_process <- function(x, pars, times){
     greater1_S <- any(1 < S)
     negative_T <- any(T < 0)
     greater1_T <- c(minor = any(1 < T & T <= 1.05), 
-                     major = any(1.05 < T))
+                    major = any(1.05 < T))
     return(c(neg_S = negative_S, 
              big_S = greater1_S,
              neg_T = negative_T,
@@ -49,7 +49,7 @@ sobol_process <- function(x, pars, times){
     # "Repair" total indices being slightly bigger than 1 by setting them to 1:
     for(i in seq_along(ST_by_state)[check_indices["big_T.minor", ]]){
       check_big_T.minor <- 1 < ST_by_state[[i]]$T & ST_by_state[[i]]$T <= 1.05
-      ST_by_state[[i]]$S[check_big_T.minor] <- 1
+      ST_by_state[[i]]$T[check_big_T.minor] <- 1
     }
   }
   
