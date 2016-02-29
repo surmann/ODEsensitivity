@@ -135,18 +135,18 @@ FHNtimes <- seq(0.1, 50, by = 5)
 # Warning: The following code might take a long time!
 
 # Arguments "rfuncs" and "rargs" being of length 1:
-FHNres_default <- ODEsobol(mod = FHNmod,
-                           pars = c("a", "b", "s"),
-                           state_init = FHNstate,
-                           times = FHNtimes,
-                           seed = 2015,
-                           n = 1000,
-                           rfuncs = "runif",
-                           rargs = "min = 0.1, max = 1.5",
-                           sobol_method = "martinez",
-                           ode_method = "adams",
-                           ode_parallel = TRUE,
-                           ode_parallel_ncores = 2)
+FHNres_1 <- ODEsobol(mod = FHNmod,
+                     pars = c("a", "b", "s"),
+                     state_init = FHNstate,
+                     times = FHNtimes,
+                     seed = 2015,
+                     n = 1000,
+                     rfuncs = "runif",
+                     rargs = "min = 0.1, max = 1.5",
+                     sobol_method = "martinez",
+                     ode_method = "adams",
+                     ode_parallel = TRUE,
+                     ode_parallel_ncores = 2)
 
 # Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
 # distributions and their corresponding arguments are chosen more or less 
