@@ -14,7 +14,7 @@ FHNmod <- function(Time, State, Pars) {
 FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
-# Martinez ohne Parallelisierung:
+# Martinez without parallelization:
 system.time(
   FHNres_martinez <- ODEsobol(mod = FHNmod,
                               pars = c("a", "b", "s"),
@@ -33,7 +33,7 @@ system.time(
 # User      System verstrichen 
 # 7.72        0.03        7.91 
 
-# Jansen ohne Parallelisierung:
+# Jansen without parallelization:
 system.time(
   FHNres_jansen <- ODEsobol(mod = FHNmod,
                             pars = c("a", "b", "s"),
@@ -52,7 +52,27 @@ system.time(
 # User      System verstrichen 
 # 7.53        0.00        7.57 
 
-# Martinez mit Parallelisierung und n = 1000:
+# Martinez with parallelization, n = 1000 and default values for "rfuncs" and
+# "rargs":
+system.time(
+  FHNres_default <- ODEsobol(mod = FHNmod,
+                             pars = c("a", "b", "s"),
+                             state_init = FHNstate,
+                             times = FHNtimes,
+                             seed = 2015,
+                             n = 1000,
+                             rfuncs = "runif",
+                             rargs = "min = 0.1, max = 1.5",
+                             sobol_method = "martinez",
+                             ode_method = "adams",
+                             ode_parallel = TRUE,
+                             ode_parallel_ncores = 2)
+)
+# User      System verstrichen 
+# 0.47        0.30      148.73
+
+# Martinez with parallelization, n = 1000 and changed arguments "rfuncs" and
+# "rargs":
 system.time(
   FHNres <- ODEsobol(mod = FHNmod,
                      pars = c("a", "b", "s"),
@@ -60,16 +80,17 @@ system.time(
                      times = FHNtimes,
                      seed = 2015,
                      n = 1000,
-                     rfuncs = c("runif", "runif", "rnorm"),
-                     rargs = c(rep("min = 0.18, max = 0.22", 2),
-                               "mean = 3, sd = 0.2 / 3"),
+                     rfuncs = c("runif", "rnorm", "rexp"),
+                     rargs = c("min = 0.18, max = 0.22", 
+                               "mean = 0.2, sd = 0.2 / 3",
+                               "rate = 1 / 3"),
                      sobol_method = "martinez",
                      ode_method = "adams",
                      ode_parallel = TRUE,
                      ode_parallel_ncores = 2)
 )
-#  User      System verstrichen 
-# 13.98        2.73      775.28
+# User      System verstrichen 
+# 1.67        0.54      389.05
 
 # save(FHNres, file = "test_ODEsobol.default.RData")
 
