@@ -25,17 +25,19 @@
 #'   (Variance-based methods for sensitivity analysis rely on 
 #'   Monte-Carlo-simulation to estimate the integrals needed for the calculation
 #'   of the sensitivity indices.) Defaults to 1000.
-#' @param rfuncs [\code{character(k)}]\cr
-#'   names of the \code{k} functions used to generate the \code{n} random values
-#'   for the \code{k} parameters. This way, different distributions can be 
-#'   used for the \code{k} parameters. Defaults to \code{"runif"} for each of
-#'   the \code{k} parameters.
-#' @param rargs [\code{character(k)}]\cr
-#'   arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
-#'   element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
-#'   tag2 = value2, ..."}. By default, \code{min = 0} and \code{max = 1} are 
-#'   used for each of the \code{k} \code{runif}'s, meaning a uniform 
-#'   distribution of all parameters on [0, 1].
+#' @param rfuncs [\code{character(1} or \code{k)}]\cr
+#'   names of the functions used to generate the \code{n} random values
+#'   for the \code{k} parameters. Can be of length 1 or \code{k}. If of length 
+#'   1, the same function is used for all parameters. Defaults to 
+#'   \code{"runif"}, so a uniform distribution is assumed for all parameters.
+#' @param rargs [\code{character(1} or \code{k)}]\cr
+#'   arguments to be passed to the functions in \code{rfuncs}. Can be of length 
+#'   1 or \code{k}. If of length 1, the same arguments are used for all 
+#'   parameters. Each element of \code{rargs} has to be a string of the form 
+#'   \code{"tag1 = value1, tag2 = value2, ..."}, see example below. Default is 
+#'   \code{"min = 0, max = 1"}, so (together with the default value of 
+#'   \code{rfuncs}) a uniform distribution on [0, 1] is assumed for all 
+#'   parameters.
 #' @param sobol_method [\code{character(1)}]\cr
 #'   either \code{"jansen"} or \code{"martinez"}, specifying which modification
 #'   of the variance-based Sobol' method shall be used. Defaults to 
@@ -120,7 +122,21 @@
 #' FHNstate  <- c(Voltage = -1, Current = 1)
 #' FHNtimes <- seq(0.1, 50, by = 5)
 #' 
-#' ### The following code might take a long time!
+#' # Warning: The following code might take a long time!
+#' 
+#' # First, use the default values for "rfuncs" and "rargs":
+#' FHNres_default <- ODEsobol(mod = FHNmod,
+#'                            pars = c("a", "b", "s"),
+#'                            state_init = FHNstate,
+#'                            times = FHNtimes,
+#'                            seed = 2015,
+#'                            n = 1000,
+#'                            rfuncs = "runif",
+#'                            rargs = "min = 0, max = 1",
+#'                            sobol_method = "martinez",
+#'                            ode_method = "adams",
+#'                            ode_parallel = TRUE,
+#'                            ode_parallel_ncores = 2)
 #' FHNres <- ODEsobol(mod = FHNmod,
 #'                    pars = c("a", "b", "s"),
 #'                    state_init = FHNstate,
@@ -148,8 +164,8 @@ ODEsobol.default <- function(mod,
                              times,
                              seed = 2015,
                              n = 1000,
-                             rfuncs = rep("runif", length(pars)),
-                             rargs = rep("min = 0, max = 1", length(pars)),
+                             rfuncs = "runif",
+                             rargs = "min = 0, max = 1",
                              sobol_method = "martinez",
                              ode_method = "lsoda",
                              ode_parallel = FALSE,
@@ -166,11 +182,19 @@ ODEsobol.default <- function(mod,
   stopifnot(!any(times == 0))
   assertNumeric(seed)
   assertIntegerish(n)
-  assertCharacter(rfuncs, len = length(pars))
-  assertCharacter(rargs, len = length(pars))
-  rfuncs_exist <- sapply(rfuncs, exists)
-  if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
-                                    "in \"rfuncs\" was not found"))
+  assertCharacter(rfuncs)
+  if(! length(rfuncs) %in% c(1, length(pars))){
+    stop("Argument \"rfuncs\" must be of length 1 or of the same length as ",
+         "\"pars\"")
+  }
+  assertCharacter(rargs)
+  if(! length(rargs) %in% c(1, length(pars))){
+    stop("Argument \"rargs\" must be of length 1 or of the same length as ",
+         "\"pars\"")
+  }
+  if(! all(sapply(rfuncs, exists))){
+    stop("At least one of the supplied functions in \"rfuncs\" was not found")
+  }
   stopifnot(sobol_method %in% c("jansen", "martinez"))
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
                               "daspk", "euler", "rk4", "ode23", "ode45", 
@@ -225,6 +249,12 @@ ODEsobol.default <- function(mod,
   
   # Create the two matrices containing the parameter samples for Monte Carlo
   # estimation:
+  if(length(rfuncs) == 1){
+    rfuncs <- rep(rfuncs, length(pars))
+  }
+  if(length(rargs) == 1){
+    rargs <- rep(rargs, length(pars))
+  }
   rfunc_calls <- paste0(rfuncs, "(n, ", rargs, ")", collapse = ", ")
   X1 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   X2 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)

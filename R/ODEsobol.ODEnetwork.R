@@ -24,17 +24,19 @@
 #'   (Variance-based methods for sensitivity analysis rely on 
 #'   Monte Carlo simulation to estimate the integrals needed for the calculation
 #'   of the sensitivity indices.) Defaults to 1000.
-#' @param rfuncs [\code{character(k)}]\cr
-#'   names of the \code{k} functions used to generate the \code{n} random values
-#'   for the \code{k} parameters (see details). This way, different 
-#'   distributions can be supplied for the \code{k} parameters. Defaults to 
-#'   \code{"runif"} for each of the \code{k} parameters.
-#' @param rargs [\code{character(k)}]\cr
-#'   arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
-#'   element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
-#'   tag2 = value2, ..."}. By default, \code{min = 0} and \code{max = 1} are 
-#'   used for each of the \code{k} \code{runif}'s, meaning a uniform 
-#'   distribution of all parameters on [0, 1].
+#' @param rfuncs [\code{character(1} or \code{k)}]\cr
+#'   names of the functions used to generate the \code{n} random values
+#'   for the \code{k} parameters. Can be of length 1 or \code{k}. If of length 
+#'   1, the same function is used for all parameters. Defaults to 
+#'   \code{"runif"}, so a uniform distribution is assumed for all parameters.
+#' @param rargs [\code{character(1} or \code{k)}]\cr
+#'   arguments to be passed to the functions in \code{rfuncs}. Can be of length 
+#'   1 or \code{k}. If of length 1, the same arguments are used for all 
+#'   parameters. Each element of \code{rargs} has to be a string of the form 
+#'   \code{"tag1 = value1, tag2 = value2, ..."}, see example below. Default is 
+#'   \code{"min = 0, max = 1"}, so (together with the default value of 
+#'   \code{rfuncs}) a uniform distribution on [0, 1] is assumed for all 
+#'   parameters.
 #' @param sobol_method [\code{character(1)}]\cr
 #'   either \code{"jansen"} or \code{"martinez"}, specifying which modification
 #'   of the variance-based Sobol' method shall be used. Defaults to 
@@ -143,8 +145,8 @@ ODEsobol.ODEnetwork <- function(mod,
                                 times,
                                 seed = 2015,
                                 n = 1000,
-                                rfuncs = rep("runif", length(pars)),
-                                rargs = rep("min = 0, max = 1", length(pars)),
+                                rfuncs = "runif",
+                                rargs = "min = 0, max = 1",
                                 sobol_method = "martinez",
                                 ode_method = "lsoda",
                                 ode_parallel = FALSE,
@@ -165,8 +167,12 @@ ODEsobol.ODEnetwork <- function(mod,
   stopifnot(all(pars %in% names(ODEnetwork::createParamVec(mod))))
   # Check if there are duplicated parameters:
   if(any(duplicated(pars))){
-    rfuncs <- rfuncs[!duplicated(pars)]
-    rargs <- rargs[!duplicated(pars)]
+    if(length(rfuncs) == length(pars)){
+      rfuncs <- rfuncs[!duplicated(pars)]
+    }
+    if(length(rfuncs) == length(pars)){
+      rargs <- rargs[!duplicated(pars)]
+    }
     pars <- unique(pars)
     warning("Duplicated parameter names in \"pars\". Only taking unique names.")
   }
@@ -203,11 +209,19 @@ ODEsobol.ODEnetwork <- function(mod,
   stopifnot(!any(times == 0))
   assertNumeric(seed)
   assertIntegerish(n)
-  assertCharacter(rfuncs, len = length(pars))
-  assertCharacter(rargs, len = length(pars))
-  rfuncs_exist <- sapply(rfuncs, exists)
-  if(!all(rfuncs_exist)) stop(paste("At least one of the supplied functions",
-                                    "in \"rfuncs\" was not found"))
+  assertCharacter(rfuncs)
+  if(! length(rfuncs) %in% c(1, length(pars))){
+    stop("Argument \"rfuncs\" must be of length 1 or of the same length as ",
+         "\"pars\"")
+  }
+  assertCharacter(rargs)
+  if(! length(rargs) %in% c(1, length(pars))){
+    stop("Argument \"rargs\" must be of length 1 or of the same length as ",
+         "\"pars\"")
+  }
+  if(! all(sapply(rfuncs, exists))){
+    stop("At least one of the supplied functions in \"rfuncs\" was not found")
+  }
   stopifnot(sobol_method %in% c("jansen", "martinez"))
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
                               "daspk", "euler", "rk4", "ode23", "ode45", 
@@ -274,6 +288,12 @@ ODEsobol.ODEnetwork <- function(mod,
   
   # Create the two matrices containing the parameter samples for Monte Carlo
   # estimation:
+  if(length(rfuncs) == 1){
+    rfuncs <- rep(rfuncs, length(pars))
+  }
+  if(length(rargs) == 1){
+    rargs <- rep(rargs, length(pars))
+  }
   rfunc_calls <- paste0(rfuncs, "(n, ", rargs, ")", collapse = ", ")
   X1 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)
   X2 <- matrix(eval(parse(text = paste0("c(", rfunc_calls, ")"))), ncol = k)

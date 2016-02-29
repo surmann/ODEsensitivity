@@ -5,10 +5,9 @@
 \title{Sobol' SA for General ODE Models}
 \usage{
 \method{ODEsobol}{default}(mod, pars, state_init, times, seed = 2015,
-  n = 1000, rfuncs = rep("runif", length(pars)),
-  rargs = rep("min = 0, max = 1", length(pars)), sobol_method = "martinez",
-  ode_method = "lsoda", ode_parallel = FALSE, ode_parallel_ncores = NA,
-  ...)
+  n = 1000, rfuncs = "runif", rargs = "min = 0, max = 1",
+  sobol_method = "martinez", ode_method = "lsoda", ode_parallel = FALSE,
+  ode_parallel_ncores = NA, ...)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -34,18 +33,20 @@ estimate the variance-based sensitivity indices by Monte Carlo method.
 Monte-Carlo-simulation to estimate the integrals needed for the calculation
 of the sensitivity indices.) Defaults to 1000.}
 
-\item{rfuncs}{[\code{character(k)}]\cr
-names of the \code{k} functions used to generate the \code{n} random values
-for the \code{k} parameters. This way, different distributions can be 
-used for the \code{k} parameters. Defaults to \code{"runif"} for each of
-the \code{k} parameters.}
+\item{rfuncs}{[\code{character(1} or \code{k)}]\cr
+names of the functions used to generate the \code{n} random values
+for the \code{k} parameters. Can be of length 1 or \code{k}. If of length 
+1, the same function is used for all parameters. Defaults to 
+\code{"runif"}, so a uniform distribution is assumed for all parameters.}
 
-\item{rargs}{[\code{character(k)}]\cr
-arguments to be passed to the \code{k} functions of \code{rfuncs}. Each 
-element of \code{rargs} has to be a string of type \code{"tag1 = value1, 
-tag2 = value2, ..."}. By default, \code{min = 0} and \code{max = 1} are 
-used for each of the \code{k} \code{runif}'s, meaning a uniform 
-distribution of all parameters on [0, 1].}
+\item{rargs}{[\code{character(1} or \code{k)}]\cr
+arguments to be passed to the functions in \code{rfuncs}. Can be of length 
+1 or \code{k}. If of length 1, the same arguments are used for all 
+parameters. Each element of \code{rargs} has to be a string of the form 
+\code{"tag1 = value1, tag2 = value2, ..."}, see example below. Default is 
+\code{"min = 0, max = 1"}, so (together with the default value of 
+\code{rfuncs}) a uniform distribution on [0, 1] is assumed for all 
+parameters.}
 
 \item{sobol_method}{[\code{character(1)}]\cr
 either \code{"jansen"} or \code{"martinez"}, specifying which modification
