@@ -135,16 +135,35 @@ FHNmod <- function(Time, State, Pars) {
 FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
-### The following code might take a long time!
+# Warning: The following code might take a long time!
+
+# Arguments "rfuncs" and "rargs" being of length 1:
+FHNres_default <- ODEsobol(mod = FHNmod,
+                           pars = c("a", "b", "s"),
+                           state_init = FHNstate,
+                           times = FHNtimes,
+                           seed = 2015,
+                           n = 1000,
+                           rfuncs = "runif",
+                           rargs = "min = 0.1, max = 1.5",
+                           sobol_method = "martinez",
+                           ode_method = "adams",
+                           ode_parallel = TRUE,
+                           ode_parallel_ncores = 2)
+
+# Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
+# distributions and their corresponding arguments are chosen more or less 
+# arbitrarily and shall only demonstrate the use of different distributions):
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),
                    state_init = FHNstate,
                    times = FHNtimes,
                    seed = 2015,
                    n = 1000,
-                   rfuncs = c("runif", "runif", "rnorm"),
-                   rargs = c(rep("min = 0.18, max = 0.22", 2),
-                             "mean = 3, sd = 0.2 / 3"),
+                   rfuncs = c("runif", "rnorm", "rexp"),
+                   rargs = c("min = 0.18, max = 0.22", 
+                             "mean = 0.2, sd = 0.2 / 3",
+                             "rate = 1 / 3"),
                    sobol_method = "martinez",
                    ode_method = "adams",
                    ode_parallel = TRUE,

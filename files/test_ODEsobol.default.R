@@ -90,7 +90,7 @@ system.time(
                      ode_parallel_ncores = 2)
 )
 # User      System verstrichen 
-# 1.67        0.54      389.05
+# 0.61        0.29      400.08
 
 # save(FHNres, file = "test_ODEsobol.default.RData")
 
