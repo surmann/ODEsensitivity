@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.morrisRes.R
 \name{plot.morrisRes}
 \alias{plot.morrisRes}
-\title{Plot of the results of Morris SA for objects of class \code{morrisRes}}
+\title{Plot of the results of Morris's SA for objects of class \code{morrisRes}}
 \usage{
 \method{plot}{morrisRes}(x, state_plot = names(x)[1], kind = "sep",
   colors_pars = NULL, main_title = NULL, legendPos = "outside",
@@ -45,7 +45,7 @@ Defaults to \code{"l"}.}
 \code{TRUE} (invisible; for testing purposes).
 }
 \description{
-\code{plot.morrisRes} plots the results of Morris SA for objects of class 
+\code{plot.morrisRes} plots the results of Morris's SA for objects of class 
   \code{morrisRes}.
 }
 \details{
@@ -128,6 +128,6 @@ plot(LFOres, state_plot = "x.2", kind = "trajec", colors_pars = my_cols)
 Frank Weber
 }
 \seealso{
-\code{\link{ODEmorris}, \link[sensitivity]{morris_list}}
+\code{\link{ODEmorris}, \link[sensitivity]{morris}}
 }
 

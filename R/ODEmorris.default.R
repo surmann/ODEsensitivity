@@ -2,8 +2,8 @@
 #'
 #' @description
 #' \code{ODEmorris.default} is the default method of \code{\link{ODEmorris}}. It
-#' performs a sensitivity analysis for general ODE models using Morris' 
-#' elementary effects screening method. 
+#' performs a sensitivity analysis for general ODE models using Morris's
+#' elementary effects screening method.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -16,10 +16,10 @@
 #'   length). The first point of time must be greater than zero.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
-#' @param binf [\code{numeric(k)}]\cr
+#' @param binf [\code{character(1} or \code{k)}]\cr
 #'   vector of lower borders of possible input parameter values.
 #'   If they are all equal, a single value can be set.
-#' @param bsup [\code{numeric(k)}]\cr
+#' @param bsup [\code{character(1} or \code{k)}]\cr
 #'   vector of upper borders of possible input parameter values.
 #'   If they are all equal, a single value can be set.
 #' @param r [\code{integer(1)}]\cr
@@ -50,7 +50,7 @@
 #' @return 
 #'   List of class \code{morrisRes} of length \code{length(state_init)} 
 #'   containing in each element a matrix for one state variable. The
-#'   matrices itself contain the Morris' SA results for all timepoints (rows: 
+#'   matrices itself contain the Morris's SA results for all timepoints (rows: 
 #'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'

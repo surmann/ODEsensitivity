@@ -26,11 +26,11 @@ length). The first point of time must be greater than zero.}
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
 
-\item{binf}{[\code{numeric(k)}]\cr
+\item{binf}{[\code{character(1} or \code{k)}]\cr
 vector of lower borders of possible input parameter values.
 If they are all equal, a single value can be set.}
 
-\item{bsup}{[\code{numeric(k)}]\cr
+\item{bsup}{[\code{character(1} or \code{k)}]\cr
 vector of upper borders of possible input parameter values.
 If they are all equal, a single value can be set.}
 
@@ -68,13 +68,13 @@ number of processor cores to be used for parallelization. Only applies if
 \value{
 List of class \code{morrisRes} of length \code{length(state_init)} 
   containing in each element a matrix for one state variable. The
-  matrices itself contain the Morris' SA results for all timepoints (rows: 
+  matrices itself contain the Morris's SA results for all timepoints (rows: 
   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
   timepoints).
 }
 \description{
 \code{ODEmorris.default} is the default method of \code{\link{ODEmorris}}. It
-performs a sensitivity analysis for general ODE models using Morris' 
+performs a sensitivity analysis for general ODE models using Morris's
 elementary effects screening method.
 }
 \details{

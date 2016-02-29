@@ -1,12 +1,8 @@
 #' @title Sobol' SA for General ODE Models
 #'
 #' @description
-#' \code{ODEsobol.default} performs a variance-based sensitivity analysis for
-#' ordinary differential equations according to either the Sobol'-Jansen- or the
-#' Sobol'-Martinez-method. The analysis is done for all output variables at all 
-#' timepoints simultaneously using either \code{\link[sensitivity]{soboljansen}} 
-#' or \code{\link[sensitivity]{sobolmartinez}} from the package 
-#' \code{sensitivity}.
+#' \code{ODEsobol.default} is the default method of \code{\link{ODEmorris}}. It
+#' performs a variance-based sensitivity analysis for general ODE models.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -66,8 +62,9 @@
 #'   The sensitivity analysis is done for all state variables and all
 #'   timepoints simultaneously using either
 #'   \code{\link[sensitivity]{soboljansen}} or
-#'   \code{\link[sensitivity]{sobolmartinez}} (depending on 
-#'   \code{sobol_method}). \code{\link[sensitivity]{soboljansen}} and
+#'   \code{\link[sensitivity]{sobolmartinez}} from the package 
+#'   \code{sensitivity} (depending on \code{sobol_method}). 
+#'   \code{\link[sensitivity]{soboljansen}} and
 #'   \code{\link[sensitivity]{sobolmartinez}} can handle three-dimensional
 #'   arrays as output for their model functions. Each element of the third 
 #'   dimension of the output array is used to contain the results for one 

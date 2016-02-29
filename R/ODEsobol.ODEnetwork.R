@@ -2,9 +2,8 @@
 #'
 #' @description
 #' \code{ODEsobol.ODEnetwork} performs a variance-based sensitivity analysis 
-#' for objects of class \code{ODEnetwork} according to either the Sobol'-Jansen-
-#' or the Sobol'-Martinez-method. Package \code{ODEnetwork} is required for this 
-#' function to work.
+#' for objects of class \code{ODEnetwork}. Package \code{ODEnetwork} is required
+#' for this function to work.
 #'
 #' @param mod [\code{ODEnetwork}]\cr
 #'   list of class \code{ODEnetwork}.
@@ -65,7 +64,8 @@
 #'   The sensitivity analysis is done for all state variables and all
 #'   timepoints simultaneously using either
 #'   \code{\link[sensitivity]{soboljansen}} or
-#'   \code{\link[sensitivity]{sobolmartinez}} (depending on 
+#'   \code{\link[sensitivity]{sobolmartinez}} from the package 
+#'   \code{sensitivity} (depending on 
 #'   \code{sobol_method}). \code{\link[sensitivity]{soboljansen}} and
 #'   \code{\link[sensitivity]{sobolmartinez}} can handle three-dimensional
 #'   arrays as output for their model functions. Each element of the third 

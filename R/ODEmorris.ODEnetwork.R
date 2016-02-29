@@ -1,10 +1,9 @@
 #' @title Morris SA for Objects of Class \code{ODEnetwork}
 #'
 #' @description
-#' \code{ODEmorris.ODEnetwork} is the method for objects of class 
-#' \code{ODEnetwork}. It performs a sensitivity analysis using Morris' 
-#' elementary effects screening method. Package \code{ODEnetwork} is required 
-#' for this function to work.
+#' \code{ODEmorris.ODEnetwork} performs a sensitivity analysis for objects of 
+#' class \code{ODEnetwork} using Morris's elementary effects screening method. 
+#' Package \code{ODEnetwork} is required for this function to work.
 #'
 #' @param mod [\code{ODEnetwork}]\cr
 #'   list of class \code{ODEnetwork}.
@@ -18,10 +17,10 @@
 #'   length). The first point of time must be greater than zero.
 #' @param seed [\code{numeric(1)}]\cr
 #'   seed.
-#' @param binf [\code{numeric(k)}]\cr
+#' @param binf [\code{character(1} or \code{k)}]\cr
 #'   vector of lower borders of possible values for the \code{k} input 
 #'   parameters. If they are all equal, a single value can be set.
-#' @param bsup [\code{numeric(k)}]\cr
+#' @param bsup [\code{character(1} or \code{k)}]\cr
 #'   vector of upper borders of possible values for the \code{k} input 
 #'   parameters. If they are all equal, a single value can be set.
 #' @param r [\code{integer(1)}]\cr
@@ -53,7 +52,7 @@
 #'   List of class \code{morrisRes} of length \code{2 * nrow(mod$state)} 
 #'   containing in each element a matrix for one state variable (all components 
 #'   of the 2 state variables are analyzed independently). The matrices 
-#'   themselves contain the Morris' SA results for all timepoints (rows: 
+#'   themselves contain the Morris's SA results for all timepoints (rows: 
 #'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'

@@ -1,8 +1,8 @@
 #' @title
-#' Plot of the results of Morris SA for objects of class \code{morrisRes}
+#' Plot of the results of Morris's SA for objects of class \code{morrisRes}
 #'
 #' @description
-#'   \code{plot.morrisRes} plots the results of Morris SA for objects of class 
+#'   \code{plot.morrisRes} plots the results of Morris's SA for objects of class 
 #'   \code{morrisRes}.
 #'
 #' @param x [\code{morrisRes}]\cr
@@ -44,7 +44,7 @@
 #'   \code{xlab} and \code{ylab} are fixed.
 #'
 #' @author Frank Weber
-#' @seealso \code{\link{ODEmorris}, \link[sensitivity]{morris_list}}
+#' @seealso \code{\link{ODEmorris}, \link[sensitivity]{morris}}
 #'
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
