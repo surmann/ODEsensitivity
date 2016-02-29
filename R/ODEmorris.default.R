@@ -157,16 +157,14 @@ ODEmorris.default <- function(mod,
   stopifnot(!any(times == 0))
   assertNumeric(seed)
   assertNumeric(binf)
-  notOk <- length(binf) != length(pars) & length(binf) != 1
-  if(notOk)
-    stop("binf must be of length 1 or of the same length as pars!")
+  if(length(binf) != length(pars) && length(binf) != 1)
+    stop("\"binf\" must be of length 1 or of the same length as \"pars\".")
   assertNumeric(bsup)
-  notOk <- length(bsup) != length(pars) & length(bsup) != 1
-  if(notOk)
-    stop("bsup must be of length 1 or of the same length as pars!")
+  if(length(bsup) != length(pars) & length(bsup) != 1)
+    stop("\"bsup\" must be of length 1 or of the same length as \"pars\".")
   assertIntegerish(r, len = 1)
   if(r < 1)
-    stop("r must be greater than or equal to 1.")
+    stop("\"r\" must be greater than or equal to 1.")
   assertList(design)
   assertLogical(scale, len = 1)
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
@@ -262,7 +260,7 @@ ODEmorris.default <- function(mod,
   }
   if(any(unlist(lapply(out_all_states, NA_check_mu)))){
     warning(paste("The ODE system can't be solved. This might be due to", 
-      "arising unrealistic parameters by means of Morris Screening. Use",
+      "arising unrealistic parameters by means of Morris's Screening. Use",
       "ODEsobol() instead or set binf and bsup differently together with",
       "scale = TRUE. It might also be helpful to try another ODE-solver by",
       "using the \"ode_method\"-argument."))
