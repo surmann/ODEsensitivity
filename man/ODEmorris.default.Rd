@@ -20,9 +20,8 @@ vector of \code{k} input variable names.}
 vector of \code{z} initial values. Must be named (with unique names).}
 
 \item{times}{[\code{numeric}]\cr
-points of time at which the SA should be executed
-(vector of arbitrary length). Also the
-first point of time must be positive.}
+points of time at which the SA should be executed (vector of arbitrary 
+length). The first point of time must be greater than zero.}
 
 \item{seed}{[\code{numeric(1)}]\cr
 seed.}
