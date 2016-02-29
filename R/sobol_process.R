@@ -38,7 +38,7 @@ sobol_process <- function(x, pars, times){
   })
   
   if(any(check_indices["neg_S.minor", ])){
-    # "Repair" minor negative first order indices by setting them to 0:
+    # "Repair" first order indices being slightly negative by setting them to 0:
     for(i in seq_along(ST_by_state)[check_indices["neg_S.minor", ]]){
       check_neg_S.minor <- -0.05 <= ST_by_state[[i]]$S & ST_by_state[[i]]$S < 0
       ST_by_state[[i]]$S[check_neg_S.minor] <- 0
@@ -53,11 +53,24 @@ sobol_process <- function(x, pars, times){
     }
   }
   
-  if(any(check_indices[c("neg_S.major", "big_T.major"), ])){
-    warning("Negative first order indices (< -0.05) and/or total indices ",
-            "> 1.05 detected. Argument \"n\" might be too low. If using a ",
-            "higher value for \"n\" does not help, please check if the ",
-            "parameter distributions (\"rfuncs\") and their arguments ", 
+  if(any(check_indices["neg_S.major", ])){
+    states_concerned <- paste0("\"", 
+      names(ST_by_state)[check_indices["neg_S.major", ]], "\"", collapse = ", ")
+    warning("Negative first order indices (< -0.05) for state variable(s) ",
+            states_concerned, " detected. Argument \"n\" might be too low. If ",
+            "using a higher value for \"n\" doesn't help, please check if ",
+            "the parameter distributions (\"rfuncs\") and their arguments ", 
+            "(\"rargs\") generate valid parameter values.",
+            call. = FALSE)
+  }
+  
+  if(any(check_indices["big_T.major", ])){
+    states_concerned <- paste0("\"", 
+      names(ST_by_state)[check_indices["big_T.major", ]], "\"", collapse = ", ")
+    warning("Total indices > 1.05 for state variable(s) ", states_concerned, 
+            " detected. Argument \"n\" might be too low. If ",
+            "using a higher value for \"n\" doesn't help, please check if ",
+            "the parameter distributions (\"rfuncs\") and their arguments ", 
             "(\"rargs\") generate valid parameter values.",
             call. = FALSE)
   }
