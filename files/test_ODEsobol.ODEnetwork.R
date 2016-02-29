@@ -10,71 +10,88 @@ distances[1, 2] <- 1
 lfonet <- ODEnetwork(masses, dampers, springs, 
                      cartesian = TRUE, distances = distances)
 lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-LFOpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+LFOpars <- c("k.1", "k.2", "k.1.2")
 LFOtimes <- seq(0.01, 20, by = 0.1)
-LFObinf <- rep(0.001, length(LFOpars) - 1)
-LFObsup <- c(2, 1.5, 6, 6, 2, 1.5)
 
 devtools::load_all(".")
 
-# Martinez ohne Parallelisierung:
+# Martinez without parallelization:
 system.time(
   LFOres_martinez <- ODEsobol(lfonet, 
                               LFOpars, 
                               LFOtimes, 
                               seed = 2015, 
                               n = 10,
-                              rfuncs = c(rep("runif", length(LFObinf)), 
-                                         "rnorm"),
-                              rargs = c(paste0("min = ", LFObinf, 
-                                               ", max = ", LFObsup),
-                                        "mean = 3, sd = 0.8"),
+                              rfuncs = "runif",
+                              rargs = "min = 0.001, max = 6",
                               sobol_method = "martinez",
                               ode_method = "adams",
                               ode_parallel = FALSE,
                               ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 5.05        0.00        7.73
+# 2.29        0.02        2.32
 
-# Jansen ohne Parallelisierung:
+# Jansen without parallelization:
 system.time(
   LFOres_jansen <- ODEsobol(lfonet, 
                             LFOpars, 
                             LFOtimes, 
                             seed = 2015, 
                             n = 10,
-                            rfuncs = c(rep("runif", length(LFObinf)), "rnorm"),
-                            rargs = c(paste0("min = ", LFObinf, 
-                                             ", max = ", LFObsup),
-                                      "mean = 3, sd = 0.8"),
+                            rfuncs = "runif",
+                            rargs = "min = 0.001, max = 6",
                             sobol_method = "jansen",
                             ode_method = "adams",
                             ode_parallel = FALSE,
                             ode_parallel_ncores = NA)
 )
 # User      System verstrichen 
-# 2.04        0.00        3.83
+# 1.11        0.00        1.21
 
-# Martinez mit Parallelisierung und n = 1000:
+# Martinez with parallelization, n = 1000 and "rfuncs" and "rargs" being of
+# length 1:
+system.time(
+  LFOres_1 <- ODEsobol(lfonet, 
+                       LFOpars, 
+                       LFOtimes, 
+                       seed = 2015, 
+                       n = 1000,
+                       rfuncs = "runif",
+                       rargs = "min = 0.001, max = 6",
+                       sobol_method = "martinez",
+                       ode_method = "adams",
+                       ode_parallel = TRUE,
+                       ode_parallel_ncores = 2)
+)
+# User      System verstrichen 
+# 6.55        0.71       61.95
+# (A warning is thrown, concerning the state variables "v.1" and "v.2". Assuming
+# that we are only interested in a sensitivity analysis of "x.1" and "x.2", this
+# warning is ignored.)
+
+# Martinez with parallelization, n = 1000 and "rfuncs" and "rargs" being of the
+# same length as "pars":
 system.time(
   LFOres <- ODEsobol(lfonet, 
                      LFOpars, 
                      LFOtimes, 
                      seed = 2015, 
                      n = 1000,
-                     rfuncs = c(rep("runif", length(LFObinf)), 
-                                "rnorm"),
-                     rargs = c(paste0("min = ", LFObinf,
-                                      ", max = ", LFObsup),
-                               "mean = 3, sd = 0.8"),
+                     rfuncs = c("runif", "rnorm", "rexp"),
+                     rargs = c("min = 0.001, max = 6",
+                               "mean = 3, sd = 0.5",
+                               "rate = 1 / 3"),
                      sobol_method = "martinez",
                      ode_method = "adams",
                      ode_parallel = TRUE,
                      ode_parallel_ncores = 2)
 )
-#  User      System verstrichen 
-# 12.33        1.65      148.95
+# User      System verstrichen 
+# 5.32        0.46       58.78
+# (A warning is thrown, concerning the state variables "v.1" and "v.2". Assuming
+# that we are only interested in a sensitivity analysis of "x.1" and "x.2", this
+# warning is ignored.)
 
 # save(LFOres, file = "test_ODEsobol.ODEnetwork.Rdata")
 
@@ -85,11 +102,8 @@ plot(LFOres_jansen)
 plot(LFOres)
 # Custom arguments:
 plot(LFOres, state_plot = "x.2", legendPos = "topleft")
-# Palette "Dark2" from the package "RColorBrewer" with some 
-# additional colors:
-my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
-             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
-             "darkblue", "darkgreen")
+# Custom colors:
+my_cols <- c("firebrick", "chartreuse3", "dodgerblue")
 plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
 # Checking the passing of arguments:
 plot(LFOres, state_plot = "x.2", type = "p", colors_pars = my_cols, 

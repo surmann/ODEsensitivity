@@ -10,10 +10,10 @@ distances[1, 2] <- 1
 lfonet <- ODEnetwork(masses, dampers, springs, 
                      cartesian = TRUE, distances = distances)
 lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-LFOpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+LFOpars <- c("k.1", "k.2", "k.1.2")
 LFOtimes <- seq(0.01, 20, by = 0.1)
-LFObinf <- rep(0.001, length(LFOpars))
-LFObsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
+LFObinf <- rep(0.001, 3)
+LFObsup <- c(6, 6, 3)
 
 devtools::load_all(".")
 
@@ -26,7 +26,7 @@ system.time(
                       ode_parallel = TRUE, ode_parallel_ncores = 2)
 )
 # User      System verstrichen 
-# 2.42        0.16        9.85
+# 1.19        0.00        5.70
 
 system.time(
   LFOres_simplex <- ODEmorris(lfonet, LFOpars, LFOtimes, 
@@ -36,7 +36,7 @@ system.time(
                       ode_parallel = TRUE, ode_parallel_ncores = 2)
 )
 # User      System verstrichen 
-# 2.11        0.06        9.21
+# 1.20        0.05        6.11
 
 # save(LFOres, file = "test_ODEmorris.ODEnetwork.Rdata")
 
@@ -48,11 +48,8 @@ plot(LFOres_simplex)
 plot(LFOres, state_plot = "x.2", kind = "sep", type = "b")
 plot(LFOres, state_plot = "x.2", kind = "sep", legendPos = "topleft")
 plot(LFOres, state_plot = "x.2", kind = "sep", legendPos = "outside")
-# Palette "Dark2" from the package "RColorBrewer" with some 
-# additional colors:
-my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
-             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
-             "darkblue", "darkgreen")
+# Custom colors:
+my_cols <- c("firebrick", "chartreuse3", "dodgerblue")
 plot(LFOres, state_plot = "x.2", kind = "sep", colors_pars = my_cols)
 
 # Trajectories:
