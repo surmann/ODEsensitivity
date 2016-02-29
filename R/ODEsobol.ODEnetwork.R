@@ -114,23 +114,44 @@
 #' lfonet <- ODEnetwork(masses, dampers, springs, 
 #'                      cartesian = TRUE, distances = distances)
 #' lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-#' LFOpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+#' LFOpars <- c("k.1", "k.2", "k.1.2")
 #' LFOtimes <- seq(0.01, 20, by = 0.1)
-#' LFObinf <- rep(0.001, length(LFOpars))
-#' LFObsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 #' 
+#' # Arguments "rfuncs" and "rargs" being of length 1:
+#' LFOres_1 <- ODEsobol(lfonet, 
+#'                      LFOpars, 
+#'                      LFOtimes, 
+#'                      seed = 2015, 
+#'                      n = 1000,
+#'                      rfuncs = "runif",
+#'                      rargs = "min = 0.001, max = 6",
+#'                      sobol_method = "martinez",
+#'                      ode_method = "adams",
+#'                      ode_parallel = TRUE,
+#'                      ode_parallel_ncores = 2)
+#' # (A warning is thrown, concerning the state variables "v.1" and "v.2". 
+#' # Assuming that we are only interested in a sensitivity analysis of "x.1" and
+#' # "x.2", this warning is ignored.)
+#' 
+#' # Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
+#' # distributions and their corresponding arguments are chosen more or less 
+#' # arbitrarily and shall only demonstrate the use of different distributions):
 #' LFOres <- ODEsobol(lfonet, 
 #'                    LFOpars, 
 #'                    LFOtimes, 
 #'                    seed = 2015, 
 #'                    n = 1000,
-#'                    rfuncs = c(rep("runif", length(LFObinf)), "rnorm"),
-#'                    rargs = c(paste0("min = ", LFObinf, ", max = ", LFObsup),
-#'                              "mean = 3, sd = 0.8"),
+#'                    rfuncs = c("runif", "rnorm", "rexp"),
+#'                    rargs = c("min = 0.001, max = 6",
+#'                              "mean = 3, sd = 0.5",
+#'                              "rate = 1 / 3"),
 #'                    sobol_method = "martinez",
 #'                    ode_method = "adams",
 #'                    ode_parallel = TRUE,
 #'                    ode_parallel_ncores = 2)
+#' # (A warning is thrown, concerning the state variables "v.1" and "v.2". 
+#' # Assuming that we are only interested in a sensitivity analysis of "x.1" and
+#' # "x.2", this warning is ignored.)
 #' 
 #' @import checkmate
 #' @importFrom deSolve ode

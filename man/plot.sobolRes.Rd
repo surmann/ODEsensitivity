@@ -69,26 +69,24 @@ FHNmod <- function(Time, State, Pars) {
 FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
-### The following code might take a long time!
+# Warning: The following code might take a long time!
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),
                    state_init = FHNstate,
                    times = FHNtimes,
                    seed = 2015,
                    n = 1000,
-                   rfuncs = c("runif", "runif", "rnorm"),
-                   rargs = c(rep("min = 0.18, max = 0.22", 2),
-                             "mean = 3, sd = 0.2 / 3"),
+                   rfuncs = c("runif", "rnorm", "rexp"),
+                   rargs = c("min = 0.18, max = 0.22", 
+                             "mean = 0.2, sd = 0.2 / 3",
+                             "rate = 1 / 3"),
                    sobol_method = "martinez",
                    ode_method = "adams",
                    ode_parallel = TRUE,
                    ode_parallel_ncores = 2)
 
-# Palette "Dark2" from the package "RColorBrewer" with some 
-# additional colors:
-my_cols <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", 
-             "#E6AB02", "#A6761D", "#666666", "black", "firebrick",
-             "darkblue", "darkgreen")
+# Define custom colors for the plot:
+my_cols <- c("firebrick", "chartreuse3", "dodgerblue")
 plot(FHNres, state_plot = "Current", colors_pars = my_cols)
 
 ##### A network of ordinary differential equations #####
@@ -103,24 +101,27 @@ distances[1, 2] <- 1
 lfonet <- ODEnetwork(masses, dampers, springs, 
                      cartesian = TRUE, distances = distances)
 lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-LFOpars <- c("m.1", "d.1", "k.1", "k.1.2", "m.2", "d.2", "k.2")
+LFOpars <- c("k.1", "k.2", "k.1.2")
 LFOtimes <- seq(0.01, 20, by = 0.1)
-LFObinf <- rep(0.001, length(LFOpars))
-LFObsup <- c(2, 1.5, 6, 6, 2, 1.5, 6)
 
 LFOres <- ODEsobol(lfonet, 
                    LFOpars, 
                    LFOtimes, 
                    seed = 2015, 
                    n = 1000,
-                   rfuncs = c(rep("runif", length(LFObinf)), "rnorm"),
-                   rargs = c(paste0("min = ", LFObinf, ", max = ", LFObsup),
-                             "mean = 3, sd = 0.8"),
+                   rfuncs = c("runif", "rnorm", "rexp"),
+                   rargs = c("min = 0.001, max = 6",
+                             "mean = 3, sd = 0.5",
+                             "rate = 1 / 3"),
                    sobol_method = "martinez",
                    ode_method = "adams",
                    ode_parallel = TRUE,
                    ode_parallel_ncores = 2)
+# (A warning is thrown, concerning the state variables "v.1" and "v.2". 
+# Assuming that we are only interested in a sensitivity analysis of "x.1" and
+# "x.2", this warning is ignored.)
 
+plot(LFOres, state_plot = "x.1", colors_pars = my_cols)
 plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
 
 }
