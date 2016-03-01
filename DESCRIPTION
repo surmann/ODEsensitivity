@@ -15,7 +15,7 @@ Suggests:
     testthat,
     ODEnetwork
 Imports:
-    sensitivity (>= 1.12.3),
+    sensitivity (>= 1.12.4),
     checkmate,
     deSolve
 License: GPL-2
