@@ -6,7 +6,7 @@
 \usage{
 \method{ODEsobol}{default}(mod, pars, state_init, times, seed = 2015,
   n = 1000, rfuncs = "runif", rargs = "min = 0, max = 1",
-  sobol_method = "martinez", ode_method = "lsoda", ode_parallel = FALSE,
+  sobol_method = "Martinez", ode_method = "lsoda", ode_parallel = FALSE,
   ode_parallel_ncores = NA, ...)
 }
 \arguments{
@@ -49,9 +49,9 @@ parameters. Each element of \code{rargs} has to be a string of the form
 parameters.}
 
 \item{sobol_method}{[\code{character(1)}]\cr
-either \code{"jansen"} or \code{"martinez"}, specifying which modification
+either \code{"Jansen"} or \code{"Martinez"}, specifying which modification
 of the variance-based Sobol' method shall be used. Defaults to 
-\code{"martinez"}.}
+\code{"Martinez"}.}
 
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
@@ -143,7 +143,7 @@ FHNres_1 <- ODEsobol(mod = FHNmod,
                      n = 1000,
                      rfuncs = "runif",
                      rargs = "min = 0.1, max = 1.5",
-                     sobol_method = "martinez",
+                     sobol_method = "Martinez",
                      ode_method = "adams",
                      ode_parallel = TRUE,
                      ode_parallel_ncores = 2)
@@ -161,7 +161,7 @@ FHNres <- ODEsobol(mod = FHNmod,
                    rargs = c("min = 0.18, max = 0.22", 
                              "mean = 0.2, sd = 0.2 / 3",
                              "rate = 1 / 3"),
-                   sobol_method = "martinez",
+                   sobol_method = "Martinez",
                    ode_method = "adams",
                    ode_parallel = TRUE,
                    ode_parallel_ncores = 2)

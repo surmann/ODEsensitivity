@@ -5,7 +5,7 @@
 \title{Sobol' SA for Objects of Class \code{ODEnetwork}}
 \usage{
 \method{ODEsobol}{ODEnetwork}(mod, pars, times, seed = 2015, n = 1000,
-  rfuncs = "runif", rargs = "min = 0, max = 1", sobol_method = "martinez",
+  rfuncs = "runif", rargs = "min = 0, max = 1", sobol_method = "Martinez",
   ode_method = "lsoda", ode_parallel = FALSE, ode_parallel_ncores = NA,
   ...)
 }
@@ -49,9 +49,9 @@ parameters. Each element of \code{rargs} has to be a string of the form
 parameters.}
 
 \item{sobol_method}{[\code{character(1)}]\cr
-either \code{"jansen"} or \code{"martinez"}, specifying which modification
+either \code{"Jansen"} or \code{"Martinez"}, specifying which modification
 of the variance-based Sobol' method shall be used. Defaults to 
-\code{"martinez"}.}
+\code{"Martinez"}.}
 
 \item{ode_method}{[\code{character(1)}]\cr
 method to be used for solving the differential equations, see 
@@ -141,7 +141,7 @@ LFOres_1 <- ODEsobol(lfonet,
                      n = 1000,
                      rfuncs = "runif",
                      rargs = "min = 0.001, max = 6",
-                     sobol_method = "martinez",
+                     sobol_method = "Martinez",
                      ode_method = "adams",
                      ode_parallel = TRUE,
                      ode_parallel_ncores = 2)
@@ -161,7 +161,7 @@ LFOres <- ODEsobol(lfonet,
                    rargs = c("min = 0.001, max = 6",
                              "mean = 3, sd = 0.5",
                              "rate = 1 / 3"),
-                   sobol_method = "martinez",
+                   sobol_method = "Martinez",
                    ode_method = "adams",
                    ode_parallel = TRUE,
                    ode_parallel_ncores = 2)
