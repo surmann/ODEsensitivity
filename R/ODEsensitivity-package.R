@@ -11,11 +11,11 @@
 #'
 #' @details
 #' The main functions are \code{\link{ODEmorris}} and \code{\link{ODEsobol}},
-#' which are generic functions and have a default method for general ODE models
-#' (\code{\link{ODEmorris.default}, \link{ODEsobol.default}}) as well as a 
-#' method for objects of class \code{ODEnetwork} 
-#' (\code{\link{ODEmorris.ODEnetwork}, \link{ODEsobol.ODEnetwork}}). For the
-#' latter two methods, the package \code{ODEnetwork} is required.
+#' which are generic functions. They have default methods for general ODE models
+#' (\code{\link{ODEmorris.default}, \link{ODEsobol.default}}) as well as methods
+#' for objects of class \code{ODEnetwork} (\code{\link{ODEmorris.ODEnetwork}, 
+#' \link{ODEsobol.ODEnetwork}}). For the latter two methods, the package 
+#' \code{ODEnetwork} is required.
 #' 
 #' See the \code{\link{sensitivity}} package and its 
 #' \code{\link[sensitivity]{morris}, \link[sensitivity]{soboljansen}} and 
