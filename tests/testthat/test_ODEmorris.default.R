@@ -241,14 +241,3 @@ test_that("Plots are generated", {
   expect_true(plot(FHNres1, state_plot = "Current", cex.axis = 2, cex = 4, 
                    main = "Small Title", cex.main = 0.5))
 })
-
-test_that("plot.morrisRes() throws errors", {
-  # An arbitrary Sobol'-result:
-  arbit_res_sobol <- diag(7)
-  class(arbit_res_sobol) <- "sobolRes"
-  
-  expect_error(plot.morrisRes(1:3))
-  expect_error(plot.morrisRes("No character!"))
-  expect_error(plot.morrisRes(diag(7)))
-  expect_error(plot.morrisRes(arbit_res_sobol))
-})
