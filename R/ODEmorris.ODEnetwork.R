@@ -195,6 +195,14 @@ ODEmorris.ODEnetwork <- function(mod,
   assertNumeric(bsup)
   if(length(bsup) != length(pars) & length(bsup) != 1)
     stop("\"bsup\" must be of length 1 or of the same length as \"pars\".")
+  if(any(bsup < binf)){
+    idx_swap <- bsup < binf
+    bsup_tmp <- bsup[idx_swap]
+    bsup[idx_swap] <- binf[idx_swap]
+    binf[idx_swap] <- bsup_tmp
+    warning("At least one element of \"bsup\" was lower than the ", 
+            "corresponding element of \"binf\". Elements were swapped.")
+  }
   assertIntegerish(r, len = 1)
   if(r < 1)
     stop("\"r\" must be greater than or equal to 1.")
