@@ -15,7 +15,7 @@ FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes1 <- seq(0.1, 20, by = 5)
 FHNtimes2 <- 10
 
-# Normal case:
+# Normal:
 FHNres1 <- ODEmorris(mod = FHNmod,
                      pars = c("a", "b", "s"),
                      state_init = FHNstate,
@@ -168,23 +168,25 @@ test_that("Type of ODEmorris.default()-result is correct", {
 
 test_that("ODEmorris.default() throws errors and warnings", {
   # bsup < binf:
-  expect_warning(ODEmorris(mod = FHNmod,
-                           pars = c("a", "b", "s"),
-                           state_init = FHNstate,
-                           times = FHNtimes2,
-                           seed = 2015,
-                           binf = c(0.22, 0.18, 2.8),
-                           bsup = c(0.18, 0.22, 3.2),
-                           r = 4,
-                           design =
-                             list(type = "oat", levels = 100, grid.jump = 1),
-                           scale = TRUE,
-                           ode_method = "adams",
-                           ode_parallel = FALSE,
-                           ode_parallel_ncores = NA),
+  expect_warning(FHNres_binf_bsup <- 
+                   ODEmorris(mod = FHNmod,
+                             pars = c("a", "b", "s"),
+                             state_init = FHNstate,
+                             times = FHNtimes1,
+                             seed = 2015,
+                             binf = c(0.22, 0.18, 2.8),
+                             bsup = c(0.18, 0.22, 3.2),
+                             r = 4,
+                             design =
+                               list(type = "oat", levels = 100, grid.jump = 1),
+                             scale = TRUE,
+                             ode_method = "adams",
+                             ode_parallel = FALSE,
+                             ode_parallel_ncores = NA),
                  paste("At least one element of \"bsup\" was lower than the",
                        "corresponding element of \"binf\".", 
                        "Elements were swapped."))
+  expect_equal(FHNres1, FHNres_binf_bsup)
   
   # r = 1:
   expect_warning(ODEmorris(mod = FHNmod,
