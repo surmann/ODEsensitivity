@@ -118,7 +118,7 @@
 #' @export
 #'
 
-plot.sobolRes <- function(x, state_plot = names(x$ST_by_state)[1],
+plot.sobolRes <- function(x, state_plot = names(x)[1],
                           colors_pars = NULL, main_title = NULL,
                           legendPos = "outside", type = "l", ...) {
   
@@ -126,7 +126,7 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_state)[1],
   
   assertClass(x, "sobolRes")
   assertCharacter(state_plot, len = 1)
-  stopifnot(state_plot %in% names(x$ST_by_state))
+  stopifnot(state_plot %in% names(x))
   assertCharacter(type, len = 1)
   if(!type %in% c("p", "l", "b", "c", "n", "o", "s", "h")){
     stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
@@ -134,7 +134,7 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_state)[1],
   }
   stopifnot(is.null(colors_pars) || (is.character(colors_pars) && 
     length(colors_pars) >= 
-      nrow((x$ST_by_state[[which(names(x$ST_by_state) == state_plot)]])$S) - 1))
+      nrow((x[[which(names(x) == state_plot)]])$S) - 1))
   stopifnot(is.null(main_title) || (is.character(main_title) && 
     length(main_title) == 1))
   assertCharacter(legendPos, len = 1)
@@ -149,11 +149,11 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_state)[1],
   ##### Preparation ####################################################
   
   # Index of the state variable to be plotted:
-  state_idx <- which(names(x$ST_by_state) == state_plot)
+  state_idx <- which(names(x) == state_plot)
   
   # Extract the matrices S and T:
-  S <- (x$ST_by_state[[state_idx]])$S
-  T <- (x$ST_by_state[[state_idx]])$T
+  S <- (x[[state_idx]])$S
+  T <- (x[[state_idx]])$T
   
   # Extract the parameter names:
   k <- nrow(S) - 1
@@ -171,11 +171,7 @@ plot.sobolRes <- function(x, state_plot = names(x$ST_by_state)[1],
   }
   
   # Set main title if not set by the user:
-  if(x$sobol_method == "jansen"){
-    method_title <- "Jansen"
-  } else if(x$sobol_method == "martinez"){
-    method_title <- "Martinez"
-  }
+  method_title <- attr(x, "sobol_method")
   if(is.null(main_title)){
     main_title <- paste0("Sobol' sensitivity indices for \"", state_plot, 
                          "\" (Sobol'-", method_title, " method)")

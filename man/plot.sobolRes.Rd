@@ -4,9 +4,8 @@
 \alias{plot.sobolRes}
 \title{Plotting the results of Sobol' SA for objects of class \code{sobolRes}}
 \usage{
-\method{plot}{sobolRes}(x, state_plot = names(x$ST_by_state)[1],
-  colors_pars = NULL, main_title = NULL, legendPos = "outside",
-  type = "l", ...)
+\method{plot}{sobolRes}(x, state_plot = names(x)[1], colors_pars = NULL,
+  main_title = NULL, legendPos = "outside", type = "l", ...)
 }
 \arguments{
 \item{x}{[\code{sobolRes}]\cr

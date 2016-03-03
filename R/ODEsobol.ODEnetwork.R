@@ -334,7 +334,7 @@ ODEsobol.ODEnetwork <- function(mod,
   ST_by_state <- sobol_process(x, pars, times)
   
   # Return:
-  res <- list(ST_by_state = ST_by_state, sobol_method = sobol_method)
-  class(res) <- "sobolRes"
-  return(res)
+  class(ST_by_state) <- "sobolRes"
+  attr(ST_by_state, "sobol_method") <- sobol_method
+  return(ST_by_state)
 }
