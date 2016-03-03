@@ -37,9 +37,9 @@
 #'   \code{rfuncs}) a uniform distribution on [0, 1] is assumed for all 
 #'   parameters.
 #' @param sobol_method [\code{character(1)}]\cr
-#'   either \code{"jansen"} or \code{"martinez"}, specifying which modification
+#'   either \code{"Jansen"} or \code{"Martinez"}, specifying which modification
 #'   of the variance-based Sobol' method shall be used. Defaults to 
-#'   \code{"martinez"}.
+#'   \code{"Martinez"}.
 #' @param ode_method [\code{character(1)}]\cr
 #'   method to be used for solving the differential equations, see 
 #'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
@@ -125,7 +125,7 @@
 #'                      n = 1000,
 #'                      rfuncs = "runif",
 #'                      rargs = "min = 0.001, max = 6",
-#'                      sobol_method = "martinez",
+#'                      sobol_method = "Martinez",
 #'                      ode_method = "adams",
 #'                      ode_parallel = TRUE,
 #'                      ode_parallel_ncores = 2)
@@ -145,7 +145,7 @@
 #'                    rargs = c("min = 0.001, max = 6",
 #'                              "mean = 3, sd = 0.5",
 #'                              "rate = 1 / 3"),
-#'                    sobol_method = "martinez",
+#'                    sobol_method = "Martinez",
 #'                    ode_method = "adams",
 #'                    ode_parallel = TRUE,
 #'                    ode_parallel_ncores = 2)
@@ -168,7 +168,7 @@ ODEsobol.ODEnetwork <- function(mod,
                                 n = 1000,
                                 rfuncs = "runif",
                                 rargs = "min = 0, max = 1",
-                                sobol_method = "martinez",
+                                sobol_method = "Martinez",
                                 ode_method = "lsoda",
                                 ode_parallel = FALSE,
                                 ode_parallel_ncores = NA, ...){
@@ -243,7 +243,7 @@ ODEsobol.ODEnetwork <- function(mod,
   if(! all(sapply(rfuncs, exists))){
     stop("At least one of the supplied functions in \"rfuncs\" was not found")
   }
-  stopifnot(sobol_method %in% c("jansen", "martinez"))
+  stopifnot(sobol_method %in% c("Jansen", "Martinez"))
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
                               "daspk", "euler", "rk4", "ode23", "ode45", 
                               "radau", "bdf", "bdf_d", "adams", "impAdams", 
@@ -324,9 +324,9 @@ ODEsobol.ODEnetwork <- function(mod,
   
   # Sensitivity analysis with either soboljansen() or sobolmartinez()
   # from package "sensitivity":
-  if(sobol_method == "jansen"){
+  if(sobol_method == "Jansen"){
     x <- soboljansen(model = model_fit, X1, X2, nboot = 0)
-  } else if(sobol_method == "martinez"){
+  } else if(sobol_method == "Martinez"){
     x <- sobolmartinez(model = model_fit, X1, X2, nboot = 0)
   }
   
