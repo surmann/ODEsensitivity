@@ -7,8 +7,8 @@ sobol_process <- function(x, pars, times){
   k <- length(pars)
   
   ST_by_state <- lapply(1:dim(x$y)[3], function(i){
-    S <- rbind(times, x$S[, , i])
-    T <- rbind(times, x$T[, , i])
+    S <- rbind(times, as.matrix(x$S[, , i]))
+    T <- rbind(times, as.matrix(x$T[, , i]))
     rownames(S) <- rownames(T) <- c("time", pars)
     return(list(S = S, T = T))
   })
