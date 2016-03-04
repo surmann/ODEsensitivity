@@ -227,10 +227,14 @@ test_that("Plots are generated", {
   expect_true(plot(LFOres1))
   expect_true(plot(LFOres2))
   expect_true(plot(LFOres3))
+  expect_true(plot(LFOres_parallel))
+  expect_true(plot(LFOres_simplex))
   # Trajectories:
   expect_true(plot(LFOres1, kind = "trajec"))
   expect_true(plot(LFOres2, kind = "trajec"))
   expect_true(plot(LFOres3, kind = "trajec"))
+  expect_true(plot(LFOres_parallel, kind = "trajec"))
+  expect_true(plot(LFOres_simplex, kind = "trajec"))
   # Non-default arguments:
   expect_true(plot(LFOres1, state_plot = "x.2", main_title = "Hi!", 
                    legendPos = "topleft", type = "b"))
