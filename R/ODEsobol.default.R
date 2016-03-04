@@ -183,7 +183,7 @@ ODEsobol.default <- function(mod,
   times <- sort(times)
   stopifnot(!any(times == 0))
   assertNumeric(seed)
-  assertIntegerish(n)
+  assertIntegerish(n, lower = 2)
   assertCharacter(rfuncs)
   if(! length(rfuncs) %in% c(1, length(pars))){
     stop("Argument \"rfuncs\" must be of length 1 or of the same length as ",
