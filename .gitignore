@@ -1,7 +1,3 @@
-# Emacs backup copies
-*~
-# Emacs history files
 .Rhistory
-# RStudio
 *.Rproj
 /.Rproj.user
