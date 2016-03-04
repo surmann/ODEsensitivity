@@ -1,4 +1,4 @@
-context("Test of tdcc")
+context("Test of tdcc()")
 
 test_that("Result is correct", {
   # gesichertes Ergebnis aus Iman & Canover (1987):

@@ -1,4 +1,4 @@
-context("Test of ODEsobol.default() and plot.sobolRes()")
+context("Test of ODEsobol.default() (and plotting)")
 
 # FHN-example:
 

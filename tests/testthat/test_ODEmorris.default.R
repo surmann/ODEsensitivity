@@ -1,4 +1,4 @@
-context("Test of ODEmorris.default() and plot.morrisRes()")
+context("Test of ODEmorris.default() (and plotting)")
 
 # FHN-example:
 

@@ -1,4 +1,4 @@
-context("Test of ODEsobol.ODEnetwork() and plot.sobolRes()")
+context("Test of ODEsobol.ODEnetwork() (and plotting)")
 
 # Example of low frequency oscillations (LFO):
 

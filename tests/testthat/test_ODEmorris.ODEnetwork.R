@@ -1,4 +1,4 @@
-context("Test of ODEmorris.ODEnetwork() and plot.morrisRes()")
+context("Test of ODEmorris.ODEnetwork() (and plotting)")
 
 # Example of low frequency oscillations (LFO):
 
