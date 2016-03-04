@@ -148,7 +148,7 @@ test_that("Type of ODEmorris.ODEnetwork()-result is correct", {
                c(1 + 3*length(c("k.1")), length(LFOtimes2)))
   
   # With parallelization:
-  expect_equal(FHNres_parallel, FHNres1)
+  expect_equal(LFOres_parallel, LFOres1)
   
   # Simplex design:
   expect_true(is.list(LFOres_simplex))
