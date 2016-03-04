@@ -142,16 +142,7 @@ test_that("Type of ODEmorris.default()-result is correct", {
                c(1 + 3*length(c("a")), length(FHNtimes2)))
   
   # With parallelization:
-  expect_true(is.list(FHNres_parallel))
-  expect_equal(class(FHNres_parallel), "morrisRes")
-  expect_equal(length(FHNres_parallel), length(FHNstate))
-  expect_equal(names(FHNres_parallel), names(FHNstate))
-  expect_true(is.matrix(FHNres_parallel$Voltage))
-  expect_true(is.matrix(FHNres_parallel$Current))
-  expect_equal(dim(FHNres_parallel$Voltage), 
-               c(1 + 3*length(c("a", "b", "s")), length(FHNtimes1)))
-  expect_equal(dim(FHNres_parallel$Current), 
-               c(1 + 3*length(c("a", "b", "s")), length(FHNtimes1)))
+  expect_equal(FHNres_parallel, FHNres1)
   
   # Simplex design:
   expect_true(is.list(FHNres_simplex))

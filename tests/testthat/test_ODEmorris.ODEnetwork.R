@@ -148,22 +148,7 @@ test_that("Type of ODEmorris.ODEnetwork()-result is correct", {
                c(1 + 3*length(c("k.1")), length(LFOtimes2)))
   
   # With parallelization:
-  expect_true(is.list(LFOres_parallel))
-  expect_equal(class(LFOres_parallel), "morrisRes")
-  expect_equal(length(LFOres_parallel), 4)
-  expect_equal(names(LFOres_parallel), c("x.1", "v.1", "x.2", "v.2"))
-  expect_true(is.matrix(LFOres_parallel$"x.1"))
-  expect_true(is.matrix(LFOres_parallel$"v.1"))
-  expect_true(is.matrix(LFOres_parallel$"x.2"))
-  expect_true(is.matrix(LFOres_parallel$"v.2"))
-  expect_equal(dim(LFOres_parallel$"x.1"), 
-               c(1 + 3*length(c("k.1", "k.2", "k.1.2")), length(LFOtimes1)))
-  expect_equal(dim(LFOres_parallel$"v.1"), 
-               c(1 + 3*length(c("k.1", "k.2", "k.1.2")), length(LFOtimes1)))
-  expect_equal(dim(LFOres_parallel$"x.2"), 
-               c(1 + 3*length(c("k.1", "k.2", "k.1.2")), length(LFOtimes1)))
-  expect_equal(dim(LFOres_parallel$"v.2"), 
-               c(1 + 3*length(c("k.1", "k.2", "k.1.2")), length(LFOtimes1)))
+  expect_equal(FHNres_parallel, FHNres1)
   
   # Simplex design:
   expect_true(is.list(LFOres_simplex))
