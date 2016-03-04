@@ -202,10 +202,12 @@ plot.sobolRes <- function(x, state_plot = names(x)[1],
        xlab = "Time", ylab = "First order Sobol' SA indices",
        type = type, col = colors_pars[1], ylim = minMaxS, ...)
   # All remaining parameters:
-  for(i in 2:k) {
-    lines(x = S[1, ], 
-          y = S[i + 1, ],
-          type = type, col = colors_pars[i], ...)
+  if(k >= 2){
+    for(i in 2:k) {
+      lines(x = S[1, ], 
+            y = S[i + 1, ],
+            type = type, col = colors_pars[i], ...)
+    }
   }
   # Legend:
   if(legendPos != "outside"){
@@ -225,10 +227,12 @@ plot.sobolRes <- function(x, state_plot = names(x)[1],
        xlab = "Time", ylab = "Total Sobol' SA indices",
        type = type, col = colors_pars[1], ylim = minMaxT, ...)
   # All remaining parameters:
-  for(i in 2:k) {
-    lines(x = T[1, ], 
-          y = T[i + 1, ],
-          type = type, col = colors_pars[i], ...)
+  if(k >= 2){
+    for(i in 2:k) {
+      lines(x = T[1, ], 
+            y = T[i + 1, ],
+            type = type, col = colors_pars[i], ...)
+    }
   }
   # Legend:
   if(legendPos != "outside"){
