@@ -1,14 +1,16 @@
 Package: ODEsensitivity
 Type: Package
-Title: Sensitivity Analysis of ODE Models
+Title: Sensitivity Analysis of Ordinary Differential Equations
 Version: 0.9.4
 Date: 2016-03-04
-Authors@R: c(person("Frank", "Weber", email =
-           "frank.weber@tu-dortmund.de", role = c("aut", "cre")),
+Authors@R: c(
     person("Stefan", "Theers", email =
            "stefan.theers@tu-dortmund.de", role = "aut"),
+    person("Frank", "Weber", email =
+           "frank.weber@tu-dortmund.de", role = c("aut", "cre")),
     person("Dirk", "Surmann", email =
            "surmann@statistik.tu-dortmund.de", role = "aut"))
+URL: https://github.com/surmann/ODEsensitivity
 Description: A package to perform sensitivity analysis in ordinary differential
     equation models.
 Suggests:
