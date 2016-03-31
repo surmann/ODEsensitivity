@@ -1,8 +1,8 @@
 Package: ODEsensitivity
 Type: Package
 Title: Sensitivity Analysis of Ordinary Differential Equations
-Version: 0.9.4
-Date: 2016-03-04
+Version: 0.9.5
+Date: 2016-03-31
 Authors@R: c(
     person("Stefan", "Theers", email =
            "stefan.theers@tu-dortmund.de", role = "aut"),
@@ -17,7 +17,7 @@ Suggests:
     testthat,
     ODEnetwork
 Imports:
-    sensitivity (>= 1.12.4),
+    sensitivity (>= 1.12.5),
     checkmate,
     deSolve
 License: GPL-2
