@@ -7,7 +7,7 @@
 #' @param mod 
 #'   either a function with arguments \code{Time, State, Pars} (for 
 #'   \code{\link{ODEmorris.default}} or an object of class \code{ODEnetwork} 
-#'   (for \code{\link{ODEmorris.ODEnetwork}}.
+#'   (for \code{\link{ODEmorris.ODEnetwork}}).
 #' @param ...
 #'   further arguments passed to methods, see \code{\link{ODEmorris.default}} 
 #'   and \code{\link{ODEmorris.ODEnetwork}}.

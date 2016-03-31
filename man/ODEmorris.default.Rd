@@ -24,7 +24,7 @@ points of time at which the SA should be executed (vector of arbitrary
 length). The first point of time must be greater than zero.}
 
 \item{seed}{[\code{numeric(1)}]\cr
-seed.}
+the seed for the sampling design.}
 
 \item{binf}{[\code{character(1} or \code{k)}]\cr
 vector of lower borders of possible input parameter values.
