@@ -1,6 +1,6 @@
 context("Test of plot.morrisRes()")
 
-test_that("plot.morrisRes() throws errors", {
+test_that("Errors are thrown", {
   # An arbitrary Sobol'-result:
   arbit_res_sobol <- diag(7)
   class(arbit_res_sobol) <- "sobolRes"

@@ -112,7 +112,7 @@ FHNres_jansen <- suppressWarnings(
            ode_parallel_ncores = NA)
 )
 
-test_that("Type of ODEsobol.default()-result is correct", {
+test_that("Result type is correct", {
   # Martinez:
   expect_true(is.list(FHNres1))
   expect_equal(class(FHNres1), "sobolRes")
@@ -209,7 +209,7 @@ test_that("Type of ODEsobol.default()-result is correct", {
                c(1 + length(c("a", "b", "s")), length(FHNtimes1)))
 })
 
-test_that("ODEsobol.default() throws errors and warnings", {
+test_that("Errors and warnings are thrown", {
   # n = 1:
   expect_error(ODEsobol(mod = FHNmod,
                           pars = c("a", "b", "s"),

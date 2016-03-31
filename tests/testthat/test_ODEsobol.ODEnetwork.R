@@ -2,6 +2,9 @@ context("Test of ODEsobol.ODEnetwork() (and plotting)")
 
 # Example of low frequency oscillations (LFO):
 
+library(BBmisc)
+library(checkmate, warn.conflicts = FALSE)
+library(deSolve, warn.conflicts = FALSE)
 library(ODEnetwork)
 masses <- c(1, 1)
 dampers <- diag(c(1, 1))
@@ -100,7 +103,7 @@ LFOres_jansen <- suppressWarnings(
            ode_parallel_ncores = NA)
 )
 
-test_that("Type of ODEsobol.ODEnetwork()-result is correct", {
+test_that("Result type is correct", {
   # Martinez:
   expect_true(is.list(LFOres1))
   expect_equal(class(LFOres1), "sobolRes")
@@ -229,7 +232,7 @@ test_that("Type of ODEsobol.ODEnetwork()-result is correct", {
                c(1 + length(c("k.1", "k.2", "k.1.2")), length(LFOtimes1)))
 })
 
-test_that("ODEsobol.ODEnetwork() throws errors and warnings", {
+test_that("Errors and warnings are thrown", {
   # n = 1:
   expect_error(ODEsobol(mod = lfonet,
                         pars = c("k.1", "k.2", "k.1.2"),

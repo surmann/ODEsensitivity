@@ -2,6 +2,9 @@ context("Test of ODEmorris.ODEnetwork() (and plotting)")
 
 # Example of low frequency oscillations (LFO):
 
+library(BBmisc)
+library(checkmate, warn.conflicts = FALSE)
+library(deSolve, warn.conflicts = FALSE)
 library(ODEnetwork)
 masses <- c(1, 1)
 dampers <- diag(c(1, 1))
@@ -92,7 +95,7 @@ LFOres_simplex <- ODEmorris(mod = lfonet,
                             ode_parallel = FALSE,
                             ode_parallel_ncores = NA)
 
-test_that("Type of ODEmorris.ODEnetwork()-result is correct", {
+test_that("Result type is correct", {
   # Normal case:
   expect_true(is.list(LFOres1))
   expect_equal(class(LFOres1), "morrisRes")
@@ -169,7 +172,7 @@ test_that("Type of ODEmorris.ODEnetwork()-result is correct", {
                c(1 + 3*length(c("k.1", "k.2", "k.1.2")), length(LFOtimes1)))
 })
 
-test_that("ODEmorris.ODEnetwork() throws errors and warnings", {
+test_that("Errors and warnings are thrown", {
   # bsup < binf:
   expect_warning(LFOres_binf_bsup <- 
                    ODEmorris(mod = lfonet,
@@ -220,7 +223,7 @@ test_that("ODEmorris.ODEnetwork() throws errors and warnings", {
                          ode_method = "adams",
                          ode_parallel = FALSE,
                          ode_parallel_ncores = NA),
-               "\"r\" must be greater than or equal to 1.")
+               "Assertion on 'r' failed: All elements must be >= 1")
 })
 
 test_that("Plots are generated", {
