@@ -75,11 +75,11 @@ FHNmod <- function(Time, State, Pars) {
 FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
+set.seed(4628)
 FHNres <- ODEmorris(mod = FHNmod,
                     pars = c("a", "b", "s"),
                     state_init = FHNstate,
                     times = FHNtimes,
-                    seed = 2015,
                     binf = c(0.18, 0.18, 2.8),
                     bsup = c(0.22, 0.22, 3.2),
                     r = 50,
@@ -111,18 +111,25 @@ LFOtimes <- seq(0.01, 20, by = 0.1)
 LFObinf <- rep(0.001, 3)
 LFObsup <- c(6, 6, 3)
 
-LFOres <- ODEmorris(lfonet, LFOpars, LFOtimes, 
-                    seed = 2015, binf = LFObinf, bsup = LFObsup, r = 50, 
+set.seed(4628)
+LFOres <- ODEmorris(lfonet,
+                    LFOpars,
+                    LFOtimes,
+                    binf = LFObinf,
+                    bsup = LFObsup,
+                    r = 50,
                     design = list(type = "oat", levels = 100, grid.jump = 1),
-                    scale = TRUE, ode_method = "adams", 
-                    ode_parallel = TRUE, ode_parallel_ncores = 2)
+                    scale = TRUE,
+                    ode_method = "adams",
+                    ode_parallel = TRUE,
+                    ode_parallel_ncores = 2)
 
 plot(LFOres, state_plot = "x.2", kind = "sep", colors_pars = my_cols)
 plot(LFOres, state_plot = "x.2", kind = "trajec", colors_pars = my_cols)
 
 }
 \author{
-Frank Weber
+Stefan Theers, Frank Weber
 }
 \seealso{
 \code{\link{ODEmorris}, \link[sensitivity]{morris}}

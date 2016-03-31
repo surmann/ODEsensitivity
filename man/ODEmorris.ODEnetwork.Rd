@@ -4,9 +4,9 @@
 \alias{ODEmorris.ODEnetwork}
 \title{Morris SA for Objects of Class \code{ODEnetwork}}
 \usage{
-\method{ODEmorris}{ODEnetwork}(mod, pars, times, seed = 2015, binf = 0,
-  bsup = 1, r = 25, design = list(type = "oat", levels = 100, grid.jump =
-  1), scale = TRUE, ode_method = "lsoda", ode_parallel = FALSE,
+\method{ODEmorris}{ODEnetwork}(mod, pars, times, binf = 0, bsup = 1,
+  r = 25, design = list(type = "oat", levels = 100, grid.jump = 1),
+  scale = TRUE, ode_method = "lsoda", ode_parallel = FALSE,
   ode_parallel_ncores = NA, ...)
 }
 \arguments{
@@ -22,9 +22,6 @@ derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
 length). The first point of time must be greater than zero.}
-
-\item{seed}{[\code{numeric(1)}]\cr
-the seed for the sampling design.}
 
 \item{binf}{[\code{character(1} or \code{k)}]\cr
 vector of lower borders of possible values for the \code{k} input 
@@ -132,11 +129,18 @@ LFOtimes <- seq(0.01, 20, by = 0.1)
 LFObinf <- rep(0.001, 3)
 LFObsup <- c(6, 6, 3)
 
-LFOres <- ODEmorris(lfonet, LFOpars, LFOtimes, 
-                    seed = 2015, binf = LFObinf, bsup = LFObsup, r = 50, 
+set.seed(4628)
+LFOres <- ODEmorris(lfonet,
+                    LFOpars,
+                    LFOtimes,
+                    binf = LFObinf,
+                    bsup = LFObsup,
+                    r = 50,
                     design = list(type = "oat", levels = 100, grid.jump = 1),
-                    scale = TRUE, ode_method = "adams", 
-                    ode_parallel = TRUE, ode_parallel_ncores = 2)
+                    scale = TRUE,
+                    ode_method = "adams",
+                    ode_parallel = TRUE,
+                    ode_parallel_ncores = 2)
 
 }
 \author{

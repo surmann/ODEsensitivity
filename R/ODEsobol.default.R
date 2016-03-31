@@ -13,8 +13,6 @@
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed (vector of arbitrary 
 #'   length). The first point of time must be greater than zero.
-#' @param seed [\code{numeric(1)}]\cr
-#'   seed.
 #' @param n [\code{integer(1)}]\cr
 #'   number of random parameter values (\code{n} per input factor) used to 
 #'   estimate the variance-based sensitivity indices by Monte Carlo method.
@@ -94,7 +92,7 @@
 #'   haven't occured yet. If this should be the case, please contact the package
 #'   author.
 #'
-#' @author Frank Weber
+#' @author Stefan Theers, Frank Weber
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
@@ -122,11 +120,11 @@
 #' # Warning: The following code might take a long time!
 #' 
 #' # Arguments "rfuncs" and "rargs" being of length 1:
+#' set.seed(4628)
 #' FHNres_1 <- ODEsobol(mod = FHNmod,
 #'                      pars = c("a", "b", "s"),
 #'                      state_init = FHNstate,
 #'                      times = FHNtimes,
-#'                      seed = 2015,
 #'                      n = 1000,
 #'                      rfuncs = "runif",
 #'                      rargs = "min = 0.1, max = 1.5",
@@ -138,11 +136,11 @@
 #' # Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
 #' # distributions and their corresponding arguments are chosen more or less 
 #' # arbitrarily and shall only demonstrate the use of different distributions):
+#' set.seed(4628)
 #' FHNres <- ODEsobol(mod = FHNmod,
 #'                    pars = c("a", "b", "s"),
 #'                    state_init = FHNstate,
 #'                    times = FHNtimes,
-#'                    seed = 2015,
 #'                    n = 1000,
 #'                    rfuncs = c("runif", "rnorm", "rexp"),
 #'                    rargs = c("min = 0.18, max = 0.22", 
@@ -164,7 +162,6 @@ ODEsobol.default <- function(mod,
                              pars,
                              state_init,
                              times,
-                             seed = 2015,
                              n = 1000,
                              rfuncs = "runif",
                              rargs = "min = 0, max = 1",
@@ -182,7 +179,6 @@ ODEsobol.default <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
-  assertNumeric(seed)
   assertIntegerish(n, lower = 2)
   assertCharacter(rfuncs)
   if(! length(rfuncs) %in% c(1, length(pars))){
@@ -210,7 +206,6 @@ ODEsobol.default <- function(mod,
 
   ##### Preparation ####################################################
   
-  set.seed(seed)
   # Number of parameters:
   k <- length(pars)
   # Number of state variables:

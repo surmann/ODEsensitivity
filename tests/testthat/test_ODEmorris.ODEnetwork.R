@@ -21,10 +21,10 @@ LFOtimes1 <- seq(0.1, 20, by = 5)
 LFOtimes2 <- 10
 
 # Normal:
+set.seed(2015)
 LFOres1 <- ODEmorris(mod = lfonet,
                      pars = c("k.1", "k.2", "k.1.2"),
                      times = LFOtimes1,
-                     seed = 2015,
                      binf = LFObinf,
                      bsup = LFObsup,
                      r = 4,
@@ -36,10 +36,10 @@ LFOres1 <- ODEmorris(mod = lfonet,
                      ode_parallel_ncores = NA)
 
 # Only 1 point of time:
+set.seed(2015)
 LFOres2 <- ODEmorris(mod = lfonet,
                      pars = c("k.1", "k.2", "k.1.2"),
                      times = LFOtimes2,
-                     seed = 2015,
                      binf = LFObinf,
                      bsup = LFObsup,
                      r = 4,
@@ -51,10 +51,10 @@ LFOres2 <- ODEmorris(mod = lfonet,
                      ode_parallel_ncores = NA)
 
 # Only 1 parameter and 1 point of time:
+set.seed(2015)
 LFOres3 <- ODEmorris(mod = lfonet,
                      pars = "k.1",
                      times = LFOtimes2,
-                     seed = 2015,
                      binf = LFObinf[1],
                      bsup = LFObsup[1],
                      r = 4,
@@ -66,10 +66,10 @@ LFOres3 <- ODEmorris(mod = lfonet,
                      ode_parallel_ncores = NA)
 
 # With parallelization:
+set.seed(2015)
 LFOres_parallel <- ODEmorris(mod = lfonet,
                              pars = c("k.1", "k.2", "k.1.2"),
                              times = LFOtimes1,
-                             seed = 2015,
                              binf = LFObinf,
                              bsup = LFObsup,
                              r = 4,
@@ -81,10 +81,10 @@ LFOres_parallel <- ODEmorris(mod = lfonet,
                              ode_parallel_ncores = 2)
 
 # Simplex design:
+set.seed(2015)
 LFOres_simplex <- ODEmorris(mod = lfonet,
                             pars = c("k.1", "k.2", "k.1.2"),
                             times = LFOtimes1,
-                            seed = 2015,
                             binf = LFObinf,
                             bsup = LFObsup,
                             r = 4,
@@ -174,11 +174,11 @@ test_that("Result type is correct", {
 
 test_that("Errors and warnings are thrown", {
   # bsup < binf:
+  set.seed(2015)
   expect_warning(LFOres_binf_bsup <- 
                    ODEmorris(mod = lfonet,
                              pars = c("k.1", "k.2", "k.1.2"),
                              times = LFOtimes1,
-                             seed = 2015,
                              binf = c(6, rep(0.001, 2)),
                              bsup = c(0.001, 6, 3),
                              r = 4,
@@ -194,10 +194,10 @@ test_that("Errors and warnings are thrown", {
   expect_equal(LFOres1, LFOres_binf_bsup)
   
   # r = 1:
+  set.seed(2015)
   expect_warning(ODEmorris(mod = lfonet,
                            pars = c("k.1", "k.2", "k.1.2"),
                            times = LFOtimes1,
-                           seed = 2015,
                            binf = LFObinf,
                            bsup = LFObsup,
                            r = 1,
@@ -210,10 +210,10 @@ test_that("Errors and warnings are thrown", {
                  "Calculation of sigma requires r >= 2.")
   
   # r = 0:
+  set.seed(2015)
   expect_error(ODEmorris(mod = lfonet,
                          pars = c("k.1", "k.2", "k.1.2"),
                          times = LFOtimes1,
-                         seed = 2015,
                          binf = LFObinf,
                          bsup = LFObsup,
                          r = 0,

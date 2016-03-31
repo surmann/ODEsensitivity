@@ -21,11 +21,11 @@ LFOtimes1 <- seq(0.1, 20, by = 5)
 LFOtimes2 <- 10
 
 # Martinez:
+set.seed(2015)
 LFOres1 <- suppressWarnings(
   ODEsobol(mod = lfonet,
            pars = c("k.1", "k.2", "k.1.2"),
            times = LFOtimes1,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.001, max = 6",
@@ -38,11 +38,11 @@ LFOres1 <- suppressWarnings(
 )
 
 # Only 1 point of time:
+set.seed(2015)
 LFOres2 <- suppressWarnings(
   ODEsobol(mod = lfonet,
            pars = c("k.1", "k.2", "k.1.2"),
            times = LFOtimes2,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.001, max = 6",
@@ -55,11 +55,11 @@ LFOres2 <- suppressWarnings(
 )
 
 # Only 1 parameter and 1 point of time:
+set.seed(2015)
 LFOres3 <- suppressWarnings(
   ODEsobol(mod = lfonet,
            pars = "k.1",
            times = LFOtimes2,
-           seed = 2015,
            n = 10,
            rfuncs = "runif",
            rargs = "min = 0.001, max = 6",
@@ -70,11 +70,11 @@ LFOres3 <- suppressWarnings(
 )
 
 # With parallelization:
+set.seed(2015)
 LFOres_parallel <- suppressWarnings(
   ODEsobol(mod = lfonet,
            pars = c("k.1", "k.2", "k.1.2"),
            times = LFOtimes1,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.001, max = 6",
@@ -87,11 +87,11 @@ LFOres_parallel <- suppressWarnings(
 )
 
 # Jansen:
+set.seed(2015)
 LFOres_jansen <- suppressWarnings(
   ODEsobol(mod = lfonet,
            pars = c("k.1", "k.2", "k.1.2"),
            times = LFOtimes1,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.001, max = 6",
@@ -234,10 +234,10 @@ test_that("Result type is correct", {
 
 test_that("Errors and warnings are thrown", {
   # n = 1:
+  set.seed(2015)
   expect_error(ODEsobol(mod = lfonet,
                         pars = c("k.1", "k.2", "k.1.2"),
                         times = LFOtimes1,
-                        seed = 2015,
                         n = 1,
                         rfuncs = c("runif", "rnorm", "rexp"),
                         rargs = c("min = 0.001, max = 6",

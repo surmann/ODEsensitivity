@@ -16,11 +16,11 @@ FHNtimes1 <- seq(0.1, 20, by = 5)
 FHNtimes2 <- 10
 
 # Normal:
+set.seed(2015)
 FHNres1 <- ODEmorris(mod = FHNmod,
                      pars = c("a", "b", "s"),
                      state_init = FHNstate,
                      times = FHNtimes1,
-                     seed = 2015,
                      binf = c(0.18, 0.18, 2.8),
                      bsup = c(0.22, 0.22, 3.2),
                      r = 4,
@@ -32,11 +32,11 @@ FHNres1 <- ODEmorris(mod = FHNmod,
                      ode_parallel_ncores = NA)
 
 # Only 1 point of time:
+set.seed(2015)
 FHNres2 <- ODEmorris(mod = FHNmod,
                      pars = c("a", "b", "s"),
                      state_init = FHNstate,
                      times = FHNtimes2,
-                     seed = 2015,
                      binf = c(0.18, 0.18, 2.8),
                      bsup = c(0.22, 0.22, 3.2),
                      r = 4,
@@ -57,11 +57,11 @@ FHNmod3 <- function(Time, State, Pars) {
     return(list(c(dVoltage, dCurrent)))
   })
 }
+set.seed(2015)
 FHNres3 <- ODEmorris(mod = FHNmod3,
                      pars = "a",
                      state_init = FHNstate,
                      times = FHNtimes2,
-                     seed = 2015,
                      binf = 0.18,
                      bsup = 0.22,
                      r = 4,
@@ -73,11 +73,11 @@ FHNres3 <- ODEmorris(mod = FHNmod3,
                      ode_parallel_ncores = NA)
 
 # With parallelization:
+set.seed(2015)
 FHNres_parallel <- ODEmorris(mod = FHNmod,
                              pars = c("a", "b", "s"),
                              state_init = FHNstate,
                              times = FHNtimes1,
-                             seed = 2015,
                              binf = c(0.18, 0.18, 2.8),
                              bsup = c(0.22, 0.22, 3.2),
                              r = 4,
@@ -89,11 +89,11 @@ FHNres_parallel <- ODEmorris(mod = FHNmod,
                              ode_parallel_ncores = 2)
 
 # Simplex design:
+set.seed(2015)
 FHNres_simplex <- ODEmorris(mod = FHNmod,
                             pars = c("a", "b", "s"),
                             state_init = FHNstate,
                             times = FHNtimes1,
-                            seed = 2015,
                             binf = c(0.18, 0.18, 2.8),
                             bsup = c(0.22, 0.22, 3.2),
                             r = 4,
@@ -159,12 +159,12 @@ test_that("Result type is correct", {
 
 test_that("Errors and warnings are thrown", {
   # bsup < binf:
+  set.seed(2015)
   expect_warning(FHNres_binf_bsup <- 
                    ODEmorris(mod = FHNmod,
                              pars = c("a", "b", "s"),
                              state_init = FHNstate,
                              times = FHNtimes1,
-                             seed = 2015,
                              binf = c(0.22, 0.18, 2.8),
                              bsup = c(0.18, 0.22, 3.2),
                              r = 4,
@@ -180,11 +180,11 @@ test_that("Errors and warnings are thrown", {
   expect_equal(FHNres1, FHNres_binf_bsup)
   
   # r = 1:
+  set.seed(2015)
   expect_warning(ODEmorris(mod = FHNmod,
                            pars = c("a", "b", "s"),
                            state_init = FHNstate,
                            times = FHNtimes2,
-                           seed = 2015,
                            binf = c(0.18, 0.18, 2.8),
                            bsup = c(0.22, 0.22, 3.2),
                            r = 1,
@@ -197,11 +197,11 @@ test_that("Errors and warnings are thrown", {
                  "Calculation of sigma requires r >= 2.")
   
   # r = 0:
+  set.seed(2015)
   expect_error(ODEmorris(mod = FHNmod,
                          pars = c("a", "b", "s"),
                          state_init = FHNstate,
                          times = FHNtimes2,
-                         seed = 2015,
                          binf = c(0.18, 0.18, 2.8),
                          bsup = c(0.22, 0.22, 3.2),
                          r = 0,

@@ -69,11 +69,11 @@ FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
 # Warning: The following code might take a long time!
+set.seed(4628)
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),
                    state_init = FHNstate,
                    times = FHNtimes,
-                   seed = 2015,
                    n = 1000,
                    rfuncs = c("runif", "rnorm", "rexp"),
                    rargs = c("min = 0.18, max = 0.22", 
@@ -103,10 +103,10 @@ lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
 LFOpars <- c("k.1", "k.2", "k.1.2")
 LFOtimes <- seq(0.01, 20, by = 0.1)
 
+set.seed(4628)
 LFOres <- ODEsobol(lfonet, 
                    LFOpars, 
-                   LFOtimes, 
-                   seed = 2015, 
+                   LFOtimes,
                    n = 1000,
                    rfuncs = c("runif", "rnorm", "rexp"),
                    rargs = c("min = 0.001, max = 6",
@@ -125,7 +125,7 @@ plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
 
 }
 \author{
-Frank Weber
+Stefan Theers, Frank Weber
 }
 \seealso{
 \code{\link{ODEsobol}, \link[sensitivity]{soboljansen},

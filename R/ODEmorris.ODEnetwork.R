@@ -15,8 +15,6 @@
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed (vector of arbitrary 
 #'   length). The first point of time must be greater than zero.
-#' @param seed [\code{numeric(1)}]\cr
-#'   the seed for the sampling design.
 #' @param binf [\code{character(1} or \code{k)}]\cr
 #'   vector of lower borders of possible values for the \code{k} input 
 #'   parameters. If they are all equal, a single value can be set.
@@ -113,11 +111,18 @@
 #' LFObinf <- rep(0.001, 3)
 #' LFObsup <- c(6, 6, 3)
 #' 
-#' LFOres <- ODEmorris(lfonet, LFOpars, LFOtimes, 
-#'                     seed = 2015, binf = LFObinf, bsup = LFObsup, r = 50, 
+#' set.seed(4628)
+#' LFOres <- ODEmorris(lfonet,
+#'                     LFOpars,
+#'                     LFOtimes,
+#'                     binf = LFObinf,
+#'                     bsup = LFObsup,
+#'                     r = 50,
 #'                     design = list(type = "oat", levels = 100, grid.jump = 1),
-#'                     scale = TRUE, ode_method = "adams", 
-#'                     ode_parallel = TRUE, ode_parallel_ncores = 2)
+#'                     scale = TRUE,
+#'                     ode_method = "adams",
+#'                     ode_parallel = TRUE,
+#'                     ode_parallel_ncores = 2)
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
@@ -129,7 +134,6 @@
 ODEmorris.ODEnetwork <- function(mod,
                                  pars,
                                  times,
-                                 seed = 2015,
                                  binf = 0,
                                  bsup = 1,
                                  r = 25,
@@ -191,7 +195,6 @@ ODEmorris.ODEnetwork <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
-  assertNumeric(seed)
   assertNumeric(binf)
   if(length(binf) != length(pars) && length(binf) != 1)
     stop("\"binf\" must be of length 1 or of the same length as \"pars\".")
@@ -221,7 +224,6 @@ ODEmorris.ODEnetwork <- function(mod,
   
   ##### Preparation ####################################################
   
-  set.seed(seed)
   # Initial state:
   state_init <- ODEnetwork::createState(mod)
   # Number of parameters:

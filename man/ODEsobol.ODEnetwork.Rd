@@ -4,8 +4,8 @@
 \alias{ODEsobol.ODEnetwork}
 \title{Sobol' SA for Objects of Class \code{ODEnetwork}}
 \usage{
-\method{ODEsobol}{ODEnetwork}(mod, pars, times, seed = 2015, n = 1000,
-  rfuncs = "runif", rargs = "min = 0, max = 1", sobol_method = "Martinez",
+\method{ODEsobol}{ODEnetwork}(mod, pars, times, n = 1000, rfuncs = "runif",
+  rargs = "min = 0, max = 1", sobol_method = "Martinez",
   ode_method = "lsoda", ode_parallel = FALSE, ode_parallel_ncores = NA,
   ...)
 }
@@ -22,9 +22,6 @@ derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
 length). The first point of time must be greater than zero.}
-
-\item{seed}{[\code{numeric(1)}]\cr
-seed.}
 
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values (\code{n} per input factor) used to 
@@ -134,10 +131,10 @@ LFOpars <- c("k.1", "k.2", "k.1.2")
 LFOtimes <- seq(0.01, 20, by = 0.1)
 
 # Arguments "rfuncs" and "rargs" being of length 1:
+set.seed(4628)
 LFOres_1 <- ODEsobol(lfonet, 
                      LFOpars, 
-                     LFOtimes, 
-                     seed = 2015, 
+                     LFOtimes,
                      n = 1000,
                      rfuncs = "runif",
                      rargs = "min = 0.001, max = 6",
@@ -152,10 +149,10 @@ LFOres_1 <- ODEsobol(lfonet,
 # Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
 # distributions and their corresponding arguments are chosen more or less 
 # arbitrarily and shall only demonstrate the use of different distributions):
+set.seed(4628)
 LFOres <- ODEsobol(lfonet, 
                    LFOpars, 
-                   LFOtimes, 
-                   seed = 2015, 
+                   LFOtimes,
                    n = 1000,
                    rfuncs = c("runif", "rnorm", "rexp"),
                    rargs = c("min = 0.001, max = 6",

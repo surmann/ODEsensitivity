@@ -38,7 +38,7 @@
 #'   Not all arguments of \code{\link{plot.default}} can be passed by 
 #'   \code{...}, for example \code{xlab} and \code{ylab} are fixed.
 #'
-#' @author Frank Weber
+#' @author Stefan Theers, Frank Weber
 #' @seealso \code{\link{ODEsobol}, \link[sensitivity]{soboljansen},
 #' \link[sensitivity]{sobolmartinez}}
 #'
@@ -59,11 +59,11 @@
 #' FHNtimes <- seq(0.1, 50, by = 5)
 #' 
 #' # Warning: The following code might take a long time!
+#' set.seed(4628)
 #' FHNres <- ODEsobol(mod = FHNmod,
 #'                    pars = c("a", "b", "s"),
 #'                    state_init = FHNstate,
 #'                    times = FHNtimes,
-#'                    seed = 2015,
 #'                    n = 1000,
 #'                    rfuncs = c("runif", "rnorm", "rexp"),
 #'                    rargs = c("min = 0.18, max = 0.22", 
@@ -93,10 +93,10 @@
 #' LFOpars <- c("k.1", "k.2", "k.1.2")
 #' LFOtimes <- seq(0.01, 20, by = 0.1)
 #' 
+#' set.seed(4628)
 #' LFOres <- ODEsobol(lfonet, 
 #'                    LFOpars, 
-#'                    LFOtimes, 
-#'                    seed = 2015, 
+#'                    LFOtimes,
 #'                    n = 1000,
 #'                    rfuncs = c("runif", "rnorm", "rexp"),
 #'                    rargs = c("min = 0.001, max = 6",

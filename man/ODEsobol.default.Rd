@@ -4,10 +4,10 @@
 \alias{ODEsobol.default}
 \title{Sobol' SA for General ODE Models}
 \usage{
-\method{ODEsobol}{default}(mod, pars, state_init, times, seed = 2015,
-  n = 1000, rfuncs = "runif", rargs = "min = 0, max = 1",
-  sobol_method = "Martinez", ode_method = "lsoda", ode_parallel = FALSE,
-  ode_parallel_ncores = NA, ...)
+\method{ODEsobol}{default}(mod, pars, state_init, times, n = 1000,
+  rfuncs = "runif", rargs = "min = 0, max = 1", sobol_method = "Martinez",
+  ode_method = "lsoda", ode_parallel = FALSE, ode_parallel_ncores = NA,
+  ...)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -22,9 +22,6 @@ vector of \code{z} initial values. Must be named (with unique names).}
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
 length). The first point of time must be greater than zero.}
-
-\item{seed}{[\code{numeric(1)}]\cr
-seed.}
 
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values (\code{n} per input factor) used to 
@@ -135,11 +132,11 @@ FHNtimes <- seq(0.1, 50, by = 5)
 # Warning: The following code might take a long time!
 
 # Arguments "rfuncs" and "rargs" being of length 1:
+set.seed(4628)
 FHNres_1 <- ODEsobol(mod = FHNmod,
                      pars = c("a", "b", "s"),
                      state_init = FHNstate,
                      times = FHNtimes,
-                     seed = 2015,
                      n = 1000,
                      rfuncs = "runif",
                      rargs = "min = 0.1, max = 1.5",
@@ -151,11 +148,11 @@ FHNres_1 <- ODEsobol(mod = FHNmod,
 # Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
 # distributions and their corresponding arguments are chosen more or less 
 # arbitrarily and shall only demonstrate the use of different distributions):
+set.seed(4628)
 FHNres <- ODEsobol(mod = FHNmod,
                    pars = c("a", "b", "s"),
                    state_init = FHNstate,
                    times = FHNtimes,
-                   seed = 2015,
                    n = 1000,
                    rfuncs = c("runif", "rnorm", "rexp"),
                    rargs = c("min = 0.18, max = 0.22", 
@@ -168,7 +165,7 @@ FHNres <- ODEsobol(mod = FHNmod,
 
 }
 \author{
-Frank Weber
+Stefan Theers, Frank Weber
 }
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,

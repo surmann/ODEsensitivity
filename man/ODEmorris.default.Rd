@@ -4,10 +4,10 @@
 \alias{ODEmorris.default}
 \title{Morris SA for General ODE Models}
 \usage{
-\method{ODEmorris}{default}(mod, pars, state_init, times, seed = 2015,
-  binf = 0, bsup = 1, r = 25, design = list(type = "oat", levels = 100,
-  grid.jump = 1), scale = TRUE, ode_method = "lsoda",
-  ode_parallel = FALSE, ode_parallel_ncores = NA, ...)
+\method{ODEmorris}{default}(mod, pars, state_init, times, binf = 0,
+  bsup = 1, r = 25, design = list(type = "oat", levels = 100, grid.jump =
+  1), scale = TRUE, ode_method = "lsoda", ode_parallel = FALSE,
+  ode_parallel_ncores = NA, ...)
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
@@ -22,9 +22,6 @@ vector of \code{z} initial values. Must be named (with unique names).}
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
 length). The first point of time must be greater than zero.}
-
-\item{seed}{[\code{numeric(1)}]\cr
-the seed for the sampling design.}
 
 \item{binf}{[\code{character(1} or \code{k)}]\cr
 vector of lower borders of possible input parameter values.
@@ -130,11 +127,11 @@ FHNmod <- function(Time, State, Pars) {
 FHNstate  <- c(Voltage = -1, Current = 1)
 FHNtimes <- seq(0.1, 50, by = 5)
 
+set.seed(4628)
 FHNres <- ODEmorris(mod = FHNmod,
                     pars = c("a", "b", "s"),
                     state_init = FHNstate,
                     times = FHNtimes,
-                    seed = 2015,
                     binf = c(0.18, 0.18, 2.8),
                     bsup = c(0.22, 0.22, 3.2),
                     r = 50,
@@ -146,7 +143,7 @@ FHNres <- ODEmorris(mod = FHNmod,
 
 }
 \author{
-Frank Weber
+Stefan Theers, Frank Weber
 }
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,

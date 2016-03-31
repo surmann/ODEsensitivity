@@ -16,12 +16,12 @@ FHNtimes1 <- seq(0.1, 20, by = 5)
 FHNtimes2 <- 10
 
 # Martinez:
+set.seed(2015)
 FHNres1 <- suppressWarnings(
   ODEsobol(mod = FHNmod,
            pars = c("a", "b", "s"),
            state_init = FHNstate,
            times = FHNtimes1,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.18, max = 0.22",
@@ -34,12 +34,12 @@ FHNres1 <- suppressWarnings(
 )
 
 # Only 1 point of time:
+set.seed(2015)
 FHNres2 <- suppressWarnings(
   ODEsobol(mod = FHNmod,
            pars = c("a", "b", "s"),
            state_init = FHNstate,
            times = FHNtimes2,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.18, max = 0.22",
@@ -61,12 +61,12 @@ FHNmod3 <- function(Time, State, Pars) {
     return(list(c(dVoltage, dCurrent)))
   })
 }
+set.seed(2015)
 FHNres3 <- suppressWarnings(
   ODEsobol(mod = FHNmod3,
            pars = "a",
            state_init = FHNstate,
            times = FHNtimes2,
-           seed = 2015,
            n = 10,
            rfuncs = "runif",
            rargs = "min = 0.18, max = 0.22",
@@ -77,12 +77,12 @@ FHNres3 <- suppressWarnings(
 )
 
 # With parallelization:
+set.seed(2015)
 FHNres_parallel <- suppressWarnings(
   ODEsobol(mod = FHNmod,
            pars = c("a", "b", "s"),
            state_init = FHNstate,
            times = FHNtimes1,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.18, max = 0.22",
@@ -95,12 +95,12 @@ FHNres_parallel <- suppressWarnings(
 )
 
 # Jansen:
+set.seed(2015)
 FHNres_jansen <- suppressWarnings(
   ODEsobol(mod = FHNmod,
            pars = c("a", "b", "s"),
            state_init = FHNstate,
            times = FHNtimes1,
-           seed = 2015,
            n = 10,
            rfuncs = c("runif", "rnorm", "rexp"),
            rargs = c("min = 0.18, max = 0.22",
@@ -211,11 +211,11 @@ test_that("Result type is correct", {
 
 test_that("Errors and warnings are thrown", {
   # n = 1:
+  set.seed(2015)
   expect_error(ODEsobol(mod = FHNmod,
                           pars = c("a", "b", "s"),
                           state_init = FHNstate,
                           times = FHNtimes1,
-                          seed = 2015,
                           n = 1,
                           rfuncs = c("runif", "rnorm", "rexp"),
                           rargs = c("min = 0.18, max = 0.22",

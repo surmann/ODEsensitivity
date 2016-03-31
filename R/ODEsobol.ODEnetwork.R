@@ -15,8 +15,6 @@
 #' @param times [\code{numeric}]\cr
 #'   points of time at which the SA should be executed (vector of arbitrary 
 #'   length). The first point of time must be greater than zero.
-#' @param seed [\code{numeric(1)}]\cr
-#'   seed.
 #' @param n [\code{integer(1)}]\cr
 #'   number of random parameter values (\code{n} per input factor) used to 
 #'   estimate the variance-based sensitivity indices by Monte Carlo method.
@@ -118,10 +116,10 @@
 #' LFOtimes <- seq(0.01, 20, by = 0.1)
 #' 
 #' # Arguments "rfuncs" and "rargs" being of length 1:
+#' set.seed(4628)
 #' LFOres_1 <- ODEsobol(lfonet, 
 #'                      LFOpars, 
-#'                      LFOtimes, 
-#'                      seed = 2015, 
+#'                      LFOtimes,
 #'                      n = 1000,
 #'                      rfuncs = "runif",
 #'                      rargs = "min = 0.001, max = 6",
@@ -136,10 +134,10 @@
 #' # Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
 #' # distributions and their corresponding arguments are chosen more or less 
 #' # arbitrarily and shall only demonstrate the use of different distributions):
+#' set.seed(4628)
 #' LFOres <- ODEsobol(lfonet, 
 #'                    LFOpars, 
-#'                    LFOtimes, 
-#'                    seed = 2015, 
+#'                    LFOtimes,
 #'                    n = 1000,
 #'                    rfuncs = c("runif", "rnorm", "rexp"),
 #'                    rargs = c("min = 0.001, max = 6",
@@ -164,7 +162,6 @@
 ODEsobol.ODEnetwork <- function(mod,
                                 pars,
                                 times,
-                                seed = 2015,
                                 n = 1000,
                                 rfuncs = "runif",
                                 rargs = "min = 0, max = 1",
@@ -228,7 +225,6 @@ ODEsobol.ODEnetwork <- function(mod,
   assertNumeric(times, lower = 0, finite = TRUE, unique = TRUE)
   times <- sort(times)
   stopifnot(!any(times == 0))
-  assertNumeric(seed)
   assertIntegerish(n, lower = 2)
   assertCharacter(rfuncs)
   if(! length(rfuncs) %in% c(1, length(pars))){
@@ -256,7 +252,6 @@ ODEsobol.ODEnetwork <- function(mod,
   
   ##### Preparation ####################################################
   
-  set.seed(seed)
   # Initial state:
   state_init <- ODEnetwork::createState(mod)
   # Number of parameters:
