@@ -34,9 +34,12 @@ If they are all equal, a single value can be set.}
 vector of upper borders of possible input parameter values.
 If they are all equal, a single value can be set.}
 
-\item{r}{[\code{integer(1)}]\cr
-number of repetitions of the \code{design},
-cf. \code{\link[sensitivity]{morris}}.}
+\item{r}{[\code{integer(1 or 2)}]\cr
+if of length 1, the number of repetitions of the \code{design}. If of 
+length 2, a space-filling optimization of the sampling design is used, see 
+\code{\link[sensitivity]{morris}}. However, this space-filling optimization
+might lead to long runtimes, so length 1 is recommended for \code{r}. 
+Defaults to 25.}
 
 \item{design}{[\code{list}]\cr
 a list specifying the design type and its parameters,

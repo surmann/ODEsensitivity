@@ -22,9 +22,12 @@
 #' @param bsup [\code{character(1} or \code{k)}]\cr
 #'   vector of upper borders of possible input parameter values.
 #'   If they are all equal, a single value can be set.
-#' @param r [\code{integer(1)}]\cr
-#'   number of repetitions of the \code{design},
-#'   cf. \code{\link[sensitivity]{morris}}.
+#' @param r [\code{integer(1 or 2)}]\cr
+#'   if of length 1, the number of repetitions of the \code{design}. If of 
+#'   length 2, a space-filling optimization of the sampling design is used, see 
+#'   \code{\link[sensitivity]{morris}}. However, this space-filling optimization
+#'   might lead to long runtimes, so length 1 is recommended for \code{r}. 
+#'   Defaults to 25.
 #' @param design [\code{list}]\cr
 #'   a list specifying the design type and its parameters,
 #'   cf. \code{\link[sensitivity]{morris}}.
@@ -170,9 +173,7 @@ ODEmorris.default <- function(mod,
     warning("At least one element of \"bsup\" was lower than the ", 
             "corresponding element of \"binf\". Elements were swapped.")
   }
-  assertIntegerish(r, len = 1)
-  if(r < 1)
-    stop("\"r\" must be greater than or equal to 1.")
+  assertIntegerish(r, lower = 1, min.len = 1, max.len = 2)
   assertList(design)
   assertLogical(scale, len = 1)
   stopifnot(ode_method %in% c("lsoda", "lsode", "lsodes","lsodar","vode", 
@@ -272,7 +273,7 @@ ODEmorris.default <- function(mod,
       "ODEsobol() instead or set binf and bsup differently together with",
       "scale = TRUE. It might also be helpful to try another ODE-solver by",
       "using the \"ode_method\"-argument."))
-  } else if(all(unlist(lapply(out_all_states, NA_check_sigma))) && r == 1){
+  } else if(all(unlist(lapply(out_all_states, NA_check_sigma))) && r[1] == 1){
     warning("Calculation of sigma requires r >= 2.")
   } else{
     NA_check_sigma_any <- function(M){
