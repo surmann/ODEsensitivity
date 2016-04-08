@@ -33,8 +33,8 @@ LFOres1 <- suppressWarnings(
                      "rate = 1 / 3"),
            sobol_method = "Martinez",
            ode_method = "adams",
-           ode_parallel = FALSE,
-           ode_parallel_ncores = NA)
+           parallel_eval = FALSE,
+           parallel_eval_ncores = NA)
 )
 
 # Only 1 point of time:
@@ -50,8 +50,8 @@ LFOres2 <- suppressWarnings(
                      "rate = 1 / 3"),
            sobol_method = "Martinez",
            ode_method = "adams",
-           ode_parallel = FALSE,
-           ode_parallel_ncores = NA)
+           parallel_eval = FALSE,
+           parallel_eval_ncores = NA)
 )
 
 # Only 1 parameter and 1 point of time:
@@ -65,8 +65,8 @@ LFOres3 <- suppressWarnings(
            rargs = "min = 0.001, max = 6",
            sobol_method = "Martinez",
            ode_method = "adams",
-           ode_parallel = FALSE,
-           ode_parallel_ncores = NA)
+           parallel_eval = FALSE,
+           parallel_eval_ncores = NA)
 )
 
 # With parallelization:
@@ -82,8 +82,8 @@ LFOres_parallel <- suppressWarnings(
                      "rate = 1 / 3"),
            sobol_method = "Martinez",
            ode_method = "adams",
-           ode_parallel = TRUE,
-           ode_parallel_ncores = 2)
+           parallel_eval = TRUE,
+           parallel_eval_ncores = 2)
 )
 
 # Jansen:
@@ -99,8 +99,8 @@ LFOres_jansen <- suppressWarnings(
                      "rate = 1 / 3"),
            sobol_method = "Jansen",
            ode_method = "adams",
-           ode_parallel = FALSE,
-           ode_parallel_ncores = NA)
+           parallel_eval = FALSE,
+           parallel_eval_ncores = NA)
 )
 
 test_that("Result type is correct", {
@@ -245,8 +245,8 @@ test_that("Errors and warnings are thrown", {
                                   "rate = 1 / 3"),
                         sobol_method = "Martinez",
                         ode_method = "adams",
-                        ode_parallel = FALSE,
-                        ode_parallel_ncores = NA),
+                        parallel_eval = FALSE,
+                        parallel_eval_ncores = NA),
                "All elements must be >= 2")
 })
 

@@ -28,8 +28,8 @@ FHNres1 <- ODEmorris(mod = FHNmod,
                        list(type = "oat", levels = 100, grid.jump = 1),
                      scale = TRUE,
                      ode_method = "adams",
-                     ode_parallel = FALSE,
-                     ode_parallel_ncores = NA)
+                     parallel_eval = FALSE,
+                     parallel_eval_ncores = NA)
 
 # Only 1 point of time:
 set.seed(2015)
@@ -44,8 +44,8 @@ FHNres2 <- ODEmorris(mod = FHNmod,
                        list(type = "oat", levels = 100, grid.jump = 1),
                      scale = TRUE,
                      ode_method = "adams",
-                     ode_parallel = FALSE,
-                     ode_parallel_ncores = NA)
+                     parallel_eval = FALSE,
+                     parallel_eval_ncores = NA)
 
 # Only 1 parameter and 1 point of time:
 FHNmod3 <- function(Time, State, Pars) {
@@ -69,8 +69,8 @@ FHNres3 <- ODEmorris(mod = FHNmod3,
                        list(type = "oat", levels = 100, grid.jump = 1),
                      scale = TRUE,
                      ode_method = "adams",
-                     ode_parallel = FALSE,
-                     ode_parallel_ncores = NA)
+                     parallel_eval = FALSE,
+                     parallel_eval_ncores = NA)
 
 # With parallelization:
 set.seed(2015)
@@ -85,8 +85,8 @@ FHNres_parallel <- ODEmorris(mod = FHNmod,
                                            grid.jump = 1),
                              scale = TRUE,
                              ode_method = "adams",
-                             ode_parallel = TRUE,
-                             ode_parallel_ncores = 2)
+                             parallel_eval = TRUE,
+                             parallel_eval_ncores = 2)
 
 # Simplex design:
 set.seed(2015)
@@ -101,8 +101,8 @@ FHNres_simplex <- ODEmorris(mod = FHNmod,
                               list(type = "simplex", scale.factor = 0.01),
                             scale = TRUE,
                             ode_method = "adams",
-                            ode_parallel = FALSE,
-                            ode_parallel_ncores = NA)
+                            parallel_eval = FALSE,
+                            parallel_eval_ncores = NA)
 
 test_that("Result type is correct", {
   # Normal case:
@@ -172,8 +172,8 @@ test_that("Errors and warnings are thrown", {
                                list(type = "oat", levels = 100, grid.jump = 1),
                              scale = TRUE,
                              ode_method = "adams",
-                             ode_parallel = FALSE,
-                             ode_parallel_ncores = NA),
+                             parallel_eval = FALSE,
+                             parallel_eval_ncores = NA),
                  paste("At least one element of \"bsup\" was lower than the",
                        "corresponding element of \"binf\".", 
                        "Elements were swapped."))
@@ -192,8 +192,8 @@ test_that("Errors and warnings are thrown", {
                              list(type = "oat", levels = 100, grid.jump = 1),
                            scale = TRUE,
                            ode_method = "adams",
-                           ode_parallel = FALSE,
-                           ode_parallel_ncores = NA),
+                           parallel_eval = FALSE,
+                           parallel_eval_ncores = NA),
                  "Calculation of sigma requires r >= 2.")
   
   # r = 0:
@@ -209,8 +209,8 @@ test_that("Errors and warnings are thrown", {
                            list(type = "oat", levels = 100, grid.jump = 1),
                          scale = TRUE,
                          ode_method = "adams",
-                         ode_parallel = FALSE,
-                         ode_parallel_ncores = NA),
+                         parallel_eval = FALSE,
+                         parallel_eval_ncores = NA),
                "Assertion on 'r' failed: All elements must be >= 1")
 })
 
