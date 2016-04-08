@@ -86,8 +86,8 @@ FHNres <- ODEmorris(mod = FHNmod,
                     design = list(type = "oat", levels = 100, grid.jump = 1),
                     scale = TRUE,
                     ode_method = "adams",
-                    ode_parallel = TRUE,
-                    ode_parallel_ncores = 2)
+                    parallel_eval = TRUE,
+                    parallel_eval_ncores = 2)
 
 # Define custom colors for the plot:
 my_cols <- c("firebrick", "chartreuse3", "dodgerblue")
@@ -121,8 +121,8 @@ LFOres <- ODEmorris(lfonet,
                     design = list(type = "oat", levels = 100, grid.jump = 1),
                     scale = TRUE,
                     ode_method = "adams",
-                    ode_parallel = TRUE,
-                    ode_parallel_ncores = 2)
+                    parallel_eval = TRUE,
+                    parallel_eval_ncores = 2)
 
 plot(LFOres, state_plot = "x.2", kind = "sep", colors_pars = my_cols)
 plot(LFOres, state_plot = "x.2", kind = "trajec", colors_pars = my_cols)

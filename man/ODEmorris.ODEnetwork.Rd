@@ -6,8 +6,8 @@
 \usage{
 \method{ODEmorris}{ODEnetwork}(mod, pars, times, binf = 0, bsup = 1,
   r = 25, design = list(type = "oat", levels = 100, grid.jump = 1),
-  scale = TRUE, ode_method = "lsoda", ode_parallel = FALSE,
-  ode_parallel_ncores = NA, ...)
+  scale = TRUE, ode_method = "lsoda", parallel_eval = FALSE,
+  parallel_eval_ncores = NA, ...)
 }
 \arguments{
 \item{mod}{[\code{ODEnetwork}]\cr
@@ -53,15 +53,14 @@ highly recommended if the factors have different orders of magnitude, see
 method to be used for solving the differential equations, see 
 \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.}
 
-\item{ode_parallel}{[\code{logical(1)}]\cr
-logical indicating if a parallelization shall be done for computing the
-\code{\link[deSolve]{ode}}-results for the different parameter combinations
-generated for Monte Carlo estimation of the sensitivity indices.}
+\item{parallel_eval}{[\code{logical(1)}]\cr
+logical indicating if the evaluation of the ODE model shall be performed
+parallelized.}
 
-\item{ode_parallel_ncores}{[\code{integer(1)}]\cr
+\item{parallel_eval_ncores}{[\code{integer(1)}]\cr
 number of processor cores to be used for parallelization. Only applies if
-\code{ode_parallel = TRUE}. If set to \code{NA} (as per default) and 
-\code{ode_parallel = TRUE}, 1 processor core is used.}
+\code{parallel_eval = TRUE}. If set to \code{NA} (as per default) and 
+\code{parallel_eval = TRUE}, 1 processor core is used.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
@@ -139,8 +138,8 @@ LFOres <- ODEmorris(lfonet,
                     design = list(type = "oat", levels = 100, grid.jump = 1),
                     scale = TRUE,
                     ode_method = "adams",
-                    ode_parallel = TRUE,
-                    ode_parallel_ncores = 2)
+                    parallel_eval = TRUE,
+                    parallel_eval_ncores = 2)
 
 }
 \author{

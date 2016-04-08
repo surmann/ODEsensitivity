@@ -37,16 +37,16 @@
 #'   highly recommended if the factors have different orders of magnitude, see
 #'   \code{\link[sensitivity]{morris}}.
 #' @param ode_method [\code{character(1)}]\cr
-#'   method to be used for solving the differential equations, see 
-#'   \code{\link[deSolve]{ode}}. Defaults to \code{"lsoda"}.
-#' @param ode_parallel [\code{logical(1)}]\cr
-#'   logical indicating if a parallelization shall be done for computing the
-#'   \code{\link[deSolve]{ode}}-results for the different parameter combinations
-#'   generated for Monte Carlo estimation of the sensitivity indices.
-#' @param ode_parallel_ncores [\code{integer(1)}]\cr
+#'   method to be used for solving the ODEs in situations where the solution has
+#'   to be determined numerically, see \code{\link[deSolve]{ode}} for details.
+#'   Defaults to \code{"lsoda"}.
+#' @param parallel_eval [\code{logical(1)}]\cr
+#'   logical indicating if the evaluation of the ODE model shall be performed
+#'   parallelized.
+#' @param parallel_eval_ncores [\code{integer(1)}]\cr
 #'   number of processor cores to be used for parallelization. Only applies if
-#'   \code{ode_parallel = TRUE}. If set to \code{NA} (as per default) and 
-#'   \code{ode_parallel = TRUE}, 1 processor core is used.
+#'   \code{parallel_eval = TRUE}. If set to \code{NA} (as per default) and 
+#'   \code{parallel_eval = TRUE}, 1 processor core is used.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return 
@@ -121,8 +121,8 @@
 #'                     design = list(type = "oat", levels = 100, grid.jump = 1),
 #'                     scale = TRUE,
 #'                     ode_method = "adams",
-#'                     ode_parallel = TRUE,
-#'                     ode_parallel_ncores = 2)
+#'                     parallel_eval = TRUE,
+#'                     parallel_eval_ncores = 2)
 #'
 #' @import checkmate
 #' @importFrom deSolve ode
@@ -141,8 +141,8 @@ ODEmorris.ODEnetwork <- function(mod,
                                                grid.jump = 1),
                                  scale = TRUE, 
                                  ode_method = "lsoda",
-                                 ode_parallel = FALSE,
-                                 ode_parallel_ncores = NA, ...){
+                                 parallel_eval = FALSE,
+                                 parallel_eval_ncores = NA, ...){
   
   ##### Package checks #################################################
   
@@ -216,10 +216,10 @@ ODEmorris.ODEnetwork <- function(mod,
                               "daspk", "euler", "rk4", "ode23", "ode45", 
                               "radau", "bdf", "bdf_d", "adams", "impAdams", 
                               "impAdams_d" ,"iteration"))
-  assertLogical(ode_parallel, len = 1)
-  assertIntegerish(ode_parallel_ncores, len = 1, lower = 1)
-  if(ode_parallel && is.na(ode_parallel_ncores)){
-    ode_parallel_ncores <- 1
+  assertLogical(parallel_eval, len = 1)
+  assertIntegerish(parallel_eval_ncores, len = 1, lower = 1)
+  if(parallel_eval && is.na(parallel_eval_ncores)){
+    parallel_eval_ncores <- 1
   }
   
   ##### Preparation ####################################################
@@ -253,9 +253,9 @@ ODEmorris.ODEnetwork <- function(mod,
       return(simnet_res$simulation$results[2:(timesNum + 1), 
                                            2:(z + 1), drop = FALSE])
     }
-    if(ode_parallel){
+    if(parallel_eval){
       # Run one_par() on parallel nodes:
-      local_cluster <- parallel::makePSOCKcluster(names = ode_parallel_ncores)
+      local_cluster <- parallel::makePSOCKcluster(names = parallel_eval_ncores)
       parallel::clusterExport(local_cluster, 
                               varlist = c("pars", "mod", "z", "X",
                                           "times", "timesNum", "ode_method"),

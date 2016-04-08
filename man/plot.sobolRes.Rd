@@ -81,8 +81,8 @@ FHNres <- ODEsobol(mod = FHNmod,
                              "rate = 1 / 3"),
                    sobol_method = "Martinez",
                    ode_method = "adams",
-                   ode_parallel = TRUE,
-                   ode_parallel_ncores = 2)
+                   parallel_eval = TRUE,
+                   parallel_eval_ncores = 2)
 
 # Define custom colors for the plot:
 my_cols <- c("firebrick", "chartreuse3", "dodgerblue")
@@ -114,8 +114,8 @@ LFOres <- ODEsobol(lfonet,
                              "rate = 1 / 3"),
                    sobol_method = "Martinez",
                    ode_method = "adams",
-                   ode_parallel = TRUE,
-                   ode_parallel_ncores = 2)
+                   parallel_eval = TRUE,
+                   parallel_eval_ncores = 2)
 # (A warning is thrown, concerning the state variables "v.1" and "v.2". 
 # Assuming that we are only interested in a sensitivity analysis of "x.1" and
 # "x.2", this warning is ignored.)
