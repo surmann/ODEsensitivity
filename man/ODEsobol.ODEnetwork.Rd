@@ -72,7 +72,7 @@ List of length \code{2 * nrow(mod$state)} and of class
   for the corresponding state variable (i.e. first order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of time of 
   the \code{times} vector. This list has an extra attribute 
-  \texttt{"sobol_method"} where the value of argument \texttt{sobol_method}
+  \code{"sobol_method"} where the value of argument \code{sobol_method}
   is stored (either \code{"Jansen"} or \code{"Martinez"}).
 }
 \description{
