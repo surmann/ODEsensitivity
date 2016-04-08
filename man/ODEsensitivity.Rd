@@ -7,11 +7,17 @@
 \title{Performing Sensitivity Analysis in ODE Models}
 \description{
 \code{ODEsensitivity} provides methods to perform sensitivity analysis (SA)
-in ordinary differential equation (ODE) models. Most of the functions are 
-based on the implementations of Morris and Sobol' SA in the
+in ordinary differential equation (ODE) models. Its functions are based on 
+the implementations of Morris and Sobol' SA in the
 \code{\link{sensitivity}} package (Pujol et al., 2015). However, a modified 
-version of the \code{\link{sensitivity}}-package is needed for this package 
-to work.
+version of the \code{\link{sensitivity}}-package is required that enables 
+\code{\link[sensitivity]{morris}}, 
+\code{\link[sensitivity]{soboljansen}} and
+\code{\link[sensitivity]{sobolmartinez}} to handle three-dimensional
+arrays as model outputs. Each element of the third dimension of the output 
+array is then used to contain the results for one state variable of the ODE 
+model. Each element of the second dimension of the output array is used for 
+one timepoint.
 }
 \details{
 The main functions are \code{\link{ODEmorris}} and \code{\link{ODEsobol}},

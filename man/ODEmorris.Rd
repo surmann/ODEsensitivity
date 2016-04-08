@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEmorris.R
 \name{ODEmorris}
 \alias{ODEmorris}
-\title{Morris SA for Objects of Class \code{ODEnetwork}}
+\title{Morris Screening for ODE Models}
 \usage{
 ODEmorris(mod, ...)
 }

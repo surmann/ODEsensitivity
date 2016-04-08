@@ -1,4 +1,4 @@
-#' @title Morris SA for Objects of Class \code{ODEnetwork}
+#' @title Morris Screening for ODE Models
 #'
 #' @description
 #'   \code{ODEmorris} is the generic function for sensitivity analysis in ODE 

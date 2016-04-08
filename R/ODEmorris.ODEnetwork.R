@@ -1,8 +1,8 @@
-#' @title Morris SA for Objects of Class \code{ODEnetwork}
+#' @title Morris Screening for Objects of Class \code{ODEnetwork}
 #'
 #' @description
 #' \code{ODEmorris.ODEnetwork} performs a sensitivity analysis for objects of 
-#' class \code{ODEnetwork} using Morris's elementary effects screening method. 
+#' class \code{ODEnetwork} using the Morris screening method.
 #' Package \code{ODEnetwork} is required for this function to work.
 #'
 #' @param mod [\code{ODEnetwork}]\cr
@@ -59,34 +59,23 @@
 #'
 #' @details 
 #'   The sensitivity analysis is done for all state variables and all
-#'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from 
-#'   the package \code{sensitivity}. \code{\link[sensitivity]{morris}} can
-#'   handle three-dimensional arrays as output for its model function. Each 
-#'   element of the third dimension of the output array is used to contain the 
-#'   results for one state variable of the ODE system. Each element of the 
-#'   second dimension of the output array is used for one timepoint. The use of
-#'   an array as output saves time (compared to looping over all state 
-#'   variables and all timepoints) since \code{\link[deSolve]{ode}} from the 
-#'   package \code{deSolve} does its calculations for all state variables and 
-#'   all timepoints anyway, so \code{\link[deSolve]{ode}} only needs to be 
-#'   executed once.
+#'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from the 
+#'   package \code{sensitivity}.
 #' 
 #' @note 
-#'   \code{\link[deSolve]{ode}} sometimes can't solve an ODE system if 
-#'   unrealistic parameter combinations are sampled by 
-#'   \code{\link[sensitivity]{morris}}. Hence \code{NA}s might occur in the 
-#'   Morris sensitivity results, such that \code{\link{ODEmorris.ODEnetwork}} 
-#'   fails for one or many points of time. For this reason, if \code{NA}s occur, 
-#'   please make use of \code{\link{ODEsobol.ODEnetwork}} instead or restrict 
-#'   the intervals for the input parameter values usefully using
-#'   \code{binf}, \code{bsup} and \code{scale = TRUE}. It might also be helpful 
-#'   to try another ODE-solver (argument \code{ode_method}). Problems are known 
-#'   for the \code{ode_method}s \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
-#'   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
-#'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
-#'   might be even faster than the default \code{ode_method} \code{"lsoda"}.
+#'   In situations where the solution of the ODE model has to be determined 
+#'   numerically, \code{NA}s might occur in the Morris sensitivity results
+#'   if unrealistic parameter combinations are sampled by 
+#'   \code{\link[sensitivity]{morris}}. If this is the case, please make use of 
+#'   \code{\link{ODEsobol.ODEnetwork}} instead or restrict the intervals for the
+#'   input parameter values usefully using \code{binf}, \code{bsup} and 
+#'   \code{scale = TRUE}. If the simulation of the model takes too long, it 
+#'   might be helpful to try another ODE-solver (argument \code{ode_method}). 
+#'   The \code{ode_method}s \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, 
+#'   \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} might be faster 
+#'   than the default \code{ode_method} \code{"lsoda"}.
 #'   
-#'   If \code{\link[sensitivity]{morris}} throws a warning message saying
+#'   If \code{\link[sensitivity]{morris}} throws a warning message stating
 #'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
 #'   \code{levels} in the \code{design} argument.
 #'

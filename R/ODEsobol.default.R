@@ -2,7 +2,8 @@
 #'
 #' @description
 #' \code{ODEsobol.default} is the default method of \code{\link{ODEmorris}}. It
-#' performs a variance-based sensitivity analysis for general ODE models.
+#' performs the variance-based Sobol' sensitivity analysis for general ODE 
+#' models.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, cf. example below.
@@ -53,33 +54,24 @@
 #'   containing in each element a list of the Sobol' SA results for the 
 #'   corresponding \code{state_init}-variable (i.e. first order sensitivity 
 #'   indices \code{S} and total sensitivity indices \code{T}) for every point of
-#'   time of the \code{times} vector.
+#'   time of the \code{times} vector. This list has an extra attribute 
+#'   \code{"sobol_method"} where the value of argument \code{sobol_method}
+#'   is stored (either \code{"Jansen"} or \code{"Martinez"}).
 #'
 #' @details 
 #'   The sensitivity analysis is done for all state variables and all
-#'   timepoints simultaneously using either
-#'   \code{\link[sensitivity]{soboljansen}} or
-#'   \code{\link[sensitivity]{sobolmartinez}} from the package 
-#'   \code{sensitivity} (depending on \code{sobol_method}). 
-#'   \code{\link[sensitivity]{soboljansen}} and
-#'   \code{\link[sensitivity]{sobolmartinez}} can handle three-dimensional
-#'   arrays as output for their model functions. Each element of the third 
-#'   dimension of the output array is used to contain the results for one 
-#'   state variable of the ODE system. Each element of the second dimension of
-#'   the output array is used for one timepoint. The use of an array as output
-#'   saves time (compared to looping over all state variables and all 
-#'   timepoints) since \code{\link[deSolve]{ode}} from the package 
-#'   \code{deSolve} does its calculations for all state variables and all
-#'   timepoints anyway, so \code{\link[deSolve]{ode}} only needs to be executed 
-#'   once.
+#'   timepoints simultaneously. If \code{sobol_method = "Jansen"},
+#'   \code{\link[sensitivity]{soboljansen}} from the package \code{sensitivity}
+#'   is used to estimate the Sobol' sensitivity indices and if 
+#'   \code{sobol_method = "Martinez"}, \code{\link[sensitivity]{sobolmartinez}}
+#'   is used (also from the package \code{sensitivity}).
 #'
 #' @note 
-#'   It might be helpful to try different types of ODE-solvers (argument 
-#'   \code{ode_method}). Problems are known for the \code{ode_method}s 
-#'   \code{"euler"}, \code{"rk4"} and \code{"ode45"}. 
-#'   In contrast, the \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
-#'   \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
-#'   might be even faster than the standard \code{ode_method} \code{"lsoda"}.
+#'   If the evaluation of the model function takes too long, it might be 
+#'   helpful to try a different type of ODE-solver (argument \code{ode_method}). 
+#'   The \code{ode_method}s \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, 
+#'   \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
+#'   might be faster than the standard \code{ode_method} \code{"lsoda"}.
 #'   
 #'   If \code{n} is too low, the Monte Carlo estimation of the sensitivity 
 #'   indices might be very bad and even produce first order indices < 0 or
