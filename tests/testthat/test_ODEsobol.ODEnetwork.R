@@ -106,7 +106,7 @@ LFOres_jansen <- suppressWarnings(
 test_that("Result type is correct", {
   # Martinez:
   expect_true(is.list(LFOres1))
-  expect_equal(class(LFOres1), "sobolRes")
+  expect_equal(class(LFOres1), "ODEsobol")
   expect_equal(attr(LFOres1, "sobol_method"), "Martinez")
   expect_equal(length(LFOres1), 4)
   expect_equal(names(LFOres1), c("x.1", "v.1", "x.2", "v.2"))
@@ -137,7 +137,7 @@ test_that("Result type is correct", {
   
   # Only 1 point of time:
   expect_true(is.list(LFOres2))
-  expect_equal(class(LFOres2), "sobolRes")
+  expect_equal(class(LFOres2), "ODEsobol")
   expect_equal(attr(LFOres2, "sobol_method"), "Martinez")
   expect_equal(length(LFOres2), 4)
   expect_equal(names(LFOres2), c("x.1", "v.1", "x.2", "v.2"))
@@ -168,7 +168,7 @@ test_that("Result type is correct", {
   
   # Only 1 parameter and 1 point of time:
   expect_true(is.list(LFOres3))
-  expect_equal(class(LFOres3), "sobolRes")
+  expect_equal(class(LFOres3), "ODEsobol")
   expect_equal(attr(LFOres3, "sobol_method"), "Martinez")
   expect_equal(length(LFOres3), 4)
   expect_equal(names(LFOres3), c("x.1", "v.1", "x.2", "v.2"))
@@ -202,7 +202,7 @@ test_that("Result type is correct", {
   
   # Jansen:
   expect_true(is.list(LFOres_jansen))
-  expect_equal(class(LFOres_jansen), "sobolRes")
+  expect_equal(class(LFOres_jansen), "ODEsobol")
   expect_equal(attr(LFOres_jansen, "sobol_method"), "Jansen")
   expect_equal(length(LFOres_jansen), 4)
   expect_equal(names(LFOres_jansen), c("x.1", "v.1", "x.2", "v.2"))

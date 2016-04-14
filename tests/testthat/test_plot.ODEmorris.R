@@ -1,9 +1,9 @@
-context("Test of plot.morrisRes()")
+context("Test of plot.ODEmorris()")
 
 test_that("Errors are thrown", {
   # An arbitrary Sobol'-result:
   arbit_res_sobol <- diag(7)
-  class(arbit_res_sobol) <- "sobolRes"
+  class(arbit_res_sobol) <- "ODEsobol"
   
   expect_error(plot.morrisRes(1:3))
   expect_error(plot.morrisRes("No character!"))

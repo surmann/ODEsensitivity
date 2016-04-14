@@ -1,12 +1,12 @@
 #' @title
-#' Plotting the results of Sobol' SA for objects of class \code{sobolRes}
+#' Plotting the results of Sobol' SA for objects of class \code{ODEsobol}
 #'
 #' @description
-#'   \code{plot.sobolRes} plots the results of Sobol' SA for objects of class 
-#'   \code{sobolRes}.
+#'   \code{plot.ODEsobol} plots the results of Sobol' SA for objects of class 
+#'   \code{ODEsobol}.
 #'
-#' @param x [\code{sobolRes}]\cr
-#'   resulting output of \code{\link{ODEsobol}}, of class \code{sobolRes}.
+#' @param x [\code{ODEsobol}]\cr
+#'   resulting output of \code{\link{ODEsobol}}, of class \code{ODEsobol}.
 #' @param state_plot [\code{character(1)}]\cr
 #'   name of the state variable to be plotted. Defaults to the name of the
 #'   first state variable.
@@ -114,17 +114,17 @@
 #' plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
 #' 
 #' @import checkmate
-#' @method plot sobolRes
+#' @method plot ODEsobol
 #' @export
 #'
 
-plot.sobolRes <- function(x, state_plot = names(x)[1],
+plot.ODEsobol <- function(x, state_plot = names(x)[1],
                           colors_pars = NULL, main_title = NULL,
                           legendPos = "outside", type = "l", ...) {
   
   ##### Input checks ###################################################
   
-  assertClass(x, "sobolRes")
+  assertClass(x, "ODEsobol")
   assertCharacter(state_plot, len = 1)
   stopifnot(state_plot %in% names(x))
   assertCharacter(type, len = 1)

@@ -98,7 +98,7 @@ LFOres_simplex <- ODEmorris(mod = lfonet,
 test_that("Result type is correct", {
   # Normal case:
   expect_true(is.list(LFOres1))
-  expect_equal(class(LFOres1), "morrisRes")
+  expect_equal(class(LFOres1), "ODEmorris")
   expect_equal(length(LFOres1), 4)
   expect_equal(names(LFOres1), c("x.1", "v.1", "x.2", "v.2"))
   expect_true(is.matrix(LFOres1$"x.1"))
@@ -116,7 +116,7 @@ test_that("Result type is correct", {
   
   # Only 1 point of time:
   expect_true(is.list(LFOres2))
-  expect_equal(class(LFOres2), "morrisRes")
+  expect_equal(class(LFOres2), "ODEmorris")
   expect_equal(length(LFOres2), 4)
   expect_equal(names(LFOres2), c("x.1", "v.1", "x.2", "v.2"))
   expect_true(is.matrix(LFOres2$"x.1"))
@@ -134,7 +134,7 @@ test_that("Result type is correct", {
   
   # Only 1 parameter and 1 point of time:
   expect_true(is.list(LFOres3))
-  expect_equal(class(LFOres3), "morrisRes")
+  expect_equal(class(LFOres3), "ODEmorris")
   expect_equal(length(LFOres3), 4)
   expect_equal(names(LFOres3), c("x.1", "v.1", "x.2", "v.2"))
   expect_true(is.matrix(LFOres3$"x.1"))
@@ -155,7 +155,7 @@ test_that("Result type is correct", {
   
   # Simplex design:
   expect_true(is.list(LFOres_simplex))
-  expect_equal(class(LFOres_simplex), "morrisRes")
+  expect_equal(class(LFOres_simplex), "ODEmorris")
   expect_equal(length(LFOres_simplex), 4)
   expect_equal(names(LFOres_simplex), c("x.1", "v.1", "x.2", "v.2"))
   expect_true(is.matrix(LFOres_simplex$"x.1"))

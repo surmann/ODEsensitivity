@@ -50,7 +50,7 @@
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return 
-#'   List of length \code{length(state_init)} and of class \code{sobolRes} 
+#'   List of length \code{length(state_init)} and of class \code{ODEsobol} 
 #'   containing in each element a list of the Sobol' SA results for the 
 #'   corresponding \code{state_init}-variable (i.e. first order sensitivity 
 #'   indices \code{S} and total sensitivity indices \code{T}) for every point of
@@ -90,7 +90,7 @@
 #'   69, Part 5, 741--796.
 #' @seealso \code{\link[sensitivity]{soboljansen},
 #'   \link[sensitivity]{sobolmartinez},
-#'   \link{plot.sobolRes}}
+#'   \link{plot.ODEsobol}}
 #' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
@@ -262,7 +262,7 @@ ODEsobol.default <- function(mod,
   ST_by_state <- sobol_process(x, pars, times)
   
   # Return:
-  class(ST_by_state) <- "sobolRes"
+  class(ST_by_state) <- "ODEsobol"
   attr(ST_by_state, "sobol_method") <- sobol_method
   return(ST_by_state)
 }

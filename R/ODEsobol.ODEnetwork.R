@@ -53,7 +53,7 @@
 #'
 #' @return 
 #'   List of length \code{2 * nrow(mod$state)} and of class 
-#'   \code{sobolRes} containing in each element a list of the Sobol' SA results 
+#'   \code{ODEsobol} containing in each element a list of the Sobol' SA results 
 #'   for the corresponding state variable (i.e. first order sensitivity indices
 #'   \code{S} and total sensitivity indices \code{T}) for every point of time of 
 #'   the \code{times} vector. This list has an extra attribute 
@@ -89,7 +89,7 @@
 #' @author Frank Weber
 #' @seealso \code{\link[sensitivity]{soboljansen}, 
 #'   \link[sensitivity]{sobolmartinez},
-#'   \link{plot.sobolRes}}
+#'   \link{plot.ODEsobol}}
 #' 
 #' @examples
 #' ##### A network of ordinary differential equations #####
@@ -321,7 +321,7 @@ ODEsobol.ODEnetwork <- function(mod,
   ST_by_state <- sobol_process(x, pars, times)
   
   # Return:
-  class(ST_by_state) <- "sobolRes"
+  class(ST_by_state) <- "ODEsobol"
   attr(ST_by_state, "sobol_method") <- sobol_method
   return(ST_by_state)
 }

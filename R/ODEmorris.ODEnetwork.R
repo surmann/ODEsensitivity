@@ -50,7 +50,7 @@
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return 
-#'   List of class \code{morrisRes} of length \code{2 * nrow(mod$state)} 
+#'   List of class \code{ODEmorris} of length \code{2 * nrow(mod$state)} 
 #'   containing in each element a matrix for one state variable (all components 
 #'   of the 2 state variables are analyzed independently). The matrices 
 #'   themselves contain the Morris's SA results for all timepoints (rows: 
@@ -80,7 +80,7 @@
 #'   \code{levels} in the \code{design} argument.
 #'
 #' @author Frank Weber
-#' @seealso \code{\link[sensitivity]{morris}, \link{plot.morrisRes}}
+#' @seealso \code{\link[sensitivity]{morris}, \link{plot.ODEmorris}}
 #' 
 #' @examples 
 #' ##### A network of ordinary differential equations #####
@@ -321,6 +321,6 @@ ODEmorris.ODEnetwork <- function(mod,
   }
   
   # Return:
-  class(out_all_states) <- "morrisRes"
+  class(out_all_states) <- "ODEmorris"
   return(out_all_states)
 }

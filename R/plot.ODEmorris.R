@@ -1,12 +1,12 @@
 #' @title
-#' Plot of the results of Morris's SA for objects of class \code{morrisRes}
+#' Plot of the results of Morris's SA for objects of class \code{ODEmorris}
 #'
 #' @description
-#'   \code{plot.morrisRes} plots the results of Morris's SA for objects of class 
-#'   \code{morrisRes}.
+#'   \code{plot.ODEmorris} plots the results of Morris's SA for objects of class 
+#'   \code{ODEmorris}.
 #'
-#' @param x [\code{morrisRes}]\cr
-#'   resulting output of \code{\link{ODEmorris}}, of class \code{morrisRes}.
+#' @param x [\code{ODEmorris}]\cr
+#'   resulting output of \code{\link{ODEmorris}}, of class \code{ODEmorris}.
 #' @param state_plot [\code{character(1)}]\cr
 #'   name of the state variable to be plotted. Defaults to the name of the
 #'   first state variable.
@@ -33,10 +33,10 @@
 #' @return \code{TRUE} (invisible; for testing purposes).
 #'
 #' @details
-#'   \code{plot.morrisRes} with \code{kind = "sep"} plots mu.star and
+#'   \code{plot.ODEmorris} with \code{kind = "sep"} plots mu.star and
 #'   sigma separately versus time.
 #'
-#'   \code{plot.morrisRes} with \code{kind = "trajec"} plots mu.star versus
+#'   \code{plot.ODEmorris} with \code{kind = "trajec"} plots mu.star versus
 #'   sigma for every point of time.
 #'
 #' @note 
@@ -115,17 +115,17 @@
 #' plot(LFOres, state_plot = "x.2", kind = "trajec", colors_pars = my_cols)
 #'
 #' @import checkmate
-#' @method plot morrisRes
+#' @method plot ODEmorris
 #' @export
 #'
 
-plot.morrisRes <- function(x, state_plot = names(x)[1], kind = "sep", 
+plot.ODEmorris <- function(x, state_plot = names(x)[1], kind = "sep", 
                            colors_pars = NULL, main_title = NULL, 
                            legendPos = "outside", type = "l", ...) {
   
   ##### Input checks ###################################################
   
-  assertClass(x, "morrisRes")
+  assertClass(x, "ODEmorris")
   assertCharacter(state_plot, len = 1)
   stopifnot(state_plot %in% names(x))
   assertCharacter(kind, len = 1)

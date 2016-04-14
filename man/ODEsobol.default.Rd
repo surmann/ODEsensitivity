@@ -66,7 +66,7 @@ number of processor cores to be used for parallelization. Only applies if
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
-List of length \code{length(state_init)} and of class \code{sobolRes} 
+List of length \code{length(state_init)} and of class \code{ODEsobol} 
   containing in each element a list of the Sobol' SA results for the 
   corresponding \code{state_init}-variable (i.e. first order sensitivity 
   indices \code{S} and total sensitivity indices \code{T}) for every point of
@@ -167,6 +167,6 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 \seealso{
 \code{\link[sensitivity]{soboljansen},
   \link[sensitivity]{sobolmartinez},
-  \link{plot.sobolRes}}
+  \link{plot.ODEsobol}}
 }
 

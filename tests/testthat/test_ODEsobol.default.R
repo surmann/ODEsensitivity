@@ -115,7 +115,7 @@ FHNres_jansen <- suppressWarnings(
 test_that("Result type is correct", {
   # Martinez:
   expect_true(is.list(FHNres1))
-  expect_equal(class(FHNres1), "sobolRes")
+  expect_equal(class(FHNres1), "ODEsobol")
   expect_equal(attr(FHNres1, "sobol_method"), "Martinez")
   expect_equal(length(FHNres1), length(FHNstate))
   expect_equal(names(FHNres1), names(FHNstate))
@@ -138,7 +138,7 @@ test_that("Result type is correct", {
   
   # Only 1 point of time:
   expect_true(is.list(FHNres2))
-  expect_equal(class(FHNres2), "sobolRes")
+  expect_equal(class(FHNres2), "ODEsobol")
   expect_equal(attr(FHNres1, "sobol_method"), "Martinez")
   expect_equal(length(FHNres2), length(FHNstate))
   expect_equal(names(FHNres2), names(FHNstate))
@@ -161,7 +161,7 @@ test_that("Result type is correct", {
   
   # Only 1 parameter and 1 point of time:
   expect_true(is.list(FHNres3))
-  expect_equal(class(FHNres3), "sobolRes")
+  expect_equal(class(FHNres3), "ODEsobol")
   expect_equal(attr(FHNres1, "sobol_method"), "Martinez")
   expect_equal(length(FHNres3), length(FHNstate))
   expect_equal(names(FHNres3), names(FHNstate))
@@ -187,7 +187,7 @@ test_that("Result type is correct", {
   
   # Jansen:
   expect_true(is.list(FHNres_jansen))
-  expect_equal(class(FHNres_jansen), "sobolRes")
+  expect_equal(class(FHNres_jansen), "ODEsobol")
   expect_equal(attr(FHNres_jansen, "sobol_method"), "Jansen")
   expect_equal(length(FHNres_jansen), length(FHNstate))
   expect_equal(names(FHNres_jansen), names(FHNstate))

@@ -65,7 +65,7 @@ number of processor cores to be used for parallelization. Only applies if
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
-List of class \code{morrisRes} of length \code{length(state_init)} 
+List of class \code{ODEmorris} of length \code{length(state_init)} 
   containing in each element a matrix for one state variable. The
   matrices itself contain the Morris's SA results for all timepoints (rows: 
   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
@@ -141,6 +141,6 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   69, Part 5, 741--796.
 }
 \seealso{
-\code{\link[sensitivity]{morris}, \link{plot.morrisRes}}
+\code{\link[sensitivity]{morris}, \link{plot.ODEmorris}}
 }
 

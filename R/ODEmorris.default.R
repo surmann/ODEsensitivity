@@ -48,7 +48,7 @@
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return 
-#'   List of class \code{morrisRes} of length \code{length(state_init)} 
+#'   List of class \code{ODEmorris} of length \code{length(state_init)} 
 #'   containing in each element a matrix for one state variable. The
 #'   matrices itself contain the Morris's SA results for all timepoints (rows: 
 #'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
@@ -83,7 +83,7 @@
 #'   \emph{Parameter estimation for differential equations: a generalized 
 #'   smoothing approach}, Journal of the Royal Statistical Society, Series B, 
 #'   69, Part 5, 741--796.
-#' @seealso \code{\link[sensitivity]{morris}, \link{plot.morrisRes}}
+#' @seealso \code{\link[sensitivity]{morris}, \link{plot.ODEmorris}}
 #' 
 #' @examples
 #' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
@@ -269,6 +269,6 @@ ODEmorris.default <- function(mod,
   }
   
   # Return:
-  class(out_all_states) <- "morrisRes"
+  class(out_all_states) <- "ODEmorris"
   return(out_all_states)
 }

@@ -66,7 +66,7 @@ number of processor cores to be used for parallelization. Only applies if
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
-List of class \code{morrisRes} of length \code{2 * nrow(mod$state)} 
+List of class \code{ODEmorris} of length \code{2 * nrow(mod$state)} 
   containing in each element a matrix for one state variable (all components 
   of the 2 state variables are analyzed independently). The matrices 
   themselves contain the Morris's SA results for all timepoints (rows: 
@@ -136,6 +136,6 @@ LFOres <- ODEmorris(lfonet,
 Frank Weber
 }
 \seealso{
-\code{\link[sensitivity]{morris}, \link{plot.morrisRes}}
+\code{\link[sensitivity]{morris}, \link{plot.ODEmorris}}
 }
 

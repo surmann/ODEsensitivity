@@ -107,7 +107,7 @@ FHNres_simplex <- ODEmorris(mod = FHNmod,
 test_that("Result type is correct", {
   # Normal case:
   expect_true(is.list(FHNres1))
-  expect_equal(class(FHNres1), "morrisRes")
+  expect_equal(class(FHNres1), "ODEmorris")
   expect_equal(length(FHNres1), length(FHNstate))
   expect_equal(names(FHNres1), names(FHNstate))
   expect_true(is.matrix(FHNres1$Voltage))
@@ -119,7 +119,7 @@ test_that("Result type is correct", {
   
   # Only 1 point of time:
   expect_true(is.list(FHNres2))
-  expect_equal(class(FHNres2), "morrisRes")
+  expect_equal(class(FHNres2), "ODEmorris")
   expect_equal(length(FHNres2), length(FHNstate))
   expect_equal(names(FHNres2), names(FHNstate))
   expect_true(is.matrix(FHNres2$Voltage))
@@ -131,7 +131,7 @@ test_that("Result type is correct", {
   
   # Only 1 parameter and 1 point of time:
   expect_true(is.list(FHNres3))
-  expect_equal(class(FHNres3), "morrisRes")
+  expect_equal(class(FHNres3), "ODEmorris")
   expect_equal(length(FHNres3), length(FHNstate))
   expect_equal(names(FHNres3), names(FHNstate))
   expect_true(is.matrix(FHNres3$Voltage))
@@ -146,7 +146,7 @@ test_that("Result type is correct", {
   
   # Simplex design:
   expect_true(is.list(FHNres_simplex))
-  expect_equal(class(FHNres_simplex), "morrisRes")
+  expect_equal(class(FHNres_simplex), "ODEmorris")
   expect_equal(length(FHNres_simplex), length(FHNstate))
   expect_equal(names(FHNres_simplex), names(FHNstate))
   expect_true(is.matrix(FHNres_simplex$Voltage))

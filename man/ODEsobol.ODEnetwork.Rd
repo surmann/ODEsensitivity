@@ -68,7 +68,7 @@ number of processor cores to be used for parallelization. Only applies if
 }
 \value{
 List of length \code{2 * nrow(mod$state)} and of class 
-  \code{sobolRes} containing in each element a list of the Sobol' SA results 
+  \code{ODEsobol} containing in each element a list of the Sobol' SA results 
   for the corresponding state variable (i.e. first order sensitivity indices
   \code{S} and total sensitivity indices \code{T}) for every point of time of 
   the \code{times} vector. This list has an extra attribute 
@@ -165,6 +165,6 @@ Frank Weber
 \seealso{
 \code{\link[sensitivity]{soboljansen}, 
   \link[sensitivity]{sobolmartinez},
-  \link{plot.sobolRes}}
+  \link{plot.ODEsobol}}
 }
 
