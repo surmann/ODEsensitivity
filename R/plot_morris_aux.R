@@ -1,4 +1,4 @@
-# Helper functions for plot.morrisRes():
+# Helper functions for plot.ODEmorris():
 
 ##### Auxiliary function: Plotting mu.star and sigma separately ###########
 plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL, 
@@ -11,9 +11,9 @@ plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL,
     my.cols <- colors_pars
   }
   if(is.null(common_title) && !is.null(state_name)){
-    common_title <- paste0("Morris SA for State Variable \"", state_name, "\"")
+    common_title <- paste0("Morris Screening for State Variable \"", state_name, "\"")
   } else if(is.null(common_title) && is.null(state_name)){
-    common_title <- "Morris SA"
+    common_title <- "Morris Screening"
   }
   if(legendPos == "outside"){
     if(k > 6){
@@ -92,10 +92,10 @@ plotTrajectories <- function(res, pars, state_name = NULL, colors_pars = NULL,
     my.cols <- colors_pars
   }
   if(is.null(main_title) && !is.null(state_name)){
-    main_title <- paste0("Morris SA for State Variable \"", state_name, 
+    main_title <- paste0("Morris Screening for State Variable \"", state_name, 
                          "\": Trajectories")
   } else if(is.null(main_title) && is.null(state_name)){
-    main_title <- "Morris SA: Trajectories"
+    main_title <- "Morris Screening: Trajectories"
   }
   if(legendPos == "outside"){
     if(k > 6){
