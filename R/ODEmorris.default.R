@@ -25,7 +25,7 @@
 #'   length 2, a space-filling optimization of the sampling design is used, see 
 #'   \code{\link[sensitivity]{morris}}. However, this space-filling optimization
 #'   might lead to long runtimes, so length 1 is recommended for \code{r}. 
-#'   Defaults to 25.
+#'   Defaults to 500.
 #' @param design [\code{list}]\cr
 #'   a list specifying the design type and its parameters,
 #'   cf. \code{\link[sensitivity]{morris}}.
@@ -58,6 +58,10 @@
 #'   The sensitivity analysis is done for all state variables and all
 #'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from the 
 #'   package \code{sensitivity}.
+#'   
+#'   For non-ODE models, values for \code{r} are typically between 10 and 50.
+#'   However, much higher values are recommended for ODE models (the default is
+#'   \code{r = 500}).
 #' 
 #' @note 
 #'   \code{\link[deSolve]{ode}} sometimes can't solve an ODE system if 
@@ -127,7 +131,7 @@ ODEmorris.default <- function(mod,
                               times,
                               binf = 0,
                               bsup = 1,
-                              r = 25,
+                              r = 500,
                               design =
                                 list(type = "oat", levels = 100, grid.jump = 1),
                               scale = TRUE,
