@@ -1,8 +1,8 @@
 Package: ODEsensitivity
 Type: Package
 Title: Sensitivity Analysis of Ordinary Differential Equations
-Version: 0.9.7
-Date: 2016-04-14
+Version: 0.9.8
+Date: 2016-04-26
 Authors@R: c(
     person("Stefan", "Theers", email =
            "stefan.theers@tu-dortmund.de", role = "aut"),

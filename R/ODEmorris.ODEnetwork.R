@@ -57,7 +57,13 @@
 #'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'
-#' @details 
+#' @details
+#'   If the object of class \code{ODEnetwork} supplied for \code{mod} doesn't
+#'   include any events, the solution of the ODE network is determined 
+#'   analytically using \code{\link[ODEnetwork]{simuNetwork}}. In the presence
+#'   of events, \code{\link[ODEnetwork]{simuNetwork}} uses 
+#'   \code{\link[deSolve]{ode}} to solve the ODE network numerically.
+#'   
 #'   The sensitivity analysis is done for all state variables and all
 #'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from the 
 #'   package \code{sensitivity}.

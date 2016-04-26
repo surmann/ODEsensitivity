@@ -6,7 +6,8 @@
 #' screening method.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
-#'   model to examine, cf. example below.
+#'   model to examine, supplied in the manner as needed for 
+#'   \code{\link[deSolve]{ode}} (see example below).
 #' @param pars [\code{character(k)}]\cr
 #'   vector of \code{k} input variable names.
 #' @param state_init [\code{numeric(z)}]\cr
@@ -54,7 +55,10 @@
 #'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'
-#' @details 
+#' @details
+#'   Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is 
+#'   used to solve the ODE system.
+#'   
 #'   The sensitivity analysis is done for all state variables and all
 #'   timepoints simultaneously using \code{\link[sensitivity]{morris}} from the 
 #'   package \code{sensitivity}.
@@ -133,7 +137,7 @@ ODEmorris.default <- function(mod,
                               bsup = 1,
                               r = 500,
                               design =
-                                list(type = "oat", levels = 100, grid.jump = 1),
+                                list(type = "oat", levels = 10, grid.jump = 1),
                               scale = TRUE,
                               ode_method = "lsoda",
                               parallel_eval = FALSE,

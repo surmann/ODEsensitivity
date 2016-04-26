@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEsobol.default.R
 \name{ODEsobol.default}
 \alias{ODEsobol.default}
-\title{Sobol' SA for General ODE Models}
+\title{Sobol' Sensitivity Analysis for General ODE Models}
 \usage{
 \method{ODEsobol}{default}(mod, pars, state_init, times, n = 1000,
   rfuncs = "runif", rargs = "min = 0, max = 1", sobol_method = "Martinez",
@@ -11,7 +11,8 @@
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
-model to examine, cf. example below.}
+model to examine, supplied in the manner as needed for 
+\code{\link[deSolve]{ode}} (see example below).}
 
 \item{pars}{[\code{character(k)}]\cr
 vector of \code{k} input variable names.}
@@ -24,11 +25,8 @@ points of time at which the SA should be executed (vector of arbitrary
 length). The first point of time must be greater than zero.}
 
 \item{n}{[\code{integer(1)}]\cr
-number of random parameter values (\code{n} per input factor) used to 
-estimate the variance-based sensitivity indices by Monte Carlo method.
-(Variance-based methods for sensitivity analysis rely on 
-Monte-Carlo-simulation to estimate the integrals needed for the calculation
-of the sensitivity indices.) Defaults to 1000.}
+number of random parameter values used to estimate the Sobol' sensitivity 
+indices by Monte Carlo simulation. Defaults to 1000.}
 
 \item{rfuncs}{[\code{character(1} or \code{k)}]\cr
 names of the functions used to generate the \code{n} random values
@@ -75,12 +73,15 @@ List of length \code{length(state_init)} and of class \code{ODEsobol}
   is stored (either \code{"Jansen"} or \code{"Martinez"}).
 }
 \description{
-\code{ODEsobol.default} is the default method of \code{\link{ODEmorris}}. It
-performs the variance-based Sobol' sensitivity analysis for general ODE 
-models.
+\code{ODEsobol.default} is the default method of \code{\link{ODEsobol}}. It
+performs the variance-based Sobol' sensitivity analysis (Sobol' SA) for 
+general ODE models.
 }
 \details{
-The sensitivity analysis is done for all state variables and all
+Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is 
+  used to solve the ODE system.
+  
+  The sensitivity analysis is done for all state variables and all
   timepoints simultaneously. If \code{sobol_method = "Jansen"},
   \code{\link[sensitivity]{soboljansen}} from the package \code{sensitivity}
   is used to estimate the Sobol' sensitivity indices and if 

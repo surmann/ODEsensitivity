@@ -2,7 +2,7 @@
 % Please edit documentation in R/ODEsobol.ODEnetwork.R
 \name{ODEsobol.ODEnetwork}
 \alias{ODEsobol.ODEnetwork}
-\title{Sobol' SA for Objects of Class \code{ODEnetwork}}
+\title{Sobol' Sensitivity Analysis for Objects of Class \code{ODEnetwork}}
 \usage{
 \method{ODEsobol}{ODEnetwork}(mod, pars, times, n = 1000, rfuncs = "runif",
   rargs = "min = 0, max = 1", sobol_method = "Martinez",
@@ -24,11 +24,8 @@ points of time at which the SA should be executed (vector of arbitrary
 length). The first point of time must be greater than zero.}
 
 \item{n}{[\code{integer(1)}]\cr
-number of random parameter values (\code{n} per input factor) used to 
-estimate the variance-based sensitivity indices by Monte Carlo method.
-(Variance-based methods for sensitivity analysis rely on 
-Monte Carlo simulation to estimate the integrals needed for the calculation
-of the sensitivity indices.) Defaults to 1000.}
+number of random parameter values used to estimate the Sobol' sensitivity 
+indices by Monte Carlo simulation. Defaults to 1000.}
 
 \item{rfuncs}{[\code{character(1} or \code{k)}]\cr
 names of the functions used to generate the \code{n} random values
@@ -77,11 +74,17 @@ List of length \code{2 * nrow(mod$state)} and of class
 }
 \description{
 \code{ODEsobol.ODEnetwork} performs the variance-based Sobol' sensitivity 
-analysis for objects of class \code{ODEnetwork}. Package \code{ODEnetwork} is
-required for this function to work.
+analysis (Sobol' SA) for objects of class \code{ODEnetwork}. Package 
+\code{ODEnetwork} is required for this function to work.
 }
 \details{
-The sensitivity analysis is done for all state variables and all
+If the object of class \code{ODEnetwork} supplied for \code{mod} doesn't
+  include any events, the solution of the ODE network is determined 
+  analytically using \code{\link[ODEnetwork]{simuNetwork}}. In the presence
+  of events, \code{\link[ODEnetwork]{simuNetwork}} uses 
+  \code{\link[deSolve]{ode}} to solve the ODE network numerically.
+
+  The sensitivity analysis is done for all state variables and all
   timepoints simultaneously. If \code{sobol_method = "Jansen"},
   \code{\link[sensitivity]{soboljansen}} from the package \code{sensitivity}
   is used to estimate the Sobol' sensitivity indices and if 

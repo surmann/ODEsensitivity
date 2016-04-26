@@ -11,7 +11,8 @@
 }
 \arguments{
 \item{mod}{[\code{function(Time, State, Pars)}]\cr
-model to examine, cf. example below.}
+model to examine, supplied in the manner as needed for 
+\code{\link[deSolve]{ode}} (see example below).}
 
 \item{pars}{[\code{character(k)}]\cr
 vector of \code{k} input variable names.}
@@ -77,7 +78,10 @@ performs a sensitivity analysis for general ODE models using the Morris
 screening method.
 }
 \details{
-The sensitivity analysis is done for all state variables and all
+Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is 
+  used to solve the ODE system.
+  
+  The sensitivity analysis is done for all state variables and all
   timepoints simultaneously using \code{\link[sensitivity]{morris}} from the 
   package \code{sensitivity}.
   
