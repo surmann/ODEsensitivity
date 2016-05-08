@@ -1,12 +1,15 @@
 #' @title
-#' Plot of the results of Morris's SA for objects of class \code{ODEmorris}
+#' Plot of the Results of Morris Screening for Objects of Class \code{ODEmorris}
 #'
 #' @description
-#'   \code{plot.ODEmorris} plots the results of Morris's SA for objects of class 
-#'   \code{ODEmorris}.
+#'   \code{plot.ODEmorris} plots the results of Morris screening for objects of 
+#'   class \code{ODEmorris}.
 #'
 #' @param x [\code{ODEmorris}]\cr
 #'   resulting output of \code{\link{ODEmorris}}, of class \code{ODEmorris}.
+#' @param pars_plot [\code{character(k)}]\cr
+#'   names of the \code{k} parameters to be plotted. If \code{NULL} (the 
+#'   default), all parameters are plotted.
 #' @param state_plot [\code{character(1)}]\cr
 #'   name of the state variable to be plotted. Defaults to the name of the
 #'   first state variable.
@@ -14,11 +17,11 @@
 #'   kind of the plot, choose between \code{"sep"} and \code{"trajec"}.
 #' @param colors_pars [\code{character(>= k)}]\cr
 #'   vector of the colors to be used for the \code{k} different parameters. Must
-#'   be at least of length \code{k}. If \code{NULL} (the default), 
-#'   \code{rainbow(k)} is used.
+#'   be at least of length \code{k} (only the first \code{k} elements will be
+#'   used, though). If \code{NULL} (the default), \code{rainbow(k)} is used.
 #' @param main_title [\code{character(1)}]\cr
 #'   title for the plot. If \code{kind = "sep"}, this is the overall title for
-#'   the two separate plots. Defaults to \code{NULL}, so a standard title is 
+#'   the two separate plots. If \code{NULL} (the default), a standard title is 
 #'   generated.
 #' @param legendPos [\code{character(1)}]\cr
 #'   keyword for the legend position, either one of those specified in
@@ -119,8 +122,8 @@
 #' @export
 #'
 
-plot.ODEmorris <- function(x, state_plot = names(x)[1], kind = "sep", 
-                           colors_pars = NULL, main_title = NULL, 
+plot.ODEmorris <- function(x, pars_plot = NULL, state_plot = names(x)[1], 
+                           kind = "sep", colors_pars = NULL, main_title = NULL, 
                            legendPos = "outside", type = "l", ...) {
   
   ##### Input checks ###################################################
@@ -128,6 +131,7 @@ plot.ODEmorris <- function(x, state_plot = names(x)[1], kind = "sep",
   assertClass(x, "ODEmorris")
   assertCharacter(state_plot, len = 1)
   stopifnot(state_plot %in% names(x))
+  stopifnot(is.null(pars_plot) || is.character(pars_plot))
   assertCharacter(kind, len = 1)
   if(!kind %in% c("sep", "trajec")){
     stop("kind must be one of \"sep\" or \"trajec\"!")
@@ -152,20 +156,28 @@ plot.ODEmorris <- function(x, state_plot = names(x)[1], kind = "sep",
   # Extract the parameter names:
   k <- (nrow(x[[state_idx]]) - 1) / 3
   pars_tmp <- rownames(x[[state_idx]])[2:(k + 1)]
-  pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
+  all_pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
+  if(is.null(pars_plot)){
+    pars_plot <- all_pars
+  } else{
+    stopifnot(all(pars_plot %in% all_pars))
+    if(any(duplicated(pars_plot))){
+      pars_plot <- unique(pars_plot)
+    }
+  }
   
   ##### Plot ###########################################################
   
   # Separate plots for mu.star und sigma:
   if(kind == "sep"){
-    plotSep(x[[state_idx]], pars = pars, state_name = state_plot, 
+    plotSep(x[[state_idx]], pars = pars_plot, state_name = state_plot, 
             colors_pars = colors_pars, common_title = main_title, 
             legendPos = legendPos, type = type, ...)
   }
   
   # Trajectories:
   if(kind == "trajec"){
-    plotTrajectories(x[[state_idx]], pars, state_name = state_plot, 
+    plotTrajectories(x[[state_idx]], pars = pars_plot, state_name = state_plot, 
                      colors_pars = colors_pars, main_title = main_title, 
                      legendPos = legendPos, type = type, ...)
   }

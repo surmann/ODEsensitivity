@@ -4,7 +4,7 @@
 plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL, 
                     common_title = NULL, legendPos, type = "l", ...) {
   t.vec <- res[1, ]
-  k     <- length(pars)
+  k <- length(pars)
   if(is.null(colors_pars)){
     my.cols <- rainbow(k)
   } else{
@@ -33,15 +33,14 @@ plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL,
   }
   
   # Plot mu.star:
-  plot(t.vec, y = res[k + 2, ], type = type, col = my.cols[1], lwd = 1,
-       ylim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
-                max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
-       xlab = "Time", ylab = expression(mu*"*"), ...)
+  plot(t.vec, y = res[paste0("mu.star_", pars[1]), ], col = my.cols[1], 
+       lwd = 1, type = type, xlab = "Time", ylab = expression(mu*"*"),
+       ylim = c(min(res[paste0("mu.star_", pars), ], na.rm = TRUE),
+                max(res[paste0("mu.star_", pars), ], na.rm = TRUE)), ...)
   if(k > 1) {
-    j <- 2
-    for(i in (k+3):(2*k+1)) {
-      lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = type, ...)
-      j <- j + 1
+    for(i in 2:k) {
+      lines(t.vec, y = res[paste0("mu.star_", pars[i]), ], col = my.cols[i], 
+            lwd = 1, type = type, ...)
     }
   }
   if(legendPos != "outside"){
@@ -49,15 +48,14 @@ plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL,
   }
   
   # Plot sigma:
-  plot(t.vec, y = res[2+2*k, ], type = type, col = my.cols[1], lwd = 1,
-       ylim = c(min(res[(2*k+2):(3*k+1), ], na.rm = TRUE),
-                max(res[(2*k+2):(3*k+1), ], na.rm = TRUE)),
-       xlab = "Time", ylab = expression(sigma), ...)
+  plot(t.vec, y = res[paste0("sigma_", pars[1]), ], col = my.cols[1], 
+       lwd = 1, type = type, xlab = "Time", ylab = expression(sigma), 
+       ylim = c(min(res[paste0("sigma_", pars), ], na.rm = TRUE),
+                max(res[paste0("sigma_", pars), ], na.rm = TRUE)), ...)
   if(k > 1) {
-    j <- 2
-    for(i in (2*k+3):(3*k+1)) {
-      lines(t.vec, y = res[i, ], col = my.cols[j], lwd = 1, type = type, ...)
-      j <- j + 1
+    for(i in 2:k) {
+      lines(t.vec, y = res[paste0("sigma_", pars[i]), ], col = my.cols[i], 
+            lwd = 1, type = type, ...)
     }
   }
   if(legendPos != "outside"){
@@ -85,7 +83,7 @@ plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL,
 plotTrajectories <- function(res, pars, state_name = NULL, colors_pars = NULL, 
                              main_title = NULL, legendPos, type = "l", ...) {
   t.vec <- res[1, ]
-  k     <- length(pars)
+  k <- length(pars)
   if(is.null(colors_pars)){
     my.cols <- rainbow(k)
   } else{
@@ -110,19 +108,19 @@ plotTrajectories <- function(res, pars, state_name = NULL, colors_pars = NULL,
   }
   
   # Plot the trajectories:
-  plot(x = res[k+2, ], y = res[2+2*k, ], type = type, col = my.cols[1], lwd = 1,
-       main = main_title,
-       xlim = c(min(res[(k+2):(2*k+1), ], na.rm = TRUE),
-                max(res[(k+2):(2*k+1), ], na.rm = TRUE)),
-       ylim = c(min(res[(2*k+2):(3*k+1), ], na.rm = TRUE),
-                max(res[(2*k+2):(3*k+1), ], na.rm = TRUE)),
+  plot(x = res[paste0("mu.star_", pars[1]), ], 
+       y = res[paste0("sigma_", pars[1]), ], 
+       col = my.cols[1], lwd = 1, type = type, main = main_title,
+       xlim = c(min(res[paste0("mu.star_", pars), ], na.rm = TRUE),
+                max(res[paste0("mu.star_", pars), ], na.rm = TRUE)),
+       ylim = c(min(res[paste0("sigma_", pars), ], na.rm = TRUE),
+                max(res[paste0("sigma_", pars), ], na.rm = TRUE)),
        xlab = expression(mu*"*"), ylab = expression(sigma), ...)
   if(k > 1) {
-    j <- 2
-    for(i in (k+3):(2*k+1)) {
-      lines(x = res[i, ], y = res[i+k, ], col = my.cols[j], lwd = 1, 
-            type = type, ...)
-      j <- j + 1
+    for(i in 2:k) {
+      lines(x = res[paste0("mu.star_", pars[i]), ], 
+            y = res[paste0("sigma_", pars[i]), ], 
+            col = my.cols[i], lwd = 1, type = type, ...)
     }
   }
   if(legendPos == "outside"){
