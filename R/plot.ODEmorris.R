@@ -161,8 +161,8 @@ plot.ODEmorris <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   
   # Extract the parameter names, set "pars_plot" if not specified and perform
   # a validity check if parameter names are user-specified:
-  k <- (nrow(x[[state_idx]]) - 1) / 3
-  pars_tmp <- rownames(x[[state_idx]])[2:(k + 1)]
+  k_all <- (nrow(x[[state_idx]]) - 1) / 3
+  pars_tmp <- rownames(x[[state_idx]])[2:(k_all + 1)]
   all_pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
   if(is.null(pars_plot)){
     pars_plot <- all_pars
