@@ -15,7 +15,8 @@ model to examine, supplied in the manner as needed for
 \code{\link[deSolve]{ode}} (see example below).}
 
 \item{pars}{[\code{character(k)}]\cr
-vector of \code{k} input variable names.}
+names of the parameters to be included as input variables in Morris 
+screening.}
 
 \item{state_init}{[\code{numeric(z)}]\cr
 vector of \code{z} initial values. Must be named (with unique names).}

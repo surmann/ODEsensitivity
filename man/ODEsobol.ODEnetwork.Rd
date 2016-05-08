@@ -14,10 +14,11 @@
 list of class \code{ODEnetwork}.}
 
 \item{pars}{[\code{character(k)}]\cr
-vector of \code{k} input variable names. All parameters must be 
-contained in \code{names(ODEnetwork::createParamVec(mod))} and must not
-be derivable from other parameters supplied (e.g., \code{"k.2.1"} can be 
-derived from \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
+names of the parameters to be included as input variables in the Sobol'
+sensitivity analysis. All parameters must be contained in 
+\code{names(ODEnetwork::createParamVec(mod))} and must not be derivable 
+from other parameters supplied (e.g. \code{"k.2.1"} can be derived from 
+\code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 
 \item{times}{[\code{numeric}]\cr
 points of time at which the SA should be executed (vector of arbitrary 
