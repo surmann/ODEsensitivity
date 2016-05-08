@@ -214,7 +214,7 @@ plot.ODEsobol <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   # First order SA indices:
   # First parameter:
   plot(x = t.vec, y = S[pars_plot[1], ],
-       xlab = "Time", ylab = "First order Sobol' SA indices",
+       xlab = "Time", ylab = "First order Sobol' indices",
        type = type, col = colors_pars[1], ylim = minMaxS, ...)
   # All remaining parameters:
   if(k >= 2){
@@ -240,7 +240,7 @@ plot.ODEsobol <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   # Total SA indices:
   # First parameter:
   plot(x = t.vec, y = T[pars_plot[1], ],
-       xlab = "Time", ylab = "Total Sobol' SA indices",
+       xlab = "Time", ylab = "Total Sobol' indices",
        type = type, col = colors_pars[1], ylim = minMaxT, ...)
   # All remaining parameters:
   if(k >= 2){
