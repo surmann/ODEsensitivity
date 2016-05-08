@@ -6,7 +6,7 @@
 #'   class \code{ODEmorris}.
 #'
 #' @param x [\code{ODEmorris}]\cr
-#'   resulting output of \code{\link{ODEmorris}}, of class \code{ODEmorris}.
+#'   output of \code{\link{ODEmorris}} (of class \code{ODEmorris}).
 #' @param pars_plot [\code{character(k)}]\cr
 #'   names of the \code{k} parameters to be plotted. If \code{NULL} (the 
 #'   default), all parameters are plotted.
@@ -129,9 +129,9 @@ plot.ODEmorris <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   ##### Input checks ###################################################
   
   assertClass(x, "ODEmorris")
+  stopifnot(is.null(pars_plot) || is.character(pars_plot))
   assertCharacter(state_plot, len = 1)
   stopifnot(state_plot %in% names(x))
-  stopifnot(is.null(pars_plot) || is.character(pars_plot))
   assertCharacter(kind, len = 1)
   if(!kind %in% c("sep", "trajec")){
     stop("kind must be one of \"sep\" or \"trajec\"!")
