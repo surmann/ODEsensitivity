@@ -1,8 +1,8 @@
 #' @title Sobol' Sensitivity Analysis for ODE Models
 #'
 #' @description
-#' \code{ODEsobol} is the generic function for performing a Sobol' sensitivity 
-#' analysis of ODE models.
+#'   \code{ODEsobol} is the generic function for performing a Sobol' sensitivity
+#'   analysis of ODE models.
 #'
 #' @param mod
 #'   either a model function supplied in the manner as needed for 

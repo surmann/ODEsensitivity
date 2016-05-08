@@ -1,9 +1,9 @@
 #' @title Sobol' Sensitivity Analysis for General ODE Models
 #'
 #' @description
-#' \code{ODEsobol.default} is the default method of \code{\link{ODEsobol}}. It
-#' performs the variance-based Sobol' sensitivity analysis (Sobol' SA) for 
-#' general ODE models.
+#'  \code{ODEsobol.default} is the default method of \code{\link{ODEsobol}}. It
+#'  performs the variance-based Sobol' sensitivity analysis for general ODE 
+#'  models.
 #'
 #' @param mod [\code{function(Time, State, Pars)}]\cr
 #'   model to examine, supplied in the manner as needed for 
@@ -14,8 +14,8 @@
 #' @param state_init [\code{numeric(z)}]\cr
 #'   vector of \code{z} initial values. Must be named (with unique names).
 #' @param times [\code{numeric}]\cr
-#'   points of time at which the SA should be executed (vector of arbitrary 
-#'   length). The first point of time must be greater than zero.
+#'   points of time at which the sensitivity analysis should be executed (vector
+#'   of arbitrary length). The first point of time must be greater than zero.
 #' @param n [\code{integer(1)}]\cr
 #'   number of random parameter values used to estimate the Sobol' sensitivity 
 #'   indices by Monte Carlo simulation. Defaults to 1000.
@@ -50,12 +50,13 @@
 #'
 #' @return 
 #'   List of length \code{length(state_init)} and of class \code{ODEsobol} 
-#'   containing in each element a list of the Sobol' SA results for the 
-#'   corresponding \code{state_init}-variable (i.e. first order sensitivity 
-#'   indices \code{S} and total sensitivity indices \code{T}) for every point of
-#'   time of the \code{times} vector. This list has an extra attribute 
-#'   \code{"sobol_method"} where the value of argument \code{sobol_method}
-#'   is stored (either \code{"Jansen"} or \code{"Martinez"}).
+#'   containing in each element a list of the Sobol' sensitivity analysis 
+#'   results for the corresponding \code{state_init}-variable (i.e. first order 
+#'   sensitivity indices \code{S} and total sensitivity indices \code{T}) for 
+#'   every point of time in the \code{times} vector. This list has an extra 
+#'   attribute \code{"sobol_method"} where the value of argument 
+#'   \code{sobol_method} is stored (either \code{"Jansen"} or 
+#'   \code{"Martinez"}).
 #'
 #' @details
 #'   Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is 

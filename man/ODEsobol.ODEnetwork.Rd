@@ -21,8 +21,8 @@ from other parameters supplied (e.g. \code{"k.2.1"} can be derived from
 \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).}
 
 \item{times}{[\code{numeric}]\cr
-points of time at which the SA should be executed (vector of arbitrary 
-length). The first point of time must be greater than zero.}
+points of time at which the sensitivity analysis should be executed (vector
+of arbitrary length). The first point of time must be greater than zero.}
 
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values used to estimate the Sobol' sensitivity 

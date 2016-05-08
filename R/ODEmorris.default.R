@@ -14,8 +14,8 @@
 #' @param state_init [\code{numeric(z)}]\cr
 #'   vector of \code{z} initial values. Must be named (with unique names).
 #' @param times [\code{numeric}]\cr
-#'   points of time at which the SA should be executed (vector of arbitrary 
-#'   length). The first point of time must be greater than zero.
+#'   points of time at which the sensitivity analysis should be executed (vector
+#'   of arbitrary length). The first point of time must be greater than zero.
 #' @param binf [\code{character(1} or \code{k)}]\cr
 #'   vector of lower borders of possible input parameter values.
 #'   If they are all equal, a single value can be set.
@@ -52,8 +52,8 @@
 #' @return 
 #'   List of class \code{ODEmorris} of length \code{length(state_init)} 
 #'   containing in each element a matrix for one state variable. The
-#'   matrices itself contain the Morris's SA results for all timepoints (rows: 
-#'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
+#'   matrices itself contain the Morris screening results for all timepoints 
+#'   (rows: \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'
 #' @details

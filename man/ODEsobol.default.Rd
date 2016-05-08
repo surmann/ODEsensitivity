@@ -22,8 +22,8 @@ sensitivity analysis.}
 vector of \code{z} initial values. Must be named (with unique names).}
 
 \item{times}{[\code{numeric}]\cr
-points of time at which the SA should be executed (vector of arbitrary 
-length). The first point of time must be greater than zero.}
+points of time at which the sensitivity analysis should be executed (vector
+of arbitrary length). The first point of time must be greater than zero.}
 
 \item{n}{[\code{integer(1)}]\cr
 number of random parameter values used to estimate the Sobol' sensitivity 

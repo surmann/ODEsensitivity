@@ -14,8 +14,8 @@
 #'   from other parameters supplied (e.g. \code{"k.2.1"} can be derived from 
 #'   \code{"k.1.2"}, so supplying \code{"k.1.2"} suffices).
 #' @param times [\code{numeric}]\cr
-#'   points of time at which the SA should be executed (vector of arbitrary 
-#'   length). The first point of time must be greater than zero.
+#'   points of time at which the sensitivity analysis should be executed (vector
+#'   of arbitrary length). The first point of time must be greater than zero.
 #' @param binf [\code{character(1} or \code{k)}]\cr
 #'   vector of lower borders of possible values for the \code{k} input 
 #'   parameters. If they are all equal, a single value can be set.
@@ -54,7 +54,7 @@
 #'   List of class \code{ODEmorris} of length \code{2 * nrow(mod$state)} 
 #'   containing in each element a matrix for one state variable (all components 
 #'   of the 2 state variables are analyzed independently). The matrices 
-#'   themselves contain the Morris's SA results for all timepoints (rows: 
+#'   themselves contain the Morris screening results for all timepoints (rows: 
 #'   \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'
