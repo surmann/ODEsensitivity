@@ -148,6 +148,11 @@ plot.ODEmorris <- function(x, pars_plot = NULL, state_plot = names(x)[1],
          \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
          \"right\", \"center\"!")
   }
+  assertCharacter(type, len = 1)
+  if(!type %in% c("p", "l", "b", "c", "n", "o", "s", "h")){
+    stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
+               "\"o\", \"s\" or \"h\"!"))
+  }
   
   ##### Preparation ####################################################
   
