@@ -2,15 +2,19 @@
 % Please edit documentation in R/plot.ODEmorris.R
 \name{plot.ODEmorris}
 \alias{plot.ODEmorris}
-\title{Plot of the results of Morris's SA for objects of class \code{ODEmorris}}
+\title{Plot of the Results of Morris Screening for Objects of Class \code{ODEmorris}}
 \usage{
-\method{plot}{ODEmorris}(x, state_plot = names(x)[1], kind = "sep",
-  colors_pars = NULL, main_title = NULL, legendPos = "outside",
-  type = "l", ...)
+\method{plot}{ODEmorris}(x, pars_plot = NULL, state_plot = names(x)[1],
+  kind = "sep", colors_pars = NULL, main_title = NULL,
+  legendPos = "outside", type = "l", ...)
 }
 \arguments{
 \item{x}{[\code{ODEmorris}]\cr
-resulting output of \code{\link{ODEmorris}}, of class \code{ODEmorris}.}
+output of \code{\link{ODEmorris}} (of class \code{ODEmorris}).}
+
+\item{pars_plot}{[\code{character(k)}]\cr
+names of the \code{k} parameters to be plotted. If \code{NULL} (the 
+default), all parameters are plotted.}
 
 \item{state_plot}{[\code{character(1)}]\cr
 name of the state variable to be plotted. Defaults to the name of the
@@ -21,12 +25,12 @@ kind of the plot, choose between \code{"sep"} and \code{"trajec"}.}
 
 \item{colors_pars}{[\code{character(>= k)}]\cr
 vector of the colors to be used for the \code{k} different parameters. Must
-be at least of length \code{k}. If \code{NULL} (the default), 
-\code{rainbow(k)} is used.}
+be at least of length \code{k} (only the first \code{k} elements will be
+used, though). If \code{NULL} (the default), \code{rainbow(k)} is used.}
 
 \item{main_title}{[\code{character(1)}]\cr
 title for the plot. If \code{kind = "sep"}, this is the overall title for
-the two separate plots. Defaults to \code{NULL}, so a standard title is 
+the two separate plots. If \code{NULL} (the default), a standard title is 
 generated.}
 
 \item{legendPos}{[\code{character(1)}]\cr
@@ -45,8 +49,8 @@ Defaults to \code{"l"}.}
 \code{TRUE} (invisible; for testing purposes).
 }
 \description{
-\code{plot.ODEmorris} plots the results of Morris's SA for objects of class 
-  \code{ODEmorris}.
+\code{plot.ODEmorris} plots the results of Morris screening for objects of 
+  class \code{ODEmorris}.
 }
 \details{
 \code{plot.ODEmorris} with \code{kind = "sep"} plots mu.star and

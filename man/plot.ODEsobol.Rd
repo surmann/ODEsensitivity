@@ -2,14 +2,20 @@
 % Please edit documentation in R/plot.ODEsobol.R
 \name{plot.ODEsobol}
 \alias{plot.ODEsobol}
-\title{Plotting the results of Sobol' SA for objects of class \code{ODEsobol}}
+\title{Plot of the Results of Sobol' Sensitivity Analysis for Objects of Class 
+\code{ODEsobol}}
 \usage{
-\method{plot}{ODEsobol}(x, state_plot = names(x)[1], colors_pars = NULL,
-  main_title = NULL, legendPos = "outside", type = "l", ...)
+\method{plot}{ODEsobol}(x, pars_plot = NULL, state_plot = names(x)[1],
+  colors_pars = NULL, main_title = NULL, legendPos = "outside",
+  type = "l", ...)
 }
 \arguments{
 \item{x}{[\code{ODEsobol}]\cr
-resulting output of \code{\link{ODEsobol}}, of class \code{ODEsobol}.}
+output of \code{\link{ODEsobol}} (of class \code{ODEsobol}).}
+
+\item{pars_plot}{[\code{character(k)}]\cr
+names of the \code{k} parameters to be plotted. If \code{NULL} (the 
+default), all parameters are plotted.}
 
 \item{state_plot}{[\code{character(1)}]\cr
 name of the state variable to be plotted. Defaults to the name of the
@@ -17,8 +23,8 @@ first state variable.}
 
 \item{colors_pars}{[\code{character(>= k)}]\cr
 vector of the colors to be used for the \code{k} different parameters. Must
-be at least of length \code{k}. If \code{NULL} (the default), 
-\code{rainbow(k)} is used.}
+be at least of length \code{k} (only the first \code{k} elements will be
+used, though). If \code{NULL} (the default), \code{rainbow(k)} is used.}
 
 \item{main_title}{[\code{character(1)}]\cr
 common title for the two graphics. Default is \code{NULL}, which means
