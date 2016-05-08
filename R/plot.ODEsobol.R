@@ -1,19 +1,23 @@
 #' @title
-#' Plotting the results of Sobol' SA for objects of class \code{ODEsobol}
+#' Plot of the Results of Sobol' Sensitivity Analysis for Objects of Class 
+#' \code{ODEsobol}
 #'
 #' @description
 #'   \code{plot.ODEsobol} plots the results of Sobol' SA for objects of class 
 #'   \code{ODEsobol}.
 #'
 #' @param x [\code{ODEsobol}]\cr
-#'   resulting output of \code{\link{ODEsobol}}, of class \code{ODEsobol}.
+#'   output of \code{\link{ODEsobol}} (of class \code{ODEsobol}).
+#' @param pars_plot [\code{character(k)}]\cr
+#'   names of the \code{k} parameters to be plotted. If \code{NULL} (the 
+#'   default), all parameters are plotted.
 #' @param state_plot [\code{character(1)}]\cr
 #'   name of the state variable to be plotted. Defaults to the name of the
 #'   first state variable.
 #' @param colors_pars [\code{character(>= k)}]\cr
 #'   vector of the colors to be used for the \code{k} different parameters. Must
-#'   be at least of length \code{k}. If \code{NULL} (the default), 
-#'   \code{rainbow(k)} is used.
+#'   be at least of length \code{k} (only the first \code{k} elements will be
+#'   used, though). If \code{NULL} (the default), \code{rainbow(k)} is used.
 #' @param main_title [\code{character(1)}]\cr
 #'   common title for the two graphics. Default is \code{NULL}, which means
 #'   an automatic title is generated.
@@ -118,20 +122,16 @@
 #' @export
 #'
 
-plot.ODEsobol <- function(x, state_plot = names(x)[1],
+plot.ODEsobol <- function(x, pars_plot = NULL, state_plot = names(x)[1],
                           colors_pars = NULL, main_title = NULL,
                           legendPos = "outside", type = "l", ...) {
   
   ##### Input checks ###################################################
   
   assertClass(x, "ODEsobol")
+  stopifnot(is.null(pars_plot) || is.character(pars_plot))
   assertCharacter(state_plot, len = 1)
   stopifnot(state_plot %in% names(x))
-  assertCharacter(type, len = 1)
-  if(!type %in% c("p", "l", "b", "c", "n", "o", "s", "h")){
-    stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
-               "\"o\", \"s\" or \"h\"!"))
-  }
   stopifnot(is.null(colors_pars) || (is.character(colors_pars) && 
     length(colors_pars) >= 
       nrow((x[[which(names(x) == state_plot)]])$S) - 1))
@@ -145,6 +145,11 @@ plot.ODEsobol <- function(x, state_plot = names(x)[1],
          \"bottomleft\", \"left\", \"topleft\", \"top\", \"topright\",
          \"right\", \"center\"!")
   }
+  assertCharacter(type, len = 1)
+  if(!type %in% c("p", "l", "b", "c", "n", "o", "s", "h")){
+    stop(paste("type must be one of \"p\", \"l\", \"b\", \"c\", \"n\",",
+               "\"o\", \"s\" or \"h\"!"))
+  }
 
   ##### Preparation ####################################################
   
@@ -155,15 +160,25 @@ plot.ODEsobol <- function(x, state_plot = names(x)[1],
   S <- (x[[state_idx]])$S
   T <- (x[[state_idx]])$T
   
-  # Extract the parameter names:
-  k <- nrow(S) - 1
-  pars <- rownames(S)[-1]
+  # Extract the timepoints:
+  t.vec <- S[1, ]
+  
+  # Extract the parameter names, set "pars_plot" if not specified and perform
+  # a validity check if parameter names are user-specified:
+  all_pars <- rownames(S)[-1]
+  if(is.null(pars_plot)){
+    pars_plot <- all_pars
+  } else{
+    stopifnot(all(pars_plot %in% all_pars))
+    if(any(duplicated(pars_plot))){
+      pars_plot <- unique(pars_plot)
+    }
+  }
+  k <- length(pars_plot)
   
   # Extreme values of the SA indices:
-  minMaxS <- c(0.95 * min(S[-1, ]), 1.05 * 
-                 max(S[-1, ]))
-  minMaxT <- c(0.95 * min(T[-1, ]), 1.05 * 
-                 max(T[-1, ]))
+  minMaxS <- c(0.95 * min(S[pars_plot, ]), 1.05 * max(S[pars_plot, ]))
+  minMaxT <- c(0.95 * min(T[pars_plot, ]), 1.05 * max(T[pars_plot, ]))
   
   # Set colors if not set by the user:
   if(is.null(colors_pars)){
@@ -198,51 +213,53 @@ plot.ODEsobol <- function(x, state_plot = names(x)[1],
   
   # First order SA indices:
   # First parameter:
-  plot(x = S[1, ], y = S[2, ],
+  plot(x = t.vec, y = S[pars_plot[1], ],
        xlab = "Time", ylab = "First order Sobol' SA indices",
        type = type, col = colors_pars[1], ylim = minMaxS, ...)
   # All remaining parameters:
   if(k >= 2){
     for(i in 2:k) {
-      lines(x = S[1, ], 
-            y = S[i + 1, ],
-            type = type, col = colors_pars[i], ...)
+      lines(x = t.vec, y = S[pars_plot[i], ], type = type, 
+            col = colors_pars[i], ...)
     }
   }
   # Legend:
   if(legendPos != "outside"){
     if(type %in% c("b", "o")){
-      legend(legendPos, legend = pars, col = colors_pars, bg = "white",
+      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white",
              lty = 1, pch = 1)
     } else if(type %in% c("l", "c", "s", "h")){
-      legend(legendPos, legend = pars, col = colors_pars, bg = "white", lty = 1)
+      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+             lty = 1)
     } else if(type == "p"){
-      legend(legendPos, legend = pars, col = colors_pars, bg = "white", pch = 1)
+      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+             pch = 1)
     }
   }
   
   # Total SA indices:
   # First parameter:
-  plot(x = T[1, ], y = T[2, ],
+  plot(x = t.vec, y = T[pars_plot[1], ],
        xlab = "Time", ylab = "Total Sobol' SA indices",
        type = type, col = colors_pars[1], ylim = minMaxT, ...)
   # All remaining parameters:
   if(k >= 2){
     for(i in 2:k) {
-      lines(x = T[1, ], 
-            y = T[i + 1, ],
-            type = type, col = colors_pars[i], ...)
+      lines(x = t.vec, y = T[pars_plot[i], ], type = type, 
+            col = colors_pars[i], ...)
     }
   }
   # Legend:
   if(legendPos != "outside"){
     if(type %in% c("b", "o")){
-      legend(legendPos, legend = pars, col = colors_pars, bg = "white",
+      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white",
              lty = 1, pch = 1)
     } else if(type %in% c("l", "c", "s", "h")){
-      legend(legendPos, legend = pars, col = colors_pars, bg = "white", lty = 1)
+      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+             lty = 1)
     } else if(type == "p"){
-      legend(legendPos, legend = pars, col = colors_pars, bg = "white", pch = 1)
+      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+             pch = 1)
     }
   }
   
@@ -257,13 +274,13 @@ plot.ODEsobol <- function(x, state_plot = names(x)[1],
     plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
     # Draw the legend depending on the plot type:
     if(type %in% c("b", "o")){
-      legend("bottom", legend = pars, col = colors_pars, lty = 1, pch = 1, 
+      legend("bottom", legend = pars_plot, col = colors_pars, lty = 1, pch = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     } else if(type %in% c("l", "c", "s", "h")){
-      legend("bottom", legend = pars, col = colors_pars, lty = 1, 
+      legend("bottom", legend = pars_plot, col = colors_pars, lty = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     } else if(type == "p"){
-      legend("bottom", legend = pars, col = colors_pars, pch = 1, 
+      legend("bottom", legend = pars_plot, col = colors_pars, pch = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     }
     par(oldpar2)
