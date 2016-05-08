@@ -156,9 +156,11 @@ plot.ODEmorris <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   
   ##### Preparation ####################################################
   
-  # Index of the state-Variable which shall be plotted:
+  # Index of the state variable to be plotted:
   state_idx <- which(names(x) == state_plot)
-  # Extract the parameter names:
+  
+  # Extract the parameter names, set "pars_plot" if not specified and perform
+  # a validity check if parameter names are user-specified:
   k <- (nrow(x[[state_idx]]) - 1) / 3
   pars_tmp <- rownames(x[[state_idx]])[2:(k + 1)]
   all_pars <- substr(pars_tmp, start = 4, stop = nchar(pars_tmp))
