@@ -35,8 +35,7 @@ plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL,
   # Plot mu.star:
   plot(t.vec, y = res[paste0("mu.star_", pars[1]), ], col = my.cols[1], 
        lwd = 1, type = type, xlab = "Time", ylab = expression(mu*"*"),
-       ylim = c(min(res[paste0("mu.star_", pars), ], na.rm = TRUE),
-                max(res[paste0("mu.star_", pars), ], na.rm = TRUE)), ...)
+       ylim = range(res[paste0("mu.star_", pars), ], na.rm = TRUE), ...)
   if(k > 1) {
     for(i in 2:k) {
       lines(t.vec, y = res[paste0("mu.star_", pars[i]), ], col = my.cols[i], 
@@ -50,8 +49,7 @@ plotSep <- function(res, pars, state_name = NULL, colors_pars = NULL,
   # Plot sigma:
   plot(t.vec, y = res[paste0("sigma_", pars[1]), ], col = my.cols[1], 
        lwd = 1, type = type, xlab = "Time", ylab = expression(sigma), 
-       ylim = c(min(res[paste0("sigma_", pars), ], na.rm = TRUE),
-                max(res[paste0("sigma_", pars), ], na.rm = TRUE)), ...)
+       ylim = range(res[paste0("sigma_", pars), ], na.rm = TRUE), ...)
   if(k > 1) {
     for(i in 2:k) {
       lines(t.vec, y = res[paste0("sigma_", pars[i]), ], col = my.cols[i], 
@@ -111,10 +109,8 @@ plotTrajectories <- function(res, pars, state_name = NULL, colors_pars = NULL,
   plot(x = res[paste0("mu.star_", pars[1]), ], 
        y = res[paste0("sigma_", pars[1]), ], 
        col = my.cols[1], lwd = 1, type = type, main = main_title,
-       xlim = c(min(res[paste0("mu.star_", pars), ], na.rm = TRUE),
-                max(res[paste0("mu.star_", pars), ], na.rm = TRUE)),
-       ylim = c(min(res[paste0("sigma_", pars), ], na.rm = TRUE),
-                max(res[paste0("sigma_", pars), ], na.rm = TRUE)),
+       xlim = range(res[paste0("mu.star_", pars), ], na.rm = TRUE),
+       ylim = range(res[paste0("sigma_", pars), ], na.rm = TRUE),
        xlab = expression(mu*"*"), ylab = expression(sigma), ...)
   if(k > 1) {
     for(i in 2:k) {
