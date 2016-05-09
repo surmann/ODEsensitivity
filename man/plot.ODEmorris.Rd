@@ -21,7 +21,8 @@ name of the state variable to be plotted. Defaults to the name of the
 first state variable.}
 
 \item{kind}{[\code{character(1)}]\cr
-kind of the plot, choose between \code{"sep"} and \code{"trajec"}.}
+kind of the plot, choose between \code{"sep"} and \code{"trajec"} (see 
+details).}
 
 \item{colors_pars}{[\code{character(>= k)}]\cr
 vector of the colors to be used for the \code{k} different parameters. Must
@@ -53,11 +54,16 @@ Defaults to \code{"l"}.}
   class \code{ODEmorris}.
 }
 \details{
-\code{plot.ODEmorris} with \code{kind = "sep"} plots mu.star and
-  sigma separately versus time.
-
-  \code{plot.ODEmorris} with \code{kind = "trajec"} plots mu.star versus
-  sigma for every point of time.
+Morris sensitivity indices are plotted for one state variable (chosen by 
+  argument \code{state_plot}) and the parameters named in \code{pars_plot}. 
+  If no parameters are named in \code{pars_plot}, the sensitivity indices for
+  all parameters are plotted. There are two kinds of plots:
+  \itemize{
+    \item{\code{kind = "sep"}: }{separate plots of the Morris sensitivity 
+      indices \eqn{\mu^*}{\mu*} and \eqn{\sigma} against time}
+    \item{\code{kind = "trajec"}: }{plot of \eqn{\mu^*}{\mu*} against 
+      \eqn{\sigma}}
+  }
 }
 \note{
 Not all plotting arguments can be passed by \code{...}, for example
