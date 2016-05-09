@@ -69,23 +69,15 @@
 #'   \code{r = 500}).
 #' 
 #' @note 
-#'   \code{\link[deSolve]{ode}} sometimes can't solve an ODE system if 
-#'   unrealistic parameter combinations are sampled by 
-#'   \code{\link[sensitivity]{morris}}. Hence, \code{NA}s might occur in the 
-#'   Morris sensitivity results, such that \code{\link{ODEmorris.default}} fails 
-#'   for one or many points of time. For this reason, if \code{NA}s occur, 
-#'   please make use of \code{\link{ODEsobol.default}} instead or
-#'   restrict the input parameter value intervals usefully using
-#'   \code{binf}, \code{bsup} and \code{scale = TRUE}. If the evaluation of the 
-#'   model function takes too long, it might be helpful to try another 
-#'   ODE-solver (argument \code{ode_method}). The \code{ode_method}s 
-#'   \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, \code{"adams"}, 
-#'   \code{"impAdams"} and \code{"impAdams_d"} might be faster than the default 
-#'   \code{ode_method} \code{"lsoda"}.
+#'   If the evaluation of the model function takes too long, it might be helpful 
+#'   to try another ODE-solver (argument \code{ode_method}). The 
+#'   \code{ode_method}s \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, 
+#'   \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} might be faster 
+#'   than the default \code{"lsoda"}.
 #'   
 #'   If \code{\link[sensitivity]{morris}} throws a warning message stating
 #'   "In ... keeping ... repetitions out of ...", try using a bigger number of 
-#'   \code{levels} in the \code{design} argument.
+#'   \code{levels} in the \code{design} argument (only possible for OAT design).
 #'
 #' @author Stefan Theers, Frank Weber
 #' @references J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
