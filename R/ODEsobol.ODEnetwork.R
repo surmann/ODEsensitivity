@@ -119,6 +119,7 @@
 #' # Sobol' sensitivity analysis (here only with n = 500 since n = 1000 takes
 #' # a lot more time; warnings are suppressed):
 #' set.seed(1739)
+#' \dontrun{
 #' suppressWarnings(
 #'   LFOres_sobol <- ODEsobol(mod = lfonet,
 #'                            pars = LFOpars,
@@ -131,6 +132,7 @@
 #'                            parallel_eval = TRUE,
 #'                            parallel_eval_ncores = 2)
 #' )
+#' }
 #' 
 #' @import checkmate
 #' @importFrom deSolve ode

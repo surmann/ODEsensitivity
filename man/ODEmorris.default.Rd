@@ -127,6 +127,7 @@ LVinit  <- c(Prey = 1, Predator = 2)
 LVtimes <- c(0.01, seq(1, 50, by = 1))
 # Morris screening:
 set.seed(7292)
+\dontrun{
 LVres_morris <- ODEmorris(mod = LVmod,
                           pars = LVpars,
                           state_init = LVinit,
@@ -140,6 +141,7 @@ LVres_morris <- ODEmorris(mod = LVmod,
                           ode_method = "lsoda",
                           parallel_eval = TRUE,
                           parallel_eval_ncores = 2)
+}
 
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
 FHNmod <- function(Time, State, Pars) {
@@ -151,7 +153,7 @@ FHNmod <- function(Time, State, Pars) {
     return(list(c(dVoltage, dCurrent)))
   })
 }
-set.seed(4628)
+\dontrun{
 FHNres_morris <- ODEmorris(mod = FHNmod,
                            pars = c("a", "b", "s"),
                            state_init = c(Voltage = -1, Current = 1),
@@ -159,12 +161,13 @@ FHNres_morris <- ODEmorris(mod = FHNmod,
                            binf = c(0.18, 0.18, 2.8),
                            bsup = c(0.22, 0.22, 3.2),
                            r = 500,
-                           design = list(type = "oat", levels = 10,
-                                         grid.jump = 1),
+                           design = list(type = "oat", 
+                                         levels = 50, grid.jump = 1),
                            scale = TRUE,
                            ode_method = "adams",
                            parallel_eval = TRUE,
                            parallel_eval_ncores = 2)
+}
 
 }
 \author{

@@ -133,7 +133,8 @@ LVinit  <- c(Prey = 1, Predator = 2)
 LVtimes <- c(0.01, seq(1, 50, by = 1))
 set.seed(59281)
 # Sobol' sensitivity analysis (here only with n = 500 since n = 1000 takes
-# a lot more time; however, the following code might still take very long):
+# a lot more time):
+\dontrun{
 LVres_sobol <- ODEsobol(mod = LVmod,
                         pars = LVpars,
                         state_init = LVinit,
@@ -146,6 +147,7 @@ LVres_sobol <- ODEsobol(mod = LVmod,
                         ode_method = "lsoda",
                         parallel_eval = TRUE,
                         parallel_eval_ncores = 2)
+}
 
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
 FHNmod <- function(Time, State, Pars) {
@@ -157,6 +159,7 @@ FHNmod <- function(Time, State, Pars) {
     return(list(c(dVoltage, dCurrent)))
   })
 }
+\dontrun{
 FHNres_sobol <- ODEsobol(mod = FHNmod,
                          pars = c("a", "b", "s"),
                          state_init = c(Voltage = -1, Current = 1),
@@ -169,9 +172,11 @@ FHNres_sobol <- ODEsobol(mod = FHNmod,
                          ode_method = "adams",
                          parallel_eval = TRUE,
                          parallel_eval_ncores = 2)
+}
 # Just for demonstration purposes: The use of different distributions for the 
 # parameters (here, the distributions and their arguments are chosen 
 # completely arbitrarily):
+\dontrun{
 demo_dists <- ODEsobol(mod = FHNmod,
                        pars = c("a", "b", "s"),
                        state_init = c(Voltage = -1, Current = 1),
@@ -185,6 +190,7 @@ demo_dists <- ODEsobol(mod = FHNmod,
                        ode_method = "adams",
                        parallel_eval = TRUE,
                        parallel_eval_ncores = 2)
+}
 
 }
 \author{

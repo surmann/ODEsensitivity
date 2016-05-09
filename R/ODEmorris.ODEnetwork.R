@@ -109,7 +109,8 @@
 #' # The timepoints of interest:
 #' LFOtimes <- seq(25, 150, by = 2.5)
 #' # Morris screening:
-#' set.seed(4628)
+#' set.seed(283)
+#' \dontrun{
 #' LFOres_morris <- ODEmorris(mod = lfonet,
 #'                            pars = LFOpars,
 #'                            times = LFOtimes,
@@ -121,6 +122,7 @@
 #'                            scale = TRUE,
 #'                            parallel_eval = TRUE,
 #'                            parallel_eval_ncores = 2)
+#' }
 #'
 #' @import checkmate
 #' @importFrom deSolve ode

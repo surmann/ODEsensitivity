@@ -108,6 +108,7 @@
 #' LFObsup <- c(rep(20, 4), rep(0.1, 4))
 #' lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
 #' LFOtimes <- seq(25, 150, by = 2.5)
+#' set.seed(283)
 #' LFOres_morris <- ODEmorris(mod = lfonet,
 #'                            pars = LFOpars,
 #'                            times = LFOtimes,
