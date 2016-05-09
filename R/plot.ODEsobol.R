@@ -34,9 +34,10 @@
 #' @return TRUE (invisible; for testing purposes).
 #'
 #' @details
-#'   First order and total Sobol' SA indices are plotted for one state variable 
-#'   (chosen by argument \code{state_plot}) and all of the parameters against 
-#'   time.
+#'   First order and total Sobol' sensitivity indices are plotted for one state 
+#'   variable (chosen by argument \code{state_plot}) and the parameters named
+#'   in \code{pars_plot} against time. If no parameters are named in 
+#'   \code{pars_plot}, the sensitivity indices for all parameters are plotted.
 #'
 #' @note 
 #'   Not all arguments of \code{\link{plot.default}} can be passed by 

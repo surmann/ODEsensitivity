@@ -66,17 +66,18 @@ number of processor cores to be used for parallelization. Only applies if
 }
 \value{
 List of length \code{length(state_init)} and of class \code{ODEsobol} 
-  containing in each element a list of the Sobol' SA results for the 
-  corresponding \code{state_init}-variable (i.e. first order sensitivity 
-  indices \code{S} and total sensitivity indices \code{T}) for every point of
-  time of the \code{times} vector. This list has an extra attribute 
-  \code{"sobol_method"} where the value of argument \code{sobol_method}
-  is stored (either \code{"Jansen"} or \code{"Martinez"}).
+  containing in each element a list of the Sobol' sensitivity analysis 
+  results for the corresponding \code{state_init}-variable (i.e. first order 
+  sensitivity indices \code{S} and total sensitivity indices \code{T}) for 
+  every point of time in the \code{times} vector. This list has an extra 
+  attribute \code{"sobol_method"} where the value of argument 
+  \code{sobol_method} is stored (either \code{"Jansen"} or 
+  \code{"Martinez"}).
 }
 \description{
 \code{ODEsobol.default} is the default method of \code{\link{ODEsobol}}. It
-performs the variance-based Sobol' sensitivity analysis (Sobol' SA) for 
-general ODE models.
+ performs the variance-based Sobol' sensitivity analysis for general ODE 
+ models.
 }
 \details{
 Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is 
