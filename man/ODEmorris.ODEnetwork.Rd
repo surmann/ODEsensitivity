@@ -96,20 +96,15 @@ If the object of class \code{ODEnetwork} supplied for \code{mod} doesn't
 }
 \note{
 In situations where the solution of the ODE model has to be determined 
-  numerically, \code{NA}s might occur in the Morris sensitivity results
-  if unrealistic parameter combinations are sampled by 
-  \code{\link[sensitivity]{morris}}. If this is the case, please make use of 
-  \code{\link{ODEsobol.ODEnetwork}} instead or restrict the intervals for the
-  input parameter values usefully using \code{binf}, \code{bsup} and 
-  \code{scale = TRUE}. If the simulation of the model takes too long, it 
-  might be helpful to try another ODE-solver (argument \code{ode_method}). 
-  The \code{ode_method}s \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, 
-  \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} might be faster 
-  than the default \code{ode_method} \code{"lsoda"}.
+  numerically, it might be helpful to try another ODE-solver if the 
+  evaluation of the model function takes too long, (argument 
+  \code{ode_method}). The \code{ode_method}s \code{"vode"}, \code{"bdf"}, 
+  \code{"bdf_d"}, \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} 
+  might be faster than the default \code{"lsoda"}.
   
   If \code{\link[sensitivity]{morris}} throws a warning message stating
   "In ... keeping ... repetitions out of ...", try using a bigger number of 
-  \code{levels} in the \code{design} argument.
+  \code{levels} in the \code{design} argument (only possible for OAT design).
 }
 \examples{
 ##### A network of 4 mechanical oscillators connected in a circle #####
