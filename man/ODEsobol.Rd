@@ -15,8 +15,8 @@ object of class \code{ODEnetwork} (for \code{\link{ODEsobol.ODEnetwork}}).}
 \code{\link{ODEsobol.ODEnetwork}}.}
 }
 \description{
-\code{ODEsobol} is the generic function for performing a Sobol' sensitivity 
-analysis of ODE models.
+\code{ODEsobol} is the generic function for performing a Sobol' sensitivity
+  analysis of ODE models.
 }
 \details{
 There are two methods for this generic function: 
