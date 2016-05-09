@@ -111,56 +111,40 @@ In situations where the solution of the ODE model has to be determined
   author.
 }
 \examples{
-##### A network of ordinary differential equations #####
+##### A network of 4 mechanical oscillators connected in a circle #####
 # Definition of the network using the package "ODEnetwork":
-library(ODEnetwork)
-masses <- c(1, 1)
-dampers <- diag(c(1, 1))
-springs <- diag(c(1, 1))
-springs[1, 2] <- 1
-distances <- diag(c(0, 2))
-distances[1, 2] <- 1
-lfonet <- ODEnetwork(masses, dampers, springs, 
-                     cartesian = TRUE, distances = distances)
-lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-LFOpars <- c("k.1", "k.2", "k.1.2")
-LFOtimes <- seq(0.01, 20, by = 0.1)
-
-# Arguments "rfuncs" and "rargs" being of length 1:
-set.seed(4628)
-LFOres_1 <- ODEsobol(lfonet, 
-                     LFOpars, 
-                     LFOtimes,
-                     n = 1000,
-                     rfuncs = "runif",
-                     rargs = "min = 0.001, max = 6",
-                     sobol_method = "Martinez",
-                     ode_method = "adams",
-                     parallel_eval = TRUE,
-                     parallel_eval_ncores = 2)
-# (A warning is thrown, concerning the state variables "v.1" and "v.2". 
-# Assuming that we are only interested in a sensitivity analysis of "x.1" and
-# "x.2", this warning is ignored.)
-
-# Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
-# distributions and their corresponding arguments are chosen more or less 
-# arbitrarily and shall only demonstrate the use of different distributions):
-set.seed(4628)
-LFOres <- ODEsobol(lfonet, 
-                   LFOpars, 
-                   LFOtimes,
-                   n = 1000,
-                   rfuncs = c("runif", "rnorm", "rexp"),
-                   rargs = c("min = 0.001, max = 6",
-                             "mean = 3, sd = 0.5",
-                             "rate = 1 / 3"),
-                   sobol_method = "Martinez",
-                   ode_method = "adams",
-                   parallel_eval = TRUE,
-                   parallel_eval_ncores = 2)
-# (A warning is thrown, concerning the state variables "v.1" and "v.2". 
-# Assuming that we are only interested in a sensitivity analysis of "x.1" and
-# "x.2", this warning is ignored.)
+M_mat <- rep(2, 4)
+K_mat <- diag(rep(2 * (2*pi*0.17)^2, 4))
+K_mat[1, 2] <- K_mat[2, 3] <- 
+  K_mat[3, 4] <- K_mat[1, 4] <- 2 * (2*pi*0.17)^2 / 10
+D_mat <- diag(rep(0.05, 4))
+library("ODEnetwork")
+lfonet <- ODEnetwork(masses = M_mat, dampers = D_mat, springs = K_mat)
+# The parameters to be included in the sensitivity analysis and their lower
+# and upper boundaries:
+LFOpars <- c("k.1", "k.2", "k.3", "k.4",
+             "d.1", "d.2", "d.3", "d.4")
+LFObinf <- c(rep(0.2, 4), rep(0.01, 4))
+LFObsup <- c(rep(20, 4), rep(0.1, 4))
+# Setting of the initial values of the state variables:
+lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
+# The timepoints of interest:
+LFOtimes <- seq(25, 150, by = 2.5)
+# Sobol' sensitivity analysis (here only with n = 500 since n = 1000 takes
+# a lot more time; warnings are suppressed):
+set.seed(1739)
+suppressWarnings(
+  LFOres_sobol <- ODEsobol(mod = lfonet,
+                           pars = LFOpars,
+                           times = LFOtimes,
+                           n = 500,
+                           rfuncs = "runif",
+                           rargs = paste0("min = ", LFObinf,
+                                          ", max = ", LFObsup),
+                           sobol_method = "Martinez",
+                           parallel_eval = TRUE,
+                           parallel_eval_ncores = 2)
+)
 
 }
 \author{

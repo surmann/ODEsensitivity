@@ -107,9 +107,46 @@ If the evaluation of the model function takes too long, it might be
   author.
 }
 \examples{
+##### Lotka-Volterra equations #####
+# The model function:
+LVmod <- function(Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    Ingestion    <- rIng  * Prey * Predator
+    GrowthPrey   <- rGrow * Prey * (1 - Prey/K)
+    MortPredator <- rMort * Predator
+    
+    dPrey        <- GrowthPrey - Ingestion
+    dPredator    <- Ingestion * assEff - MortPredator
+    
+    return(list(c(dPrey, dPredator)))
+  })
+}
+# The parameters to be included in the sensitivity analysis and their lower 
+# and upper boundaries:
+LVpars  <- c("rIng", "rGrow", "rMort", "assEff", "K")
+LVbinf <- c(0.05, 0.05, 0.05, 0.05, 1)
+LVbsup <- c(1.00, 3.00, 0.95, 0.95, 20)
+# The initial values of the state variables:
+LVinit  <- c(Prey = 1, Predator = 2)
+# The timepoints of interest:
+LVtimes <- c(0.01, seq(1, 50, by = 1))
+set.seed(59281)
+# Sobol' sensitivity analysis (here only with n = 500 since n = 1000 takes
+# a lot more time; however, the following code might still take very long):
+LVres_sobol <- ODEsobol(mod = LVmod,
+                        pars = LVpars,
+                        state_init = LVinit,
+                        times = LVtimes,
+                        n = 500,
+                        rfuncs = "runif",
+                        rargs = paste0("min = ", LVbinf,
+                                       ", max = ", LVbsup),
+                        sobol_method = "Martinez",
+                        ode_method = "lsoda",
+                        parallel_eval = TRUE,
+                        parallel_eval_ncores = 2)
+
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
-# Definition of the model itself, parameters, initial state values
-# and the times vector:
 FHNmod <- function(Time, State, Pars) {
   with(as.list(c(State, Pars)), {
     
@@ -119,42 +156,34 @@ FHNmod <- function(Time, State, Pars) {
     return(list(c(dVoltage, dCurrent)))
   })
 }
-FHNstate  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
-
-# Warning: The following code might take a long time!
-
-# Arguments "rfuncs" and "rargs" being of length 1:
-set.seed(4628)
-FHNres_1 <- ODEsobol(mod = FHNmod,
-                     pars = c("a", "b", "s"),
-                     state_init = FHNstate,
-                     times = FHNtimes,
-                     n = 1000,
-                     rfuncs = "runif",
-                     rargs = "min = 0.1, max = 1.5",
-                     sobol_method = "Martinez",
-                     ode_method = "adams",
-                     parallel_eval = TRUE,
-                     parallel_eval_ncores = 2)
-
-# Arguments "rfuncs" and "rargs" being of the same length as "pars" (the
-# distributions and their corresponding arguments are chosen more or less 
-# arbitrarily and shall only demonstrate the use of different distributions):
-set.seed(4628)
-FHNres <- ODEsobol(mod = FHNmod,
-                   pars = c("a", "b", "s"),
-                   state_init = FHNstate,
-                   times = FHNtimes,
-                   n = 1000,
-                   rfuncs = c("runif", "rnorm", "rexp"),
-                   rargs = c("min = 0.18, max = 0.22", 
-                             "mean = 0.2, sd = 0.2 / 3",
-                             "rate = 1 / 3"),
-                   sobol_method = "Martinez",
-                   ode_method = "adams",
-                   parallel_eval = TRUE,
-                   parallel_eval_ncores = 2)
+FHNres_sobol <- ODEsobol(mod = FHNmod,
+                         pars = c("a", "b", "s"),
+                         state_init = c(Voltage = -1, Current = 1),
+                         times = seq(0.1, 50, by = 5),
+                         n = 500,
+                         rfuncs = "runif",
+                         rargs = c(rep("min = 0.18, max = 0.22", 2),
+                                   "min = 2.8, max = 3.2"),
+                         sobol_method = "Martinez",
+                         ode_method = "adams",
+                         parallel_eval = TRUE,
+                         parallel_eval_ncores = 2)
+# Just for demonstration purposes: The use of different distributions for the 
+# parameters (here, the distributions and their arguments are chosen 
+# completely arbitrarily):
+demo_dists <- ODEsobol(mod = FHNmod,
+                       pars = c("a", "b", "s"),
+                       state_init = c(Voltage = -1, Current = 1),
+                       times = seq(0.1, 50, by = 5),
+                       n = 500,
+                       rfuncs = c("runif", "rnorm", "rexp"),
+                       rargs = c("min = 0.18, max = 0.22",
+                                 "mean = 0.2, sd = 0.2 / 3",
+                                 "rate = 1 / 3"),
+                       sobol_method = "Martinez",
+                       ode_method = "adams",
+                       parallel_eval = TRUE,
+                       parallel_eval_ncores = 2)
 
 }
 \author{

@@ -112,35 +112,38 @@ In situations where the solution of the ODE model has to be determined
   \code{levels} in the \code{design} argument.
 }
 \examples{
-##### A network of ordinary differential equations #####
+##### A network of 4 mechanical oscillators connected in a circle #####
 # Definition of the network using the package "ODEnetwork":
-library(ODEnetwork)
-masses <- c(1, 1)
-dampers <- diag(c(1, 1))
-springs <- diag(c(1, 1))
-springs[1, 2] <- 1
-distances <- diag(c(0, 2))
-distances[1, 2] <- 1
-lfonet <- ODEnetwork(masses, dampers, springs, 
-                     cartesian = TRUE, distances = distances)
-lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-LFOpars <- c("k.1", "k.2", "k.1.2")
-LFOtimes <- seq(0.01, 20, by = 0.1)
-LFObinf <- rep(0.001, 3)
-LFObsup <- c(6, 6, 3)
-
+M_mat <- rep(2, 4)
+K_mat <- diag(rep(2 * (2*pi*0.17)^2, 4))
+K_mat[1, 2] <- K_mat[2, 3] <- 
+  K_mat[3, 4] <- K_mat[1, 4] <- 2 * (2*pi*0.17)^2 / 10
+D_mat <- diag(rep(0.05, 4))
+library("ODEnetwork")
+lfonet <- ODEnetwork(masses = M_mat, dampers = D_mat, springs = K_mat)
+# The parameters to be included in the sensitivity analysis and their lower
+# and upper boundaries:
+LFOpars <- c("k.1", "k.2", "k.3", "k.4",
+             "d.1", "d.2", "d.3", "d.4")
+LFObinf <- c(rep(0.2, 4), rep(0.01, 4))
+LFObsup <- c(rep(20, 4), rep(0.1, 4))
+# Setting of the initial values of the state variables:
+lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
+# The timepoints of interest:
+LFOtimes <- seq(25, 150, by = 2.5)
+# Morris screening:
 set.seed(4628)
-LFOres <- ODEmorris(lfonet,
-                    LFOpars,
-                    LFOtimes,
-                    binf = LFObinf,
-                    bsup = LFObsup,
-                    r = 50,
-                    design = list(type = "oat", levels = 100, grid.jump = 1),
-                    scale = TRUE,
-                    ode_method = "adams",
-                    parallel_eval = TRUE,
-                    parallel_eval_ncores = 2)
+LFOres_morris <- ODEmorris(mod = lfonet,
+                           pars = LFOpars,
+                           times = LFOtimes,
+                           binf = LFObinf,
+                           bsup = LFObsup,
+                           r = 500,
+                           design = list(type = "oat", 
+                                         levels = 10, grid.jump = 1),
+                           scale = TRUE,
+                           parallel_eval = TRUE,
+                           parallel_eval_ncores = 2)
 
 }
 \author{

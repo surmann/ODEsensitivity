@@ -91,28 +91,57 @@ Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is
   \code{r = 500}).
 }
 \note{
-\code{\link[deSolve]{ode}} sometimes can't solve an ODE system if 
-  unrealistic parameter combinations are sampled by 
-  \code{\link[sensitivity]{morris}}. Hence, \code{NA}s might occur in the 
-  Morris sensitivity results, such that \code{\link{ODEmorris.default}} fails 
-  for one or many points of time. For this reason, if \code{NA}s occur, 
-  please make use of \code{\link{ODEsobol.default}} instead or
-  restrict the input parameter value intervals usefully using
-  \code{binf}, \code{bsup} and \code{scale = TRUE}. If the evaluation of the 
-  model function takes too long, it might be helpful to try another 
-  ODE-solver (argument \code{ode_method}). The \code{ode_method}s 
-  \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, \code{"adams"}, 
-  \code{"impAdams"} and \code{"impAdams_d"} might be faster than the default 
-  \code{ode_method} \code{"lsoda"}.
+If the evaluation of the model function takes too long, it might be helpful 
+  to try another ODE-solver (argument \code{ode_method}). The 
+  \code{ode_method}s \code{"vode"}, \code{"bdf"}, \code{"bdf_d"}, 
+  \code{"adams"}, \code{"impAdams"} and \code{"impAdams_d"} might be faster 
+  than the default \code{"lsoda"}.
   
   If \code{\link[sensitivity]{morris}} throws a warning message stating
   "In ... keeping ... repetitions out of ...", try using a bigger number of 
-  \code{levels} in the \code{design} argument.
+  \code{levels} in the \code{design} argument (only possible for OAT design).
 }
 \examples{
+##### Lotka-Volterra equations #####
+# The model function:
+LVmod <- function(Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    Ingestion    <- rIng  * Prey * Predator
+    GrowthPrey   <- rGrow * Prey * (1 - Prey/K)
+    MortPredator <- rMort * Predator
+    
+    dPrey        <- GrowthPrey - Ingestion
+    dPredator    <- Ingestion * assEff - MortPredator
+    
+    return(list(c(dPrey, dPredator)))
+  })
+}
+# The parameters to be included in the sensitivity analysis and their lower 
+# and upper boundaries:
+LVpars  <- c("rIng", "rGrow", "rMort", "assEff", "K")
+LVbinf <- c(0.05, 0.05, 0.05, 0.05, 1)
+LVbsup <- c(1.00, 3.00, 0.95, 0.95, 20)
+# The initial values of the state variables:
+LVinit  <- c(Prey = 1, Predator = 2)
+# The timepoints of interest:
+LVtimes <- c(0.01, seq(1, 50, by = 1))
+# Morris screening:
+set.seed(7292)
+LVres_morris <- ODEmorris(mod = LVmod,
+                          pars = LVpars,
+                          state_init = LVinit,
+                          times = LVtimes,
+                          binf = LVbinf,
+                          bsup = LVbsup,
+                          r = 500,
+                          design = list(type = "oat", 
+                                        levels = 10, grid.jump = 1),
+                          scale = TRUE,
+                          ode_method = "lsoda",
+                          parallel_eval = TRUE,
+                          parallel_eval_ncores = 2)
+
 ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
-# Definition of the model itself, parameters, initial state values
-# and the times vector:
 FHNmod <- function(Time, State, Pars) {
   with(as.list(c(State, Pars)), {
     
@@ -122,22 +151,20 @@ FHNmod <- function(Time, State, Pars) {
     return(list(c(dVoltage, dCurrent)))
   })
 }
-FHNstate  <- c(Voltage = -1, Current = 1)
-FHNtimes <- seq(0.1, 50, by = 5)
-
 set.seed(4628)
-FHNres <- ODEmorris(mod = FHNmod,
-                    pars = c("a", "b", "s"),
-                    state_init = FHNstate,
-                    times = FHNtimes,
-                    binf = c(0.18, 0.18, 2.8),
-                    bsup = c(0.22, 0.22, 3.2),
-                    r = 50,
-                    design = list(type = "oat", levels = 100, grid.jump = 1),
-                    scale = TRUE,
-                    ode_method = "adams",
-                    parallel_eval = TRUE,
-                    parallel_eval_ncores = 2)
+FHNres_morris <- ODEmorris(mod = FHNmod,
+                           pars = c("a", "b", "s"),
+                           state_init = c(Voltage = -1, Current = 1),
+                           times = seq(0.1, 50, by = 5),
+                           binf = c(0.18, 0.18, 2.8),
+                           bsup = c(0.22, 0.22, 3.2),
+                           r = 500,
+                           design = list(type = "oat", levels = 10,
+                                         grid.jump = 1),
+                           scale = TRUE,
+                           ode_method = "adams",
+                           parallel_eval = TRUE,
+                           parallel_eval_ncores = 2)
 
 }
 \author{

@@ -47,75 +47,72 @@
 #' \link[sensitivity]{sobolmartinez}}
 #'
 #' @examples
-#' ##### FitzHugh-Nagumo equations (Ramsay et al., 2007) #####
-#' # Definition of the model itself, parameters, initial state values
-#' # and the times vector:
-#' FHNmod <- function(Time, State, Pars) {
+#' ##### Lotka-Volterra equations #####
+#' LVmod <- function(Time, State, Pars) {
 #'   with(as.list(c(State, Pars)), {
+#'     Ingestion    <- rIng  * Prey * Predator
+#'     GrowthPrey   <- rGrow * Prey * (1 - Prey/K)
+#'     MortPredator <- rMort * Predator
 #'     
-#'     dVoltage <- s * (Voltage - Voltage^3 / 3 + Current)
-#'     dCurrent <- - 1 / s *(Voltage - a + b * Current)
+#'     dPrey        <- GrowthPrey - Ingestion
+#'     dPredator    <- Ingestion * assEff - MortPredator
 #'     
-#'     return(list(c(dVoltage, dCurrent)))
+#'     return(list(c(dPrey, dPredator)))
 #'   })
 #' }
-#' FHNstate  <- c(Voltage = -1, Current = 1)
-#' FHNtimes <- seq(0.1, 50, by = 5)
-#' 
+#' LVpars  <- c("rIng", "rGrow", "rMort", "assEff", "K")
+#' LVbinf <- c(0.05, 0.05, 0.05, 0.05, 1)
+#' LVbsup <- c(1.00, 3.00, 0.95, 0.95, 20)
+#' LVinit  <- c(Prey = 1, Predator = 2)
+#' LVtimes <- c(0.01, seq(1, 50, by = 1))
+#' set.seed(59281)
 #' # Warning: The following code might take a long time!
-#' set.seed(4628)
-#' FHNres <- ODEsobol(mod = FHNmod,
-#'                    pars = c("a", "b", "s"),
-#'                    state_init = FHNstate,
-#'                    times = FHNtimes,
-#'                    n = 1000,
-#'                    rfuncs = c("runif", "rnorm", "rexp"),
-#'                    rargs = c("min = 0.18, max = 0.22", 
-#'                              "mean = 0.2, sd = 0.2 / 3",
-#'                              "rate = 1 / 3"),
-#'                    sobol_method = "Martinez",
-#'                    ode_method = "adams",
-#'                    parallel_eval = TRUE,
-#'                    parallel_eval_ncores = 2)
+#' LVres_sobol <- ODEsobol(mod = LVmod,
+#'                         pars = LVpars,
+#'                         state_init = LVinit,
+#'                         times = LVtimes,
+#'                         n = 500,
+#'                         rfuncs = "runif",
+#'                         rargs = paste0("min = ", LVbinf,
+#'                                        ", max = ", LVbsup),
+#'                         sobol_method = "Martinez",
+#'                         ode_method = "lsoda",
+#'                         parallel_eval = TRUE,
+#'                         parallel_eval_ncores = 2)
+#' my_cols <- c("firebrick", "orange2", "dodgerblue", 
+#'              "forestgreen", "black")
+#' plot(LVres_sobol, colors_pars = my_cols)
+#' plot(LVres_sobol, pars_plot = c("rGrow", "rMort"), state_plot = "Predator", 
+#'      colors_pars = my_cols[2:3])
 #' 
-#' # Define custom colors for the plot:
-#' my_cols <- c("firebrick", "chartreuse3", "dodgerblue")
-#' plot(FHNres, state_plot = "Current", colors_pars = my_cols)
-#' 
-#' ##### A network of ordinary differential equations #####
-#' # Definition of the network using the package "ODEnetwork":
-#' library(ODEnetwork)
-#' masses <- c(1, 1)
-#' dampers <- diag(c(1, 1))
-#' springs <- diag(c(1, 1))
-#' springs[1, 2] <- 1
-#' distances <- diag(c(0, 2))
-#' distances[1, 2] <- 1
-#' lfonet <- ODEnetwork(masses, dampers, springs, 
-#'                      cartesian = TRUE, distances = distances)
-#' lfonet <- setState(lfonet, c(0.5, 1), c(0, 0))
-#' LFOpars <- c("k.1", "k.2", "k.1.2")
-#' LFOtimes <- seq(0.01, 20, by = 0.1)
-#' 
-#' set.seed(4628)
-#' LFOres <- ODEsobol(lfonet, 
-#'                    LFOpars, 
-#'                    LFOtimes,
-#'                    n = 1000,
-#'                    rfuncs = c("runif", "rnorm", "rexp"),
-#'                    rargs = c("min = 0.001, max = 6",
-#'                              "mean = 3, sd = 0.5",
-#'                              "rate = 1 / 3"),
-#'                    sobol_method = "Martinez",
-#'                    ode_method = "adams",
-#'                    parallel_eval = TRUE,
-#'                    parallel_eval_ncores = 2)
-#' # (A warning is thrown, concerning the state variables "v.1" and "v.2". 
-#' # Assuming that we are only interested in a sensitivity analysis of "x.1" and
-#' # "x.2", this warning is ignored.)
-#' 
-#' plot(LFOres, state_plot = "x.1", colors_pars = my_cols)
-#' plot(LFOres, state_plot = "x.2", colors_pars = my_cols)
+#' ##### A network of 4 mechanical oscillators connected in a circle #####
+#' M_mat <- rep(2, 4)
+#' K_mat <- diag(rep(2 * (2*pi*0.17)^2, 4))
+#' K_mat[1, 2] <- K_mat[2, 3] <- 
+#'   K_mat[3, 4] <- K_mat[1, 4] <- 2 * (2*pi*0.17)^2 / 10
+#' D_mat <- diag(rep(0.05, 4))
+#' library("ODEnetwork")
+#' lfonet <- ODEnetwork(masses = M_mat, dampers = D_mat, springs = K_mat)
+#' LFOpars <- c("k.1", "k.2", "k.3", "k.4",
+#'              "d.1", "d.2", "d.3", "d.4")
+#' LFObinf <- c(rep(0.2, 4), rep(0.01, 4))
+#' LFObsup <- c(rep(20, 4), rep(0.1, 4))
+#' lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
+#' LFOtimes <- seq(25, 150, by = 2.5)
+#' suppressWarnings(
+#'   LFOres_sobol <- ODEsobol(mod = lfonet,
+#'                            pars = LFOpars,
+#'                            times = LFOtimes,
+#'                            n = 500,
+#'                            rfuncs = "runif",
+#'                            rargs = paste0("min = ", LFObinf,
+#'                                           ", max = ", LFObsup),
+#'                            sobol_method = "Martinez",
+#'                            parallel_eval = TRUE,
+#'                            parallel_eval_ncores = 2)
+#' )
+#' plot(LFOres_sobol, pars_plot = paste0("k.", 1:4), state_plot = "x.2",
+#'      colors_pars = my_cols)
 #' 
 #' @import checkmate
 #' @method plot ODEsobol
