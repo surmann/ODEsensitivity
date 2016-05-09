@@ -120,8 +120,9 @@
 #' # The timepoints of interest:
 #' LVtimes <- c(0.01, seq(1, 50, by = 1))
 #' set.seed(59281)
-#' # Sobol' sensitivity analysis (here only with n = 500 since n = 1000 takes
-#' # a lot more time):
+#' # Sobol' sensitivity analysis (here only with n = 500, but n = 1000 is
+#' # recommended):
+#' # Warning: The following code might take very long!
 #' \dontrun{
 #' LVres_sobol <- ODEsobol(mod = LVmod,
 #'                         pars = LVpars,
@@ -147,6 +148,7 @@
 #'     return(list(c(dVoltage, dCurrent)))
 #'   })
 #' }
+#' # Warning: The following code might take very long!
 #' \dontrun{
 #' FHNres_sobol <- ODEsobol(mod = FHNmod,
 #'                          pars = c("a", "b", "s"),
@@ -164,6 +166,7 @@
 #' # Just for demonstration purposes: The use of different distributions for the 
 #' # parameters (here, the distributions and their arguments are chosen 
 #' # completely arbitrarily):
+#' # Warning: The following code might take very long!
 #' \dontrun{
 #' demo_dists <- ODEsobol(mod = FHNmod,
 #'                        pars = c("a", "b", "s"),

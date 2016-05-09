@@ -116,9 +116,11 @@
 #' lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
 #' # The timepoints of interest:
 #' LFOtimes <- seq(25, 150, by = 2.5)
-#' # Sobol' sensitivity analysis (here only with n = 500 since n = 1000 takes
-#' # a lot more time; warnings are suppressed):
+#' # Sobol' sensitivity analysis (here only with n = 500, but n = 1000 is
+#' # recommended):
 #' set.seed(1739)
+#' # Warning: The following code might take very long! There are warnings
+#' # occurring which might be due to "n" being too low.
 #' \dontrun{
 #' suppressWarnings(
 #'   LFOres_sobol <- ODEsobol(mod = lfonet,

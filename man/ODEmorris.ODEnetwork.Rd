@@ -128,6 +128,7 @@ lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
 LFOtimes <- seq(25, 150, by = 2.5)
 # Morris screening:
 set.seed(283)
+# Warning: The following code might take very long!
 \dontrun{
 LFOres_morris <- ODEmorris(mod = lfonet,
                            pars = LFOpars,

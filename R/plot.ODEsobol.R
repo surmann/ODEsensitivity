@@ -67,6 +67,7 @@
 #' LVinit  <- c(Prey = 1, Predator = 2)
 #' LVtimes <- c(0.01, seq(1, 50, by = 1))
 #' set.seed(59281)
+#' # Warning: The following code might take very long!
 #' LVres_sobol <- ODEsobol(mod = LVmod,
 #'                         pars = LVpars,
 #'                         state_init = LVinit,
@@ -100,6 +101,7 @@
 #' lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
 #' LFOtimes <- seq(25, 150, by = 2.5)
 #' set.seed(1739)
+#' # Warning: The following code might take very long!
 #' suppressWarnings(
 #'   LFOres_sobol <- ODEsobol(mod = lfonet,
 #'                            pars = LFOpars,
