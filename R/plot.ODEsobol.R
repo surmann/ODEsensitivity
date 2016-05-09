@@ -130,9 +130,15 @@ plot.ODEsobol <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   stopifnot(is.null(pars_plot) || is.character(pars_plot))
   assertCharacter(state_plot, len = 1)
   stopifnot(state_plot %in% names(x))
-  stopifnot(is.null(colors_pars) || (is.character(colors_pars) && 
-    length(colors_pars) >= 
-      nrow((x[[which(names(x) == state_plot)]])$S) - 1))
+  stopifnot(is.null(colors_pars) || is.character(colors_pars))
+  if(is.character(colors_pars) && is.null(pars_plot) &&
+     length(colors_pars) < nrow((x[[which(names(x) == state_plot)]])$S) - 1){
+    stop("\"colors_pars\" has to be at least of length",
+         (nrow(x[[which(names(x) == state_plot)]]) - 1) / 3)
+  } else if(is.character(colors_pars) && !is.null(pars_plot) &&
+            length(colors_pars) < length(pars_plot)){
+    stop("\"colors_pars\" has to be at least of length", length(pars_plot))
+  }
   stopifnot(is.null(main_title) || (is.character(main_title) && 
     length(main_title) == 1))
   assertCharacter(legendPos, len = 1)
