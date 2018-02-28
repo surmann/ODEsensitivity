@@ -152,12 +152,11 @@ suppressWarnings(
 }
 
 }
-\author{
-Frank Weber
-}
 \seealso{
 \code{\link[sensitivity]{soboljansen}, 
   \link[sensitivity]{sobolmartinez},
   \link{plot.ODEsobol}}
 }
-
+\author{
+Frank Weber
+}

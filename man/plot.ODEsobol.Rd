@@ -130,11 +130,10 @@ plot(LFOres_sobol, pars_plot = paste0("k.", 1:4), state_plot = "x.2",
      colors_pars = my_cols)
 
 }
-\author{
-Stefan Theers, Frank Weber
-}
 \seealso{
 \code{\link{ODEsobol}, \link[sensitivity]{soboljansen},
 \link[sensitivity]{sobolmartinez}}
 }
-
+\author{
+Stefan Theers, Frank Weber
+}

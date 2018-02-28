@@ -32,4 +32,3 @@ See the \code{\link{sensitivity}} package and its
 \code{\link[sensitivity]{sobolmartinez}} implementations for further 
 information on sensitivity analysis in \code{R}.
 }
-

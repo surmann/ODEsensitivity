@@ -196,9 +196,6 @@ demo_dists <- ODEsobol(mod = FHNmod,
 }
 
 }
-\author{
-Stefan Theers, Frank Weber
-}
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   \emph{Parameter estimation for differential equations: a generalized 
@@ -210,4 +207,6 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   \link[sensitivity]{sobolmartinez},
   \link{plot.ODEsobol}}
 }
-
+\author{
+Stefan Theers, Frank Weber
+}

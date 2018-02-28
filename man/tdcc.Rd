@@ -42,10 +42,9 @@ ranking <- rbind(1:20,
 tdcc(ranking, pearson = TRUE, plot = TRUE)
 
 }
-\author{
-Stefan Theers
-}
 \references{
 Iman and Conover (1987): A Measure of Top-Down Correlation
 }
-
+\author{
+Stefan Theers
+}

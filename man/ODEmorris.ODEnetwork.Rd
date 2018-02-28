@@ -144,10 +144,9 @@ LFOres_morris <- ODEmorris(mod = lfonet,
 }
 
 }
-\author{
-Frank Weber
-}
 \seealso{
 \code{\link[sensitivity]{morris}, \link{plot.ODEmorris}}
 }
-
+\author{
+Frank Weber
+}

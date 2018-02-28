@@ -24,10 +24,9 @@ There are two methods for this generic function:
   \code{\link{ODEsobol.ODEnetwork}} (for objects of class \code{ODEnetwork},
   see package \code{ODEnetwork}).
 }
-\author{
-Frank Weber
-}
 \seealso{
 \code{\link{ODEsobol.default}, \link{ODEsobol.ODEnetwork}}
 }
-
+\author{
+Frank Weber
+}

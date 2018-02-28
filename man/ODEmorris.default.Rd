@@ -172,9 +172,6 @@ FHNres_morris <- ODEmorris(mod = FHNmod,
 }
 
 }
-\author{
-Stefan Theers, Frank Weber
-}
 \references{
 J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
   \emph{Parameter estimation for differential equations: a generalized 
@@ -184,4 +181,6 @@ J. O. Ramsay, G. Hooker, D. Campbell and J. Cao, 2007,
 \seealso{
 \code{\link[sensitivity]{morris}, \link{plot.ODEmorris}}
 }
-
+\author{
+Stefan Theers, Frank Weber
+}

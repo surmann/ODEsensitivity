@@ -140,10 +140,9 @@ plot(LFOres_morris, pars_plot = paste0("k.", 1:4), state_plot = "x.2",
      kind = "sep", colors_pars = my_cols)
 
 }
-\author{
-Stefan Theers, Frank Weber
-}
 \seealso{
 \code{\link{ODEmorris}, \link[sensitivity]{morris}}
 }
-
+\author{
+Stefan Theers, Frank Weber
+}
