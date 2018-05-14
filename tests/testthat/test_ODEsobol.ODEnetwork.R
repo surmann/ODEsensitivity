@@ -1,11 +1,6 @@
 context("Test of ODEsobol.ODEnetwork() (and plotting)")
 
 # Example of low frequency oscillations (LFO):
-
-library(BBmisc)
-library(checkmate, warn.conflicts = FALSE)
-library(deSolve, warn.conflicts = FALSE)
-library(ODEnetwork)
 masses <- c(1, 1)
 dampers <- diag(c(1, 1))
 springs <- diag(c(1, 1))

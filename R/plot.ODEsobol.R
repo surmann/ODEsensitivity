@@ -188,7 +188,7 @@ plot.ODEsobol <- function(x, pars_plot = NULL, state_plot = names(x)[1],
   
   # Set colors if not set by the user:
   if(is.null(colors_pars)){
-    colors_pars <- rainbow(k)
+    colors_pars <- grDevices::rainbow(k)
   }
   
   # Set main title if not set by the user:
@@ -204,95 +204,92 @@ plot.ODEsobol <- function(x, pars_plot = NULL, state_plot = names(x)[1],
     if(k > 6){
       # Multirow legend:
       legend_ncol <- ceiling(k / 2)
-      oldpar <- par(mfrow = c(1, 2),
-                    oma = c(2.5, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+      oldpar <- graphics::par(mfrow = c(1, 2), oma = c(2.5, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
     } else{
       # One-row legend:
       legend_ncol <- k
-      oldpar <- par(mfrow = c(1, 2),
+      oldpar <- graphics::par(mfrow = c(1, 2),
                     oma = c(1.7, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
     }
   } else{
-    oldpar <- par(mfrow = c(1, 2),
-                  oma = c(0, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
+    oldpar <- graphics::par(mfrow = c(1, 2), oma = c(0, 0, 2, 0), mar = c(4, 4, 1, 2) + 0.2)
   }
   
   # First order SA indices:
   # First parameter:
-  plot(x = t.vec, y = S[pars_plot[1], ],
+  graphics::plot(x = t.vec, y = S[pars_plot[1], ],
        xlab = "Time", ylab = "First order Sobol' indices",
        type = type, col = colors_pars[1], ylim = minMaxS, ...)
   # All remaining parameters:
   if(k >= 2){
     for(i in 2:k) {
-      lines(x = t.vec, y = S[pars_plot[i], ], type = type, 
+      graphics::lines(x = t.vec, y = S[pars_plot[i], ], type = type, 
             col = colors_pars[i], ...)
     }
   }
   # Legend:
   if(legendPos != "outside"){
     if(type %in% c("b", "o")){
-      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white",
+      graphics::legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white",
              lty = 1, pch = 1)
     } else if(type %in% c("l", "c", "s", "h")){
-      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+      graphics::legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
              lty = 1)
     } else if(type == "p"){
-      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+      graphics::legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
              pch = 1)
     }
   }
   
   # Total SA indices:
   # First parameter:
-  plot(x = t.vec, y = T[pars_plot[1], ],
+  graphics::plot(x = t.vec, y = T[pars_plot[1], ],
        xlab = "Time", ylab = "Total Sobol' indices",
        type = type, col = colors_pars[1], ylim = minMaxT, ...)
   # All remaining parameters:
   if(k >= 2){
     for(i in 2:k) {
-      lines(x = t.vec, y = T[pars_plot[i], ], type = type, 
+      graphics::lines(x = t.vec, y = T[pars_plot[i], ], type = type, 
             col = colors_pars[i], ...)
     }
   }
   # Legend:
   if(legendPos != "outside"){
     if(type %in% c("b", "o")){
-      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white",
+      graphics::legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white",
              lty = 1, pch = 1)
     } else if(type %in% c("l", "c", "s", "h")){
-      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+      graphics::legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
              lty = 1)
     } else if(type == "p"){
-      legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
+      graphics::legend(legendPos, legend = pars_plot, col = colors_pars, bg = "white", 
              pch = 1)
     }
   }
   
   # Create the big common title for the two plots:
-  mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
+  graphics::mtext(main_title, side = 3, line = 0, outer = TRUE, cex = 1.2, font = 2)
   
   # Legend outside of the plotting region:
   if(legendPos == "outside"){
     # Dummy plot:
-    oldpar2 <- par(mfrow = c(1, 1), oma = rep(0, 4), mar = rep(0, 4), 
-                   new = TRUE)
-    plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+    oldpar2 <- graphics::par(mfrow = c(1, 1), oma = rep(0, 4), mar = rep(0, 4), new = TRUE)
+    graphics::plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
     # Draw the legend depending on the plot type:
     if(type %in% c("b", "o")){
-      legend("bottom", legend = pars_plot, col = colors_pars, lty = 1, pch = 1, 
+      graphics::legend("bottom", legend = pars_plot, col = colors_pars, lty = 1, pch = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     } else if(type %in% c("l", "c", "s", "h")){
-      legend("bottom", legend = pars_plot, col = colors_pars, lty = 1, 
+      graphics::legend("bottom", legend = pars_plot, col = colors_pars, lty = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     } else if(type == "p"){
-      legend("bottom", legend = pars_plot, col = colors_pars, pch = 1, 
+      graphics::legend("bottom", legend = pars_plot, col = colors_pars, pch = 1, 
              bty = "n", xpd = TRUE, ncol = legend_ncol, inset = c(0, 0))
     }
-    par(oldpar2)
+    graphics::par(oldpar2)
   }
   
-  par(oldpar)
+  graphics::par(oldpar)
   # For testing purposes:
   return(invisible(TRUE))
 }

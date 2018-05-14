@@ -293,7 +293,7 @@ ODEmorris.ODEnetwork <- function(mod,
   })
   sigma <- lapply(1:dim(x$ee)[4], function(i){
     apply(x$ee[, , , i, drop = FALSE], 3, function(M){
-      apply(M, 2, sd)
+      apply(M, 2, stats::sd)
     })
   })
   names(mu) <- names(mu.star) <- names(sigma) <- dimnames(x$ee)[[4]]

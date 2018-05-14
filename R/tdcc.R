@@ -62,12 +62,12 @@ tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
   C.T <- 1 / (b^2 * (k - S1)) * sum(S.sums^2) - b^2 * k
   # Scatterplots:
   if(plot) {
-    par(mfrow = c(1, 2))
+    graphics::par(mfrow = c(1, 2))
     plot(ranks[1, ], ranks[2, ], main = "Scatterplot of Ranks",
          xlab = "Ranking by A", ylab = "Ranking by B")
     plot(S[1, ], S[2, ], main = "Scatterplot of Savage Scores",
          xlab = "Savage Score for A", ylab = "Savage Score for B")
-    par(mfrow = c(1, 1))
+    graphics::par(mfrow = c(1, 1))
   }
   if(!pearson)
     return(c(kendall = C.T))
