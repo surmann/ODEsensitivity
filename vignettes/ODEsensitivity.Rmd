@@ -60,7 +60,7 @@ The sensitivity analysis of a general ODE model can be performed by using the ge
 ```{r}
 LVres_morris = ODEmorris(mod = LVmod, pars = LVpars, state_init = LVinit
                          , times = LVtimes, binf = LVbinf, bsup = LVbsup
-                         , r = 500, design = list(type = "oat", levels = 10, grid.jump = 1)
+                         , r = 100, design = list(type = "oat", levels = 10, grid.jump = 1)
                          , scale = TRUE, ode_method = "lsoda", parallel_eval = TRUE
                          , parallel_eval_ncores = parallel::detectCores()
                          )
