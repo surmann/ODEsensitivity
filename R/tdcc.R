@@ -37,8 +37,6 @@
 #'
 #' @export
 #'
-#' @import checkmate
-#'
 tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
   # Plausibilitaet:
   assertMatrix(ranks, mode = "numeric", min.rows = 2, min.cols = 2)

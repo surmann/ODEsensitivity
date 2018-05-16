@@ -121,8 +121,6 @@
 #'      colors_pars = my_cols)
 #' }
 #' 
-#' @import checkmate
-#' @method plot ODEsobol
 #' @export
 #'
 

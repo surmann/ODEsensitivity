@@ -136,11 +136,6 @@
 #' )
 #' }
 #' 
-#' @import checkmate
-#' @importFrom deSolve ode
-#' @importFrom sensitivity soboljansen
-#' @importFrom sensitivity sobolmartinez
-#' @method ODEsobol ODEnetwork
 #' @export
 #' 
 

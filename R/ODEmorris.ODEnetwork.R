@@ -125,10 +125,6 @@
 #'                            parallel_eval_ncores = 2)
 #' }
 #'
-#' @import checkmate
-#' @importFrom deSolve ode
-#' @importFrom sensitivity morris
-#' @method ODEmorris ODEnetwork
 #' @export
 #' 
 

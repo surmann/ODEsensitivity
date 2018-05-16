@@ -183,10 +183,6 @@
 #'                        parallel_eval_ncores = 2)
 #' }
 #'
-#' @import checkmate
-#' @importFrom deSolve ode
-#' @importFrom sensitivity soboljansen
-#' @importFrom sensitivity sobolmartinez
 #' @export
 #'
 

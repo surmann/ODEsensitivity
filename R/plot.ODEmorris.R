@@ -129,8 +129,6 @@
 #'      kind = "sep", colors_pars = my_cols)
 #' }
 #' 
-#' @import checkmate
-#' @method plot ODEmorris
 #' @export
 #'
 
