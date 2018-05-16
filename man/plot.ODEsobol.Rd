@@ -80,6 +80,7 @@ LVinit  <- c(Prey = 1, Predator = 2)
 LVtimes <- c(0.01, seq(1, 50, by = 1))
 set.seed(59281)
 # Warning: The following code might take very long!
+\dontrun{
 LVres_sobol <- ODEsobol(mod = LVmod,
                         pars = LVpars,
                         state_init = LVinit,
@@ -97,6 +98,7 @@ my_cols <- c("firebrick", "orange2", "dodgerblue",
 plot(LVres_sobol, colors_pars = my_cols)
 plot(LVres_sobol, pars_plot = c("rGrow", "rMort"), state_plot = "Predator", 
      colors_pars = my_cols[2:3])
+}
 
 ##### A network of 4 mechanical oscillators connected in a circle #####
 M_mat <- rep(2, 4)
@@ -114,6 +116,7 @@ lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
 LFOtimes <- seq(25, 150, by = 2.5)
 set.seed(1739)
 # Warning: The following code might take very long!
+\dontrun{
 suppressWarnings(
   LFOres_sobol <- ODEsobol(mod = lfonet,
                            pars = LFOpars,
@@ -128,6 +131,7 @@ suppressWarnings(
 )
 plot(LFOres_sobol, pars_plot = paste0("k.", 1:4), state_plot = "x.2",
      colors_pars = my_cols)
+}
 
 }
 \seealso{
