@@ -1,7 +1,11 @@
 Package: ODEsensitivity
 Version: 1.1.0
 Title: Sensitivity Analysis of Ordinary Differential Equations
-Description: Perform sensitivity analysis in ordinary differential equation models.
+Description: Performs sensitivity analysis in ordinary differential equation (ode) models.
+    The package utilize the ode interface from \code{\link{deSolve}} and connects it with the 
+    sensitivity analysis from \code{\link{sensitivity}}. Additionally we add a method to
+    run the sensitivity analysis on variables with class \code{\link{ODEnetwork}}. A detailed
+    plotting function provides outputs on the calculations.
 Authors@R: c(
     person("Stefan", "Theers", email = "stefan.theers@tu-dortmund.de", role = "aut"),
     person("Frank", "Weber", email = "frank.weber@tu-dortmund.de", role = "aut"),
