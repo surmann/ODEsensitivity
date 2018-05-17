@@ -128,7 +128,7 @@ LVtimes <- c(0.01, seq(1, 50, by = 1))
 # Morris screening:
 set.seed(7292)
 # Warning: The following code might take very long!
-\dontrun{
+\donttest{
 LVres_morris <- ODEmorris(mod = LVmod,
                           pars = LVpars,
                           state_init = LVinit,
@@ -155,7 +155,7 @@ FHNmod <- function(Time, State, Pars) {
   })
 }
 # Warning: The following code might take very long!
-\dontrun{
+\donttest{
 FHNres_morris <- ODEmorris(mod = FHNmod,
                            pars = c("a", "b", "s"),
                            state_init = c(Voltage = -1, Current = 1),

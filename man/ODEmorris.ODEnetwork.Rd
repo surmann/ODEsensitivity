@@ -129,7 +129,7 @@ LFOtimes <- seq(25, 150, by = 2.5)
 # Morris screening:
 set.seed(283)
 # Warning: The following code might take very long!
-\dontrun{
+\donttest{
 LFOres_morris <- ODEmorris(mod = lfonet,
                            pars = LFOpars,
                            times = LFOtimes,

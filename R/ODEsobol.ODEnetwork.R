@@ -121,7 +121,7 @@
 #' set.seed(1739)
 #' # Warning: The following code might take very long! There are warnings
 #' # occurring which might be due to "n" being too low.
-#' \dontrun{
+#' \donttest{
 #' suppressWarnings(
 #'   LFOres_sobol <- ODEsobol(mod = lfonet,
 #'                            pars = LFOpars,

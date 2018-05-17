@@ -68,7 +68,7 @@
 #' LVtimes <- c(0.01, seq(1, 50, by = 1))
 #' set.seed(59281)
 #' # Warning: The following code might take very long!
-#' \dontrun{
+#' \donttest{
 #' LVres_sobol <- ODEsobol(mod = LVmod,
 #'                         pars = LVpars,
 #'                         state_init = LVinit,
@@ -104,7 +104,7 @@
 #' LFOtimes <- seq(25, 150, by = 2.5)
 #' set.seed(1739)
 #' # Warning: The following code might take very long!
-#' \dontrun{
+#' \donttest{
 #' suppressWarnings(
 #'   LFOres_sobol <- ODEsobol(mod = lfonet,
 #'                            pars = LFOpars,

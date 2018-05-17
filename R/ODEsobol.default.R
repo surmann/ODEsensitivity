@@ -123,7 +123,7 @@
 #' # Sobol' sensitivity analysis (here only with n = 500, but n = 1000 is
 #' # recommended):
 #' # Warning: The following code might take very long!
-#' \dontrun{
+#' \donttest{
 #' LVres_sobol <- ODEsobol(mod = LVmod,
 #'                         pars = LVpars,
 #'                         state_init = LVinit,
@@ -149,7 +149,7 @@
 #'   })
 #' }
 #' # Warning: The following code might take very long!
-#' \dontrun{
+#' \donttest{
 #' FHNres_sobol <- ODEsobol(mod = FHNmod,
 #'                          pars = c("a", "b", "s"),
 #'                          state_init = c(Voltage = -1, Current = 1),
@@ -167,7 +167,7 @@
 #' # parameters (here, the distributions and their arguments are chosen 
 #' # completely arbitrarily):
 #' # Warning: The following code might take very long!
-#' \dontrun{
+#' \donttest{
 #' demo_dists <- ODEsobol(mod = FHNmod,
 #'                        pars = c("a", "b", "s"),
 #'                        state_init = c(Voltage = -1, Current = 1),

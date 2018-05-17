@@ -90,7 +90,7 @@ LVinit  <- c(Prey = 1, Predator = 2)
 LVtimes <- c(0.01, seq(1, 50, by = 1))
 set.seed(7292)
 # Warning: The following code might take very long!
-\dontrun{
+\donttest{
 LVres_morris <- ODEmorris(mod = LVmod,
                           pars = LVpars,
                           state_init = LVinit,
@@ -127,7 +127,7 @@ lfonet <- setState(lfonet, state1 = rep(2, 4), state2 = rep(0, 4))
 LFOtimes <- seq(25, 150, by = 2.5)
 set.seed(283)
 # Warning: The following code might take very long!
-\dontrun{
+\donttest{
 LFOres_morris <- ODEmorris(mod = lfonet,
                            pars = LFOpars,
                            times = LFOtimes,
