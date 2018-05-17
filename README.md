@@ -1,6 +1,11 @@
 Sensitivity Analysis of ODE Models
 ==============
 
+[![CRAN status](https://www.r-pkg.org/badges/version/ODEsensitivity)](https://cran.r-project.org/package=ODEsensitivity)
+[![Travis build status](https://travis-ci.org/surmann/ODEsensitivity.svg?branch=master)](https://travis-ci.org/surmann/ODEsensitivity)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/surmann/ODEsensitivity?branch=master&svg=true)](https://ci.appveyor.com/project/surmann/ODEsensitivity)
+[![Coverage status](https://codecov.io/gh/surmann/ODEsensitivity/branch/master/graph/badge.svg)](https://codecov.io/github/surmann/ODEsensitivity?branch=master)
+
 A package to perform sensitivity analysis for ordinary differential equation 
 models, e.g. the FitzHugh-Nagumo equations (cf. Ramsay et al., 2007) or low 
 frequency oscillations (LFOs) in an electrical system (cf. Surmann et al., 
