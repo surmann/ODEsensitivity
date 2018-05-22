@@ -7,10 +7,10 @@ Sensitivity Analysis of ODE Models
 [![Coverage status](https://codecov.io/gh/surmann/ODEsensitivity/branch/master/graph/badge.svg)](https://codecov.io/github/surmann/ODEsensitivity?branch=master)
 
 A package to perform sensitivity analysis for ordinary differential equation (ode)
-models, e.g. the FitzHugh-Nagumo equations (cf. Ramsay et al., 2007) or low 
-frequency oscillations (LFOs) in an electrical system (cf. Surmann et al., 
+models, e.g. the FitzHugh-Nagumo equations (cf. Ramsay et al., 2007) or low
+frequency oscillations (LFOs) in an electrical system (cf. Surmann et al.,
 2014).
-The package utilize the ode interface from `deSolve` and connects it with the 
+The package utilizes the ode interface from `deSolve` and connects it with the
 sensitivity analysis from `sensitivity`. Additionally we add a method to
 run the sensitivity analysis on variables with class `ODEnetwork`. A detailed
 plotting function provides outputs on the calculations.
