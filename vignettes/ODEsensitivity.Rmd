@@ -58,11 +58,9 @@ LVtimes = c(0.01, seq(1, 50, by = 1))
 ### Sensitivity Analysis
 The sensitivity analysis of a general ODE model can be performed by using the generic function `ODEsensitivity::ODEmorris()`.
 ```{r}
+set.seed(1618)
 LVres_morris = ODEmorris(mod = LVmod, pars = LVpars, state_init = LVinit
                          , times = LVtimes, binf = LVbinf, bsup = LVbsup
-                         , r = 100, design = list(type = "oat", levels = 10, grid.jump = 1)
-                         , scale = TRUE, ode_method = "lsoda", parallel_eval = TRUE
-                         , parallel_eval_ncores = 1  # parallel::detectCores()
                          )
 ```
 Let's take a look at the output `LVres_morris`.
