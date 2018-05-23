@@ -52,7 +52,7 @@
 #' @return 
 #'   List of class \code{ODEmorris} of length \code{length(state_init)} 
 #'   containing in each element a matrix for one state variable. The
-#'   matrices itself contain the Morris screening results for all timepoints 
+#'   matrices themselves contain the Morris screening results for all timepoints 
 #'   (rows: \code{mu, mu.star} and \code{sigma} for every parameter; columns: 
 #'   timepoints).
 #'
