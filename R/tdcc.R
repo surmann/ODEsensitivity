@@ -22,8 +22,8 @@
 #'
 #' @return A named vector with components:
 #' \itemize{
-#'   \item{\bold{kendall}}: Coefficient of concordance.
-#'   \item{\bold{pearson}}: Pearson Coefficient (only if \code{pearson = TRUE}).
+#'   \item{\code{kendall}}: Coefficient of concordance.
+#'   \item{\code{pearson}}: Pearson coefficient (only if \code{pearson = TRUE}).
 #' }
 #'
 #' @examples
@@ -62,12 +62,13 @@ tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
   C.T <- 1 / (b^2 * (k - S1)) * sum(S.sums^2) - b^2 * k
   # scatter plots:
   if(plot) {
+    old.pars <- graphics::par(no.readonly = TRUE)
+    on.exit(do.call(graphics::par, old.pars))
     graphics::par(mfrow = c(1, 2))
     plot(ranks[1, ], ranks[2, ], main = "Scatterplot of Ranks",
          xlab = "Ranking by A", ylab = "Ranking by B")
     plot(S[1, ], S[2, ], main = "Scatterplot of Savage Scores",
          xlab = "Savage Score for A", ylab = "Savage Score for B")
-    graphics::par(mfrow = c(1, 1))
   }
   # return value:
   if(!pearson) {
