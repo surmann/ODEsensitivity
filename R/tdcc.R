@@ -2,8 +2,8 @@
 #' A Measure of Top-Down Correlation
 #'
 #' @description
-#' The Top-Down Correlation Coefficient TDCC compares \code{b} rankings
-#' using Savage Scores.
+#' With the use of Savage scores, the Top-Down Correlation Coefficient TDCC 
+#' compares \code{b} rankings.
 #'
 #' @details
 #' NOTE: As the implementation of the coefficient of concordance is still defective,
@@ -11,14 +11,14 @@
 #'
 #' @param ranks [\code{matrix(nrow = b, ncol = k)}]\cr
 #'   \code{(bxk)}-matrix of the ranks of the \code{k}
-#'   variables for each of the \code{b} SAs, ties are neglected,
+#'   variables for each of the \code{b} sensitivity analyses, ties are neglected,
 #'   must be integers.
 #' @param pearson [\code{logical(1)}]\cr
-#'   logical, should the ordinary Pearson coefficient with
-#'   Savage scores be computed (\code{b = 2})?
+#'   Should the ordinary Pearson coefficient with
+#'   Savage scores be computed (\code{b = 2})? Default is \code{FALSE}.
 #' @param plot [\code{logical(1)}]\cr
-#'   logical, scatter plots showing rankings and Savage scores
-#'   (\code{b = 2})?
+#'   Should scatter plots showing rankings and Savage scores be created
+#'   (\code{b = 2})? Default is \code{FALSE}.
 #'
 #' @return A named vector with components:
 #' \itemize{
@@ -33,22 +33,24 @@
 #' tdcc(ranking, pearson = TRUE, plot = TRUE)
 #'
 #' @author Stefan Theers
-#' @references Iman and Conover (1987): A Measure of Top-Down Correlation
+#' @references R. L. Iman and W. J. Conover, 
+#'   \emph{A Measure of Top-Down Correlation}, 
+#'   Technometrics, Vol. 29, No. 3 (Aug., 1987), pp. 351--357.
 #'
 #' @export
 #'
 tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
-  # Plausibilitaet:
+  # input checks:
   assertMatrix(ranks, mode = "numeric", min.rows = 2, min.cols = 2)
   assertIntegerish(ranks)
   assertLogical(pearson, len = 1)
   assertLogical(plot, len = 1)
   if(pearson | plot) stopifnot(nrow(ranks) == 2)
-  # Anzahl zu vergleichender SA-Methoden:
+  # number of sensitivity methods which should be compared:
   b <- nrow(ranks)
-  # Anzahl Merkmale:
+  # number of variables:
   k <- ncol(ranks)
-  # Savage-Scores:
+  # Savage scores:
   Sfun <- function(i) sum(1 / i:k)
   S <- matrix(sapply(t(ranks), Sfun), nrow = b, byrow = TRUE)
            ## Warum nicht gleich?
@@ -58,7 +60,7 @@ tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
   # Kendall's Coefficient of Concordance:
   S1 <- sum(1 / 1:k)
   C.T <- 1 / (b^2 * (k - S1)) * sum(S.sums^2) - b^2 * k
-  # Scatterplots:
+  # scatter plots:
   if(plot) {
     graphics::par(mfrow = c(1, 2))
     plot(ranks[1, ], ranks[2, ], main = "Scatterplot of Ranks",
@@ -67,12 +69,13 @@ tdcc <- function(ranks, pearson = FALSE, plot = FALSE) {
          xlab = "Savage Score for A", ylab = "Savage Score for B")
     graphics::par(mfrow = c(1, 1))
   }
-  if(!pearson)
-    return(c(kendall = C.T))
-  if(pearson) {
+  # return value:
+  if(!pearson) {
+    retVal <- c(kendall = C.T)
+  } else {
     r.T <- 1 / (k - S1) * (sum(apply(S, 2, prod)) - k)
-    # An dieser Stelle kann analog zu Abschnitt 2 ein Permutationstest
-    # implementiert werden.
-    return(c(kendall = C.T, pearson = r.T))
+    # Analogously to section 2, a permutation test could be implemented here:
+    retVal <- c(kendall = C.T, pearson = r.T)
   }
+  return(retVal)
 }
