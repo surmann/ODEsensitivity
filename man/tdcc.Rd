@@ -9,41 +9,45 @@ tdcc(ranks, pearson = FALSE, plot = FALSE)
 \arguments{
 \item{ranks}{[\code{matrix(nrow = b, ncol = k)}]\cr
 \code{(bxk)}-matrix of the ranks of the \code{k}
-variables for each of the \code{b} SAs, ties are neglected,
+variables for each of the \code{b} sensitivity analyses, ties are neglected,
 must be integers.}
 
 \item{pearson}{[\code{logical(1)}]\cr
-logical, should the ordinary Pearson coefficient with
-Savage scores be computed (\code{b = 2})?}
+Should the ordinary Pearson coefficient with
+Savage scores be computed (\code{b = 2})? Default is \code{FALSE}.}
 
 \item{plot}{[\code{logical(1)}]\cr
-logical, scatter plots showing rankings and Savage scores
-(\code{b = 2})?}
+Should scatter plots showing rankings and Savage scores be created
+(\code{b = 2})? Default is \code{FALSE}.}
 }
 \value{
 A named vector with components:
 \itemize{
-  \item{\bold{kendall}}: Coefficient of concordance.
-  \item{\bold{pearson}}: Pearson Coefficient (only if \code{pearson = TRUE}).
+  \item{\code{kendall}}: Coefficient of concordance.
+  \item{\code{pearson}}: Pearson coefficient (only if \code{pearson = TRUE}).
 }
 }
 \description{
-The Top-Down Correlation Coefficient TDCC compares \code{b} rankings
-using Savage Scores.
+With the use of Savage scores, the Top-Down Correlation Coefficient TDCC 
+compares \code{b} rankings.
 }
 \details{
 NOTE: As the implementation of the coefficient of concordance is still defective,
 please use the Pearson coefficient!
 }
 \examples{
-ranking <- rbind(1:20,
-                 c(1,3,2,4,16,10,19,12,18,17,
-                   20,5,14,7,8,11,6,15,9,13))
+# b=2 sensitivity analysis techniques A and B that rate the influence of 
+# k=20 variables/ input parameters (example taken from Iman and Conover, 1987):
+ranking <- rbind(A = 1:20,
+                 B = c(1,3,2,4,16,10,19,12,18,17,
+                       20,5,14,7,8,11,6,15,9,13))
 tdcc(ranking, pearson = TRUE, plot = TRUE)
 
 }
 \references{
-Iman and Conover (1987): A Measure of Top-Down Correlation
+R. L. Iman and W. J. Conover, 
+  \emph{A Measure of Top-Down Correlation}, 
+  Technometrics, Vol. 29, No. 3 (Aug., 1987), pp. 351--357.
 }
 \author{
 Stefan Theers

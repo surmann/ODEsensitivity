@@ -85,10 +85,11 @@ Function \code{\link[deSolve]{ode}} from \code{\link[deSolve]{deSolve}} is
   
   The sensitivity analysis is done for all state variables and all
   timepoints simultaneously. If \code{sobol_method = "Jansen"},
-  \code{\link[sensitivity]{soboljansen}} from the package \code{sensitivity}
+  \code{\link[sensitivity]{soboljansen}} from the package 
+  \code{\link[sensitivity]{sensitivity}}
   is used to estimate the Sobol' sensitivity indices and if 
   \code{sobol_method = "Martinez"}, \code{\link[sensitivity]{sobolmartinez}}
-  is used (also from the package \code{sensitivity}).
+  is used (also from the package \code{\link[sensitivity]{sensitivity}}).
 }
 \note{
 If the evaluation of the model function takes too long, it might be 
