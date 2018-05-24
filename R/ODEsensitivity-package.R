@@ -6,11 +6,13 @@
 #' in ordinary differential equation (ODE) models. Its functions are based on 
 #' the implementations of Morris and Sobol' SA in the
 #' \code{\link{sensitivity}} package (Pujol et al., 2015). However, a modified 
-#' version of the \code{\link{sensitivity}}-package is required that enables 
+#' version of the \code{\link{sensitivity}}-package had been required that enables 
 #' \code{\link[sensitivity]{morris}}, 
 #' \code{\link[sensitivity]{soboljansen}} and
 #' \code{\link[sensitivity]{sobolmartinez}} to handle three-dimensional
-#' arrays as model outputs. Each element of the third dimension of the output 
+#' arrays as model outputs (This is why \code{ODEsensitivity} depends on
+#' \code{\link{sensitivity}} version >= 1.12.1).
+#' Each element of the third dimension of the output 
 #' array is then used to contain the results for one state variable of the ODE 
 #' model. Each element of the second dimension of the output array is used for 
 #' one timepoint.
