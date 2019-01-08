@@ -217,8 +217,7 @@ test_that("Errors and warnings are thrown", {
                          scale = TRUE,
                          ode_method = "adams",
                          parallel_eval = FALSE,
-                         parallel_eval_ncores = NA),
-               "Assertion on 'r' failed: All elements must be >= 1")
+                         parallel_eval_ncores = NA))
 })
 
 test_that("Plots are generated", {

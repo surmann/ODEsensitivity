@@ -241,8 +241,7 @@ test_that("Errors and warnings are thrown", {
                         sobol_method = "Martinez",
                         ode_method = "adams",
                         parallel_eval = FALSE,
-                        parallel_eval_ncores = NA),
-               "All elements must be >= 2")
+                        parallel_eval_ncores = NA))
 })
 
 test_that("Plots are generated", {
