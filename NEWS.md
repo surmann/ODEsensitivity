@@ -1,3 +1,6 @@
+# ODEsensitivity 1.1.2
+* maintenance release to fix tests
+
 # ODEsensitivity 1.1.1
 * add reference to TechReport
 

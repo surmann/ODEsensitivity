@@ -1,5 +1,5 @@
 Package: ODEsensitivity
-Version: 1.1.1
+Version: 1.1.2
 Title: Sensitivity Analysis of Ordinary Differential Equations
 Description: Performs sensitivity analysis in ordinary differential equation (ode) models.
     The package utilize the ode interface from 'deSolve' and connects it with the 
